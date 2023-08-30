@@ -1,7 +1,7 @@
 import { Card, CardInstance, addCard } from "../cardContainer"
 
 const aiTakeover: Card = {
-  name: 'ACROBATIC',
+  name: 'AI TAKEOVER',
   colour: 'catastophe',
   pointsA: 0,
   pointsC: (playerCards: Array<CardInstance>, oponentCards: Array<Array<CardInstance>>) => {
