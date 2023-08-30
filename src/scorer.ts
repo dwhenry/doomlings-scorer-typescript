@@ -14,15 +14,15 @@ export class Scorer {
 
   // Functions
   scoreA(): number[] {
-    return [1, 0, 0, 0]
+    return [2, 0, 0, 0]
   }
 
   scoreB(): number[] {
-    return [1, 0, 0, 0]
+    return [0, 0, 0, 0]
   }
 
   scoreC(): number[] {
-    return [1, 0, 0, 0]
+    return [0, 0, 0, 0]
   }
 
   scores(): number[] {
