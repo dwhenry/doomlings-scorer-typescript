@@ -2,7 +2,7 @@ import { Card, addCard } from "../cardContainer"
 
 const acrobatic: Card = {
   name: 'ACROBATIC',
-  colour: 'multi-colour',
+  type: 'multi-colour',
   pointsA: 2,
 };
 
@@ -10,7 +10,7 @@ addCard(acrobatic)
 
 const adorable: Card = {
   name: 'ADORABLE',
-  colour: 'purple',
+  type: 'purple',
   pointsA: 4,
 };
 

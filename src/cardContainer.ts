@@ -1,6 +1,6 @@
 export interface Card {
   name: string;
-  colour: string,
+  type: string,
   pointsA: number;
   pointsB?(): number;
   pointsC?(playerCards: Array<CardInstance>, oponentCards: Array<Array<CardInstance>>): number;
@@ -13,7 +13,7 @@ export interface CardInstance {
 
 const unknownCard: Card = {
   name: "unknown",
-  colour: 'none',
+  type: 'none',
   pointsA: 0
 }
 
