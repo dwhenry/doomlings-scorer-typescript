@@ -6,15 +6,20 @@ export class Scorer {
   p4Cards: string[];
 
   constructor(p1Cards: string, p2Cards: string, p3Cards: string, p4Cards: string) {
-    this.p1Cards = p1Cards.split(',');
-    this.p2Cards = p2Cards.split(',');
-    this.p3Cards = p3Cards.split(',');
-    this.p4Cards = p4Cards.split(',');
+    this.p1Cards = p1Cards.split(',').filter(Boolean);
+    this.p2Cards = p2Cards.split(',').filter(Boolean);
+    this.p3Cards = p3Cards.split(',').filter(Boolean);
+    this.p4Cards = p4Cards.split(',').filter(Boolean);
   }
 
   // Functions
   scoreA(): number[] {
-    return [2, 0, 0, 0]
+    return [
+      this.p1Cards.length * 2,
+      this.p2Cards.length * 2,
+      this.p3Cards.length * 2,
+      this.p4Cards.length * 2,
+    ]
   }
 
   scoreB(): number[] {
