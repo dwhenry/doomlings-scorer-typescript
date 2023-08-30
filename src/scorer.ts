@@ -1,24 +1,27 @@
+import { Card, cards } from "./cardContainer"
+import './cards'
+
 export class Scorer {
   // Properties
-  p1Cards: string[];
-  p2Cards: string[];
-  p3Cards: string[];
-  p4Cards: string[];
+  p1Cards: Card[];
+  p2Cards: Card[];
+  p3Cards: Card[];
+  p4Cards: Card[];
 
   constructor(p1Cards: string, p2Cards: string, p3Cards: string, p4Cards: string) {
-    this.p1Cards = p1Cards.split(',').filter(Boolean);
-    this.p2Cards = p2Cards.split(',').filter(Boolean);
-    this.p3Cards = p3Cards.split(',').filter(Boolean);
-    this.p4Cards = p4Cards.split(',').filter(Boolean);
+    this.p1Cards = p1Cards.split(',').filter(Boolean).map((name) => cards.findCard(name));
+    this.p2Cards = p2Cards.split(',').filter(Boolean).map((name) => cards.findCard(name));
+    this.p3Cards = p3Cards.split(',').filter(Boolean).map((name) => cards.findCard(name));
+    this.p4Cards = p4Cards.split(',').filter(Boolean).map((name) => cards.findCard(name));
   }
 
   // Functions
   scoreA(): number[] {
     return [
-      this.p1Cards.length * 2,
-      this.p2Cards.length * 2,
-      this.p3Cards.length * 2,
-      this.p4Cards.length * 2,
+      this.p1Cards.reduce((total, card) => total + card.pointsA, 0),
+      this.p2Cards.reduce((total, card) => total + card.pointsA, 0),
+      this.p3Cards.reduce((total, card) => total + card.pointsA, 0),
+      this.p4Cards.reduce((total, card) => total + card.pointsA, 0),
     ]
   }
 
