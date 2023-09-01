@@ -10,16 +10,12 @@ export class Scorer {
   playersCards: Array<Array<CardInstance>>
 
   constructor(p1Cards: string, p2Cards: string, p3Cards: string, p4Cards: string) {
-    this.p1Cards = p1Cards.split(',').filter(a => a).map((name) => getCard(name));
-    this.p2Cards = p2Cards.split(',').filter(a => a).map((name) => getCard(name));
-    this.p3Cards = p3Cards.split(',').filter(a => a).map((name) => getCard(name));
-    this.p4Cards = p4Cards.split(',').filter(a => a).map((name) => getCard(name));
     this.playersCards = [
-      this.p1Cards,
-      this.p2Cards,
-      this.p3Cards,
-      this.p4Cards
-    ]
+      this.p1Cards = this.buildCardInsts(p1Cards),
+      this.p2Cards = this.buildCardInsts(p2Cards),
+      this.p3Cards = this.buildCardInsts(p3Cards),
+      this.p4Cards = this.buildCardInsts(p4Cards)
+      ]
 
   }
 
@@ -27,6 +23,11 @@ export class Scorer {
   scores(): number[] {
     this.playersCards.forEach((playerCards) => {
       playerCards.forEach((inst: CardInstance) => {
+        if(typeof inst.card.pointsA === 'function') {
+          inst.finalA = inst.card.pointsA(inst)
+        } else {
+          inst.finalA = inst.card.pointsA
+        }
         inst.card.calcB?.()
         inst.card.calcC?.(this.playersCards)
       })
@@ -37,5 +38,16 @@ export class Scorer {
     })
 
     return result
+  }
+
+  buildCardInsts(cards: string): CardInstance[] {
+    return cards.split(',').filter(a => a).map((name) => {
+      let realName: string, metadata: string[]
+      [realName, ...metadata] = name.split('+')
+      let metadataValues: Array<string[]> = metadata.map((str) => str.split('=', 2))
+      const card = getCard(realName, metadataValues)
+      return card
+    })
+
   }
 }

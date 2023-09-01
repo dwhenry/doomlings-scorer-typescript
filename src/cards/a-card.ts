@@ -1,4 +1,4 @@
-import { Card, addCard } from "../cardContainer"
+import { Card, CardInstance, addCard } from "../cardContainer"
 
 const acrobatic: Card = {
   name: 'ACROBATIC',
@@ -15,3 +15,21 @@ const adorable: Card = {
 };
 
 addCard(adorable)
+
+const altruistic: Card = {
+  name: 'ALTRUISTIC',
+  type: 'colourless',
+  pointsA: (inst: CardInstance): number => {
+    const regexp = new RegExp('^\\d+$')
+    if(regexp.test(inst.metadata['gene_pool_size'])) {
+      return +inst.metadata['gene_pool_size']
+    } else {
+      throw new Error(`invalid data for metadata field gene_pool_size`)
+    }
+  },
+  metadataRequired: [
+    ['gene_pool_size', 'number']
+  ]
+};
+
+addCard(altruistic)
