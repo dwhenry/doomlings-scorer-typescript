@@ -1,15 +1,23 @@
 export interface Card {
   name: string;
-  type: string,
+  type: CardType,
   pointsA: number;
-  pointsB?(): number;
-  pointsC?(playerCards: Array<CardInstance>, oponentCards: Array<Array<CardInstance>>): number;
+  calcB?(): number;
+  calcC?(oplayersCards: Array<Array<CardInstance>>): void;
 }
 
 export interface CardInstance {
   card: Card;
   traitPoints: number;
+  finalA: number;
+  finalB: number;
 }
+
+const traitCardTypes = ['colourless', 'multi-colour', 'purple'] as const;
+const costopheCardTypes = ['catastrophe'] as const;
+const otherCardTypes = ['none'] as const;
+const CardTypes = [...traitCardTypes, ...costopheCardTypes, ...otherCardTypes] as const;
+type CardType = typeof CardTypes[number];
 
 const unknownCard: Card = {
   name: "unknown",
@@ -28,8 +36,11 @@ export function addCard(card: Card) {
 }
 
 export function getCard(name: string): CardInstance {
+  const card = findCard(name)
   return {
-    card: findCard(name),
-    traitPoints: 0
+    card: card,
+    traitPoints: 0,
+    finalA: card.pointsA,
+    finalB: 0
   }
 }
