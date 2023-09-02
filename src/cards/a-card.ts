@@ -1,12 +1,13 @@
 import { Card, CardInstance } from "../types"
 import { addCard, addBasicCard } from "../cardContainer"
 
-addBasicCard('ACROBATIC', 'multi-colour', 2)
-addBasicCard('ADORABLE', 'purple', 4)
+addBasicCard('ACROBATIC', 'multi-colour', 'Classic', 2)
+addBasicCard('ADORABLE', 'purple', 'Classic', 4)
 
 const altruistic: Card = {
   name: 'ALTRUISTIC',
   type: 'colourless',
+  pack: 'Classic',
   calcA: (inst: CardInstance): void => { inst.finalA = 0 },
   calcB: (inst: CardInstance): void => {
     if(typeof inst.metadata.gene_pool_size !== 'number') {
@@ -20,12 +21,13 @@ const altruistic: Card = {
 };
 addCard(altruistic)
 
-addBasicCard('ANCIENT', 'red', 2)
-addBasicCard('ANTLERS', 'red', 3)
+addBasicCard('ANCIENT', 'red', 'Mythlings', 2)
+addBasicCard('ANTLERS', 'red', 'Classic', 3)
 
 const apex_predator: Card = {
   name: 'APEX PREDATOR',
   type: 'red',
+  pack: 'Classic',
   calcA: (inst: CardInstance): void => { inst.finalA = 4 },
   calcB: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void => {
     let points: number = 4
@@ -42,5 +44,6 @@ const apex_predator: Card = {
 };
 addCard(apex_predator)
 
-addBasicCard('APPEALING', 'green', 3)
+addBasicCard('APPEALING', 'green', 'Classic', 3)
 
+addBasicCard('AUTOMIMICRY', 'blue', 'Classic', 0)

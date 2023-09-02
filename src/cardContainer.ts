@@ -1,9 +1,10 @@
 
-import { Card, CardInstance, CardType, PlayerInput } from './types'
+import { Card, CardInstance, CardType, PackType, PlayerInput } from './types'
 
 const unknownCard: Card = {
   name: "unknown",
   type: 'none',
+  pack: 'Classic',
   calcA: (inst: CardInstance): number => inst.finalA = 0,
 }
 
@@ -21,10 +22,11 @@ export function addCard(card: Card) {
   cardsMap.set(card.name, card)
 }
 
-export function addBasicCard(name: string, colour: CardType, score: number) {
+export function addBasicCard(name: string, colour: CardType, pack: PackType, score: number) {
   const card: Card = {
     name: name,
     type: colour,
+    pack: pack,
     calcA: (inst: CardInstance): void => { inst.finalA = score },
   }
   addCard(card)

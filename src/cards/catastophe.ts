@@ -4,6 +4,7 @@ import { addCard } from "../cardContainer"
 const aiTakeover: Card = {
   name: 'AI TAKEOVER',
   type: 'catastrophe',
+  pack: 'Classic',
   calcA: (inst: CardInstance): void => { inst.finalA = 0 },
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let colourlessCards: Array<CardInstance> = allPlayerCards
@@ -23,6 +24,7 @@ addCard(aiTakeover)
 const bio_plague: Card = {
   name: 'BIOENGINEERED PLAGUE',
   type: 'catastrophe',
+  pack: 'Techlings',
   calcA: (inst: CardInstance): void => { inst.finalA = 0 },
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     // remove a card (set score to 0) from each players hand
