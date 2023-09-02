@@ -59,10 +59,10 @@ export interface CardInstance {
   traitPoints: number;
   finalA: number;
   finalB: number;
-  metadata: { [key: string]: any };
+  metadata: { [key: string]: string | number | string[] };
 }
 
 export interface PlayerInput {
   name: string;
-  [key: string]: any;
+  [key: string]: string | number | string[];
 }

@@ -29,30 +29,34 @@ const bio_plague: Card = {
   type: 'catastrophe',
   pack: 'Techlings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    // remove a card (set score to 0) from each players hand
+  // remove a card (set score to 0) from each players hand
     // TODO: the card must come from the colour with the highest count - this logic is not implemented
     allPlayerCards.forEach((playerCards, position) => {
-      const cardName: string = inst.metadata.discard[position];
+      if(inst.metadata.discard instanceof Array) {
+        const cardName: string = inst.metadata.discard[position];
 
-      if (cardName === undefined) {
-        throw new Error(
-          `no card selected to discard for Player ${position + 1}`
-        );
-      }
-      let removed: boolean = false;
-      playerCards.forEach((inst: CardInstance, index: number) => {
-        if (!removed && inst.card.name === cardName) {
-          removed = true;
-          playerCards.splice(index, 1);
+        if (cardName === undefined) {
+          throw new Error(
+            `no card selected to discard for Player ${position + 1}`
+          );
         }
-      });
+        let removed: boolean = false;
+        playerCards.forEach((inst: CardInstance, index: number) => {
+          if (!removed && inst.card.name === cardName) {
+            removed = true;
+            playerCards.splice(index, 1);
+          }
+        });
 
-      if (!removed) {
-        throw new Error(
-          `could not find card to discard: ${cardName} for Player ${
-            position + 1
-          }`
-        );
+        if (!removed) {
+          throw new Error(
+            `could not find card to discard: ${cardName} for Player ${
+              position + 1
+            }`
+          );
+        }
+      } else {
+        throw new Error('discard is not an array')
       }
     });
   },
