@@ -1,16 +1,26 @@
-const traitCardTypes = ['colourless', 'multi-colour', 'purple'] as const;
-const costopheCardTypes = ['catastrophe'] as const;
+const traitCardTypes = ['colourless', 'multi-colour', 'purple', 'red', 'green', 'blue'] as const;
+const catastropheCardTypes = ['catastrophe'] as const;
 const otherCardTypes = ['none'] as const;
-const CardTypes = [...traitCardTypes, ...costopheCardTypes, ...otherCardTypes] as const;
-type CardType = typeof CardTypes[number];
+const CardTypes = [...traitCardTypes, ...catastropheCardTypes, ...otherCardTypes] as const;
+export type CardType = typeof CardTypes[number];
+
+const PackTypes = ['Classic', 'Special Edition', 'Multi-Color', 'Dinolings', 'Mythlings', 'Techlings', 'Meaning of Life', 'Overlush'] as const;
+export type PackType = typeof PackTypes[number];
+
+const simpleMetaDataTypes = ['number'] as const;
+const catastropheMetaDataTypes = ['card_per_person'] as const;
+const MetaDataTypes = [...simpleMetaDataTypes, ...catastropheMetaDataTypes] as const;
+type MetaDataType = typeof MetaDataTypes[number];
+type MetaData = [string, MetaDataType]
 
 export interface Card {
   name: string;
   type: CardType,
-  calcA(card: CardInstance): void;
-  calcB?(): number;
-  calcC?(oplayersCards: Array<Array<CardInstance>>): void;
-  metadataRequired?: Array<[string, string]>
+  pack: PackType,
+  calcA?(card: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void;
+  calcB?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void;
+  calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  metadataRequired?: Array<MetaData>
 }
 
 export interface CardInstance {
