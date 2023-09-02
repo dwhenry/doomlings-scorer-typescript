@@ -3,11 +3,11 @@ import { Card, CardInstance, addCard } from "../cardContainer"
 const aiTakeover: Card = {
   name: 'AI TAKEOVER',
   type: 'catastrophe',
-  pointsA: 0,
+  calcA: (inst: CardInstance): void => { inst.finalA = 0 },
   calcC: (playersCards: Array<Array<CardInstance>>) => {
     let colourlessCards: Array<CardInstance> = playersCards
       .reduce((allCards, playerCards) => {
-        const clessCards: Array<CardInstance> = playerCards.filter((inst: CardInstance) => inst.card.type == "colourless")
+        const clessCards: Array<CardInstance> = playerCards.filter((inst: CardInstance) => inst.card.type === "colourless")
         return [...clessCards, ...allCards]
       }, [])
 
