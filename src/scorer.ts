@@ -19,7 +19,7 @@ export class Scorer {
     this.allCards.forEach((playerCards, i) => {
       playerCards.forEach((inst: CardInstance) => {
         inst.card.calcA(inst, this.allCards.slice(0, 4), i)
-        inst.card.calcB?.()
+        inst.card.calcB?.(inst, this.allCards.slice(0, 4), i)
         inst.card.calcC?.(inst, this.allCards)
       })
     })
