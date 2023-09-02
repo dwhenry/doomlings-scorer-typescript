@@ -17,7 +17,7 @@ export interface Card {
   name: string;
   type: CardType,
   pack: PackType,
-  calcA(card: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void;
+  calcA?(card: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void;
   calcB?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>, currentPlayer: number): void;
   calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
   metadataRequired?: Array<MetaData>
