@@ -1,5 +1,4 @@
 import { Scorer } from '../src/scorer';
-import { PlayerInput } from '../src/types';
 
 describe('Using ACROBATIC card', () => {
   test('singel card gives the user a total score of 2', () => {
@@ -101,13 +100,23 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
   })
 
   it("works when < maximum number of players", () => {
-        const scorer: Scorer = new Scorer(
+    const scorer: Scorer = new Scorer(
       [{'name': 'BIOENGINEERED PLAGUE', 'discard': ['ACROBATIC', 'ACROBATIC']}],
       [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}]
     );
     expect(scorer.scores()).toStrictEqual([2, 2]);
   })
+
+  it("error when discard is not an array", () => {
+    const scorer: Scorer = new Scorer(
+      [{'name': 'BIOENGINEERED PLAGUE', 'discard': 1}],
+      [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}]
+    );
+    const t = () => { scorer.scores() }
+    expect(t).toThrow(new Error('discard is not an array'))
+  })
 })
+
 describe('Using BIONIC ARM', () => {
   it("when on a single card", () => {
     const scorer: Scorer = new Scorer([], [{'name': 'BIONIC ARM'}]);
