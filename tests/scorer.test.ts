@@ -98,3 +98,16 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
     expect(scorer.scores()).toStrictEqual([2, 2, 0, 0]);
   })
 })
+describe('Using BIONIC ARM', () => {
+  it("when on a single card", () => {
+    const cards: Array<Array<PlayerInput>> = [[{'name': 'BIONIC ARM'}], [], [], [], []]
+    const scorer: Scorer = new Scorer(cards);
+    expect(scorer.scores()).toStrictEqual([0, 0, 0, 0]);
+  })
+
+  it("when multiple cards", () => {
+    const cards: Array<Array<PlayerInput>> = [[{'name': 'BIONIC ARM'}, {'name': 'BIONIC ARM'}, {'name': 'BIONIC ARM'}], [{'name': 'BIONIC ARM'}, {'name': 'BIONIC ARM'}], [], [], []]
+    const scorer: Scorer = new Scorer(cards);
+    expect(scorer.scores()).toStrictEqual([6, 2, 0, 0]);
+  })
+})

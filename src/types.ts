@@ -6,6 +6,7 @@ export type CardType = typeof CardTypes[number];
 
 const PackTypes = ['Classic', 'Special Edition', 'Multi-Color', 'Dinolings', 'Mythlings', 'Techlings', 'Meaning of Life', 'Overlush'] as const;
 export type PackType = typeof PackTypes[number];
+
 const simpleMetaDataTypes = ['number'] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [...simpleMetaDataTypes, ...catastropheMetaDataTypes] as const;
