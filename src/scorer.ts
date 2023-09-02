@@ -1,4 +1,5 @@
-import { CardInstance, getCard, PlayerInput } from "./cardContainer"
+import { CardInstance, PlayerInput } from "./types"
+import { getCard } from "./cardContainer"
 import './cards'
 
 

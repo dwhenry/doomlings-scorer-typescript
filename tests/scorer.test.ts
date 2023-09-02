@@ -1,5 +1,5 @@
 import { Scorer } from '../src/scorer';
-import { PlayerInput } from '../src/cardContainer';
+import { PlayerInput } from '../src/types';
 
 describe('Using ACROBATIC card', () => {
   test('singel card gives the user a total score of 2', () => {

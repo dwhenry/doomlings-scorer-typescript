@@ -1,4 +1,5 @@
-import { Card, CardInstance, addCard } from "../cardContainer"
+import { Card, CardInstance } from "../types"
+import { addCard } from "../cardContainer"
 
 const aiTakeover: Card = {
   name: 'AI TAKEOVER',
