@@ -1,20 +1,21 @@
-import { Card, CardInstance, addCard } from "../cardContainer"
+import { Card, CardInstance } from "../types"
+import { addCard } from "../cardContainer"
 
 const aiTakeover: Card = {
   name: 'AI TAKEOVER',
-  type: 'catastophe',
-  pointsA: 0,
-  pointsC: (playerCards: Array<CardInstance>, oponentCards: Array<Array<CardInstance>>) => {
-    let colourlessCards = playerCards
-      .filter((inst: CardInstance) => inst.card.type == "colourless")
+  type: 'catastrophe',
+  calcA: (inst: CardInstance): void => { inst.finalA = 0 },
+  calcC: (playersCards: Array<Array<CardInstance>>) => {
+    let colourlessCards: Array<CardInstance> = playersCards
+      .reduce((allCards, playerCards) => {
+        const clessCards: Array<CardInstance> = playerCards.filter((inst: CardInstance) => inst.card.type === "colourless")
+        return [...clessCards, ...allCards]
+      }, [])
 
-    let pointsAAjust = colourlessCards
-      .reduce((sum, inst: CardInstance) => sum + 2 - inst.card.pointsA, 0);
-
-    let traitEffectsPoints = playerCards
-      .reduce((sum, inst: CardInstance) => sum + inst.traitPoints, 0)
-
-    return pointsAAjust - traitEffectsPoints;
+    colourlessCards.forEach((inst: CardInstance) => {
+      inst.finalA = 2
+      inst.finalB = 0
+    })
   }
 };
 
