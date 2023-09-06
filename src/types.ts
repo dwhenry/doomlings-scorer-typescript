@@ -40,6 +40,7 @@ export interface Card {
   name: string;
   type: CardType;
   pack: PackType;
+  effect?: string;
   calcA?(
     card: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -52,6 +53,18 @@ export interface Card {
   ): void;
   calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
   metadataRequired?: Array<MetaData>;
+}
+
+export interface CatastopheCard extends Card {
+  calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+}
+
+export interface PlayerCard extends Card {
+  calcA(
+    card: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void;
 }
 
 export interface CardInstance {

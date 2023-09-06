@@ -1,7 +1,7 @@
-import { Card, CardInstance } from '../types';
+import { CatastopheCard, CardInstance } from '../types';
 import { addCard } from '../cardContainer';
 
-const aiTakeover: Card = {
+const aiTakeover: CatastopheCard = {
   name: 'AI TAKEOVER',
   type: 'catastrophe',
   pack: 'Classic',
@@ -24,7 +24,7 @@ const aiTakeover: Card = {
 };
 addCard(aiTakeover);
 
-const bio_plague: Card = {
+const bio_plague: CatastopheCard = {
   name: 'BIOENGINEERED PLAGUE',
   type: 'catastrophe',
   pack: 'Techlings',

@@ -1,4 +1,4 @@
-import { Card, CardInstance, CardType, PackType, PlayerInput } from './types';
+import { Card, PlayerCard, CardInstance, CardType, PackType, PlayerInput } from './types';
 
 const cardsMap: Map<string, Card> = new Map();
 
@@ -20,7 +20,7 @@ export function addBasicCard(
   pack: PackType,
   score: number
 ) {
-  const card: Card = {
+  const card: PlayerCard = {
     name: name,
     type: colour,
     pack: pack,
