@@ -131,3 +131,48 @@ describe('Using BIONIC ARM', () => {
     expect(scorer.scores()).toStrictEqual([6, 2]);
   })
 })
+
+describe('Using BOREDOM + other cards', () => {
+  it("add points when cards have effects", () => {
+    const scorer: Scorer = new Scorer(
+      [],
+      [{'name': 'BOREDOM'}, {'name': 'BAD'}]
+    );
+    expect(scorer.scores()).toStrictEqual([3]);
+
+  })
+
+  it("does not add points when cards have no effects", () => {
+    const scorer: Scorer = new Scorer(
+      [],
+      [{'name': 'BOREDOM'}, {'name': 'ADORABLE'}]
+    );
+    expect(scorer.scores()).toStrictEqual([5]);
+  })
+})
+
+describe('Using BRANCHES + other cards', () => {
+  it('point for pairs of green cards in opponents hands', () => {
+    const scorer: Scorer = new Scorer(
+      [],
+      [{'name': 'BRANCHES'}],
+      [{'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
+      [{'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
+    );
+    expect(scorer.scores()).toStrictEqual([2, 4, 6]);
+  })
+
+  it('no points for green cards in players hands', () => {
+    const scorer: Scorer = new Scorer(
+      [],
+      [{'name': 'BRANCHES'}, {'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
+    );
+    expect(scorer.scores()).toStrictEqual([4]);
+
+  })
+})
+
+describe('Using CAMOUFLAGE + other cards', () => {
+  it('addition points for each card in hand')
+})
+
