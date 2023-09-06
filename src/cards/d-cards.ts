@@ -1,0 +1,11 @@
+addBasicCard('DEEP ROOTS', 'green', 'Classic', 2);
+addBasicCard('DELICIOUS', 'colourless', 'Classic', 4);
+addBasicCard('DENIAL', 'colourless', 'Classic', 4);
+addBasicCard('DERMAL ARMOR', 'colourless', 'Dinolings', 2);
+addBasicCard('DESTINED', 'colourless', 'Mythlings', 4);
+addBasicCard('DEUS EX MACHINA', 'green', 'Classic', );
+addBasicCard('DIAPHANOUS WINGS', 'blue', 'Mythlings', -1);
+addBasicCard('DIRECTLY REGISTER', 'purple', 'Classic', 1);
+addBasicCard('DOTING', 'colourless', 'Classic', 2);
+addBasicCard('DRAGON HEART', 'red', 'Mythlings', 1);
+addBasicCard('DREAMER', 'purple', 'Classic', 1);

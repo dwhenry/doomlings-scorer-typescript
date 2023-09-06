@@ -18,7 +18,7 @@ export type CardType = (typeof CardTypes)[number];
 const PackTypes = [
   'Classic',
   'Special Edition',
-  'Multi-Color',
+  'multi-colour',
   'Dinolings',
   'Mythlings',
   'Techlings',

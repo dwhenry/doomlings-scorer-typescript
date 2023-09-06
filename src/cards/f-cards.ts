@@ -1,0 +1,14 @@
+addBasicCard('FAITH', 'colourless', 'Classic', 4);
+addBasicCard('FANGS', 'red', 'Classic', 1);
+addBasicCard('FEAR', 'colourless', 'Classic', 1);
+addBasicCard('FECUNDITY', 'green', 'Classic', 1);
+addBasicCard('FEY', 'green', 'Mythlings', 1);
+addBasicCard('FINE MOTOR SKILLS', 'purple', 'Classic', 2);
+addBasicCard('FIRE SKIN', 'red', 'Classic', 3);
+addBasicCard('FLATULENCE', 'colourless', 'Classic', 3);
+addBasicCard('FLIGHT', 'blue', 'Classic', 2);
+addBasicCard('FLOURISH', 'green', 'Classic', );
+addBasicCard('FORTUNATE', 'green', 'Classic', 1);
+addBasicCard('FREE WILL', 'colourless', 'multi-colour', 2);
+addBasicCard('FRONDS', 'green', 'Dinolings', 0);
+addBasicCard('FULFILLED', 'colourless', 'KSE', 4);

@@ -1,0 +1,11 @@
+addBasicCard('MASS EXTINCTION', 'colourless', 'Classic', );
+addBasicCard('MECHA', 'blue', 'Techlings', 2);
+addBasicCard('MEGA TSUNAMI', 'blue', 'Classic', );
+addBasicCard('MEMORY', 'purple', 'Classic', 2);
+addBasicCard('MIGHTY', 'red', 'Mythlings', 2);
+addBasicCard('MIGRATORY', 'blue', 'Classic', 2);
+addBasicCard('MINDFUL', 'colourless', 'Classic', 0);
+addBasicCard('MITOCHONDRION', 'colourless', 'Classic', 1);
+addBasicCard('MITOSIS', 'multi-colour', 'multi-colour', 1);
+addBasicCard('MORALITY', 'colourless', 'Classic', 5);
+addBasicCard('MOTLEY', 'multi-colour', 'multi-colour', 4);
