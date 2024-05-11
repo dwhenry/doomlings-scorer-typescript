@@ -1,6 +1,5 @@
 const traitCardTypes = [
   'colourless',
-  'multi-colour',
   'purple',
   'red',
   'green',
@@ -27,7 +26,7 @@ const PackTypes = [
 ] as const;
 export type PackType = (typeof PackTypes)[number];
 
-const simpleMetaDataTypes = ['number'] as const;
+const simpleMetaDataTypes = ['number', 'trait'] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
   ...simpleMetaDataTypes,
@@ -38,7 +37,7 @@ type MetaData = [string, MetaDataType];
 
 export interface Card {
   name: string;
-  type: CardType;
+  type: CardType[];
   pack: PackType;
   effect?: string;
   calcA?(

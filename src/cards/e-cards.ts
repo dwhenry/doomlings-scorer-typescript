@@ -6,7 +6,7 @@ addBasicCard('ECLIPSE', 'purple', 'Classic', 0);
 addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
 const egg_clusters: PlayerCard = {
   name: 'EGG CLUSTERS',
-  type: 'blue',
+  type: ['blue'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = -1;
@@ -18,7 +18,7 @@ const egg_clusters: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const blueCards = playerCards.filter(
-      (inst) => inst.card.type === 'blue'
+      (inst) => inst.card.type.includes('blue')
     );
     inst.finalB = blueCards.length
   }
@@ -30,7 +30,7 @@ addBasicCard('ELONGATED NECK', 'blue', 'Dinolings', 1);
 addBasicCard('ELOQUENCE', 'colourless', 'Classic', 1);
 const elven_ears: PlayerCard = {
   name: 'ELVEN EARS',
-  type: 'green',
+  type: ['green'],
   pack: 'Mythlings',
   calcA: (inst: CardInstance): void => {
     inst.finalA = -1;

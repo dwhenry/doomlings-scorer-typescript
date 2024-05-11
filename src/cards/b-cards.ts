@@ -10,7 +10,7 @@ addBasicCard('BINARY', 'colourless', 'Techlings', 0);
 
 const bionic_arm: PlayerCard = {
   name: 'BIONIC ARM',
-  type: 'red',
+  type: ['red'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
     inst.finalA = -1;
@@ -33,7 +33,7 @@ const bionic_arm: PlayerCard = {
 };
 addCard(bionic_arm);
 
-addBasicCard('BLOOM', 'multi-colour', 'Classic', 1);
+addBasicCard('BLOOM', ['green', 'blue'], 'Classic', 1);
 addBasicCard('BLUBBER', 'blue', 'Classic', 4);
 addBasicCard('BONE REINFORCEMENT', 'red', 'Techlings', 4);
 addBasicCard('BONES', 'colourless', 'Classic', 2);
@@ -41,7 +41,7 @@ addBasicCard('BONY PLATES', 'green', 'Dinolings', 2);
 
 const boredom: PlayerCard = {
   name: 'BOREDOM',
-  type: 'colourless',
+  type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 0;
@@ -66,7 +66,7 @@ addCard(boredom);
 
 const branches: PlayerCard = {
   name: 'BRANCHES',
-  type: 'green',
+  type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 0;
@@ -81,7 +81,7 @@ const branches: PlayerCard = {
     // point for each pair of green cards in each players hand
     allPlayerCards.forEach((playerCards, index) => {
       if(index !== currentPlayer) {
-        points = points + Math.floor(playerCards.filter((inst) => inst.card.type == 'green').length / 2)
+        points = points + Math.floor(playerCards.filter((inst) => inst.card.type.includes('green')).length / 2)
       }
     });
 
@@ -92,5 +92,5 @@ addCard(branches);
 
 addBasicCard('BRAVE', 'red', 'Classic', 2);
 addBasicCard('BRUTE STRENGTH', 'red', 'Classic', 4);
-addBasicCard('BULLHEADED', 'multi-colour', 'Classic', 1);
+addBasicCard('BULLHEADED', ['red', 'green'], 'Classic', 1);
 

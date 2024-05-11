@@ -16,13 +16,13 @@ export function addCard(card: Card) {
 
 export function addBasicCard(
   name: string,
-  colour: CardType,
+  colours: CardType[] | CardType,
   pack: PackType,
   score: number
 ) {
   const card: PlayerCard = {
     name: name,
-    type: colour,
+    type: Array.isArray(colours) ? colours : [colours],
     pack: pack,
     calcA: (inst: CardInstance): void => {
       inst.finalA = score;

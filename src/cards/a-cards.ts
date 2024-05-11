@@ -1,12 +1,12 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 
-addBasicCard('ACROBATIC', 'multi-colour', 'Classic', 2);
+addBasicCard('ACROBATIC', ['purple', 'green'], 'Classic', 2);
 addBasicCard('ADORABLE', 'purple', 'Classic', 4);
 
 const altruistic: PlayerCard = {
   name: 'ALTRUISTIC',
-  type: 'colourless',
+  type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 0;
@@ -26,7 +26,7 @@ addBasicCard('ANTLERS', 'red', 'Classic', 3);
 
 const apex_predator: PlayerCard = {
   name: 'APEX PREDATOR',
-  type: 'red',
+  type: ['red'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 4;
