@@ -1,4 +1,5 @@
 import { Scorer } from '../src/scorer';
+import { zeroPointColourlessCard, zeroPointGreenCard } from './helpers';
 
 describe('Using BIOENGINEERED PLAGUE + other cards', () => {
   it("removes when only one card of discard type", () => {
@@ -72,9 +73,9 @@ describe('Using BOREDOM + other cards', () => {
   it("add points when cards have effects", () => {
     const scorer: Scorer = new Scorer(
       [],
-      [{'name': 'BOREDOM'}, {'name': 'BAD'}]
+      [{'name': 'BOREDOM'}, zeroPointColourlessCard()]
     );
-    expect(scorer.scores()).toStrictEqual([3]);
+    expect(scorer.scores()).toStrictEqual([2]);
 
   })
 
@@ -92,17 +93,17 @@ describe('Using BRANCHES + other cards', () => {
     const scorer: Scorer = new Scorer(
       [],
       [{'name': 'BRANCHES'}],
-      [{'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
-      [{'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
+      [zeroPointGreenCard(), zeroPointGreenCard()],
+      [zeroPointGreenCard(), zeroPointGreenCard(), zeroPointGreenCard()],
     );
-    expect(scorer.scores()).toStrictEqual([2, 4, 6]);
+    expect(scorer.scores()).toStrictEqual([2, 0, 0]);
   })
 
   it('no points for green cards in players hands', () => {
     const scorer: Scorer = new Scorer(
       [],
-      [{'name': 'BRANCHES'}, {'name': 'BONY PLATES'}, {'name': 'BONY PLATES'}],
+      [{'name': 'BRANCHES'}, zeroPointGreenCard(), zeroPointGreenCard()],
     );
-    expect(scorer.scores()).toStrictEqual([4]);
+    expect(scorer.scores()).toStrictEqual([0]);
   })
 })

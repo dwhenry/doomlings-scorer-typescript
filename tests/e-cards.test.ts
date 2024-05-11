@@ -1,4 +1,5 @@
 import { Scorer } from '../src/scorer';
+import { zeroPointBlueCard, zeroPointColourlessCard } from './helpers';
 
 describe('Using EGG CLUSTERS + other cards', () => {
   it('just the egg cards cancels itself out', () => {
@@ -12,7 +13,7 @@ describe('Using EGG CLUSTERS + other cards', () => {
   it('point for each blue card', () => {
     const scorer: Scorer = new Scorer(
       [],
-      [{'name': 'EGG CLUSTERS'}, {'name': 'CHROMATOPHORES'}],
+      [{'name': 'EGG CLUSTERS'}, zeroPointBlueCard()],
     );
     expect(scorer.scores()).toStrictEqual([1]);
   })
@@ -20,7 +21,7 @@ describe('Using EGG CLUSTERS + other cards', () => {
   it('no points for other colour cards', () => {
     const scorer: Scorer = new Scorer(
       [],
-      [{'name': 'EGG CLUSTERS'}, {'name': 'BINARY'}],
+      [{'name': 'EGG CLUSTERS'}, zeroPointColourlessCard()],
     );
     expect(scorer.scores()).toStrictEqual([0]);
   })
@@ -43,9 +44,12 @@ describe('Using ELVEN EARS + other cards', () => {
     expect(scorer.scores()).toStrictEqual([0]);
   })
 
-  it('point for each mythling card', () => {
+  it('1 point for each mythling card (including itself)', () => {
     const scorer: Scorer = new Scorer(
       [],
+      // -1 points from Elven Ears
+      // 1 point for each mythling
+      // 2 points from Ancient
       [{'name': 'ELVEN EARS'}, {'name': 'ANCIENT'}],
     );
     expect(scorer.scores()).toStrictEqual([3]);
@@ -54,7 +58,7 @@ describe('Using ELVEN EARS + other cards', () => {
   it('no points for other pack cards', () => {
     const scorer: Scorer = new Scorer(
       [],
-      [{'name': 'ELVEN EARS'}, {'name': 'BINARY'}],
+      [{'name': 'ELVEN EARS'}, zeroPointColourlessCard()],
     );
     expect(scorer.scores()).toStrictEqual([0]);
   })
