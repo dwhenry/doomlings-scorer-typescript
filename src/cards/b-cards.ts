@@ -1,5 +1,6 @@
-import { Card, CardInstance } from '../types';
+import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { hasEffect  } from './effect_cards';
 
 addBasicCard('BAD', 'red', 'Classic', 1);
 addBasicCard('BARK', 'green', 'Classic', 2);
@@ -52,10 +53,44 @@ const boredom: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const effectCards = playerCards.filter(
-      (inst) => inst.card.effect !== undefined
+      (inst) => {
+        const val = hasEffect(inst.card.name)
+        return val
+      }
     );
 
     inst.finalB = effectCards.length;
   }
 };
-addCard(bionic_arm);
+addCard(boredom);
+
+const branches: PlayerCard = {
+  name: 'BRANCHES',
+  type: 'green',
+  pack: 'Classic',
+  calcA: (inst: CardInstance): void => {
+    inst.finalA = 0;
+  },
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    let points = 0
+
+    // point for each pair of green cards in each players hand
+    allPlayerCards.forEach((playerCards, index) => {
+      if(index !== currentPlayer) {
+        points = points + Math.floor(playerCards.filter((inst) => inst.card.type == 'green').length / 2)
+      }
+    });
+
+    inst.finalB = points;
+  }
+};
+addCard(branches);
+
+addBasicCard('BRAVE', 'red', 'Classic', 2);
+addBasicCard('BRUTE STRENGTH', 'red', 'Classic', 4);
+addBasicCard('BULLHEADED', 'multi-colour', 'Classic', 1);
+

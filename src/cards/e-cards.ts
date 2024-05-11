@@ -1,0 +1,12 @@
+addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
+addBasicCard('ECLIPSE', 'purple', 'Classic', );
+addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
+addBasicCard('EGG CLUSTERS', 'blue', 'Classic', -1);
+addBasicCard('EGG PREDATION', 'purple', 'Dinolings', 1);
+addBasicCard('ELECTROMAGNETIC', 'purple', 'Techlings', 1);
+addBasicCard('ELONGATED NECK', 'blue', 'Dinolings', 1);
+addBasicCard('ELOQUENCE', 'colourless', 'Classic', 1);
+addBasicCard('ELVEN EARS', 'green', 'Mythlings', -1);
+addBasicCard('ENDURANCE', 'red', 'Classic', 1);
+addBasicCard('ENLIGHTENMENT', 'purple', 'Classic', );
+addBasicCard('EYES OPEN FROM BEHIND THE STARS', 'purple', 'Mythlings', );

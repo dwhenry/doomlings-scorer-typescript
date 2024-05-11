@@ -1,0 +1,16 @@
+addBasicCard('PACK BEHAVIOR', 'green', 'Classic', 3);
+addBasicCard('PAINTED SHELL', 'blue', 'Classic', 1);
+addBasicCard('PARASITIC', 'purple', 'Classic', -2);
+addBasicCard('PERSUASIVE', 'purple', 'Classic', 1);
+addBasicCard('PHOTOSYNTHESIS', 'green', 'Classic', 1);
+addBasicCard('PHREAKISH EYES', 'red', 'Techlings', 2);
+addBasicCard('POISONOUS', 'purple', 'Classic', 2);
+addBasicCard('POLLINATION', 'green', 'Classic', 1);
+addBasicCard('PREPPER', 'colourless', 'Classic', 2);
+addBasicCard('PRIDE', 'red', 'KSE', 2);
+addBasicCard('PROPAGATION', 'green', 'Classic', 1);
+addBasicCard('PROSPERITY', 'green', 'Classic', );
+addBasicCard('PROTOFEATHERS', 'purple', 'Dinolings', -2);
+addBasicCard('PTEROSAUR WINGS', 'blue', 'Dinolings', 1);
+addBasicCard('PULSE EVENT', 'purple', 'Classic', );
+addBasicCard('PYCNOFIBERS', 'colourless', 'Dinolings', 1);
