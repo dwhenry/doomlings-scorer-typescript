@@ -4,3 +4,4 @@ import './c-cards';
 import './d-cards';
 import './catastophe';
 import './e-cards';
+import './g-cards';
