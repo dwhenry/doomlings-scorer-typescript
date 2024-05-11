@@ -66,3 +66,7 @@ addCard(bio_plague);
 
 // TODO
 // addBasicCard('EYES OPEN FROM BEHIND THE STARS', 'purple', 'Mythlings', );
+
+
+// TODO Catastrophe
+// addBasicCard('DEUS EX MACHINA', 'green', 'Classic', );
