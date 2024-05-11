@@ -63,3 +63,6 @@ const bio_plague: CatastopheCard = {
   metadataRequired: [['discard', 'card_per_person']]
 };
 addCard(bio_plague);
+
+// TODO
+// addBasicCard('EYES OPEN FROM BEHIND THE STARS', 'purple', 'Mythlings', );
