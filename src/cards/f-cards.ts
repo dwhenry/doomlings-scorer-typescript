@@ -3,7 +3,7 @@ import { addCard, addBasicCard } from '../cardContainer';
 
 const faith: PlayerCard = {
   name: 'FAITH',
-  type: 'colourless',
+  type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 4;
@@ -16,8 +16,8 @@ const faith: PlayerCard = {
     const playerCards = allPlayerCards[currentPlayer];
     playerCards.forEach(
       (card) => {
-        if(card.type === inst.metadata.fromColour) {
-          card.setOverride('type', inst.metadata.toColour!)
+        if(card.type.includes(inst.metadata.fromColour!)) {
+          card.setOverride('type', [inst.metadata.toColour!])
         }
       }
     );
@@ -36,7 +36,7 @@ addBasicCard('FLIGHT', 'blue', 'Classic', 2);
 addBasicCard('FLOURISH', 'green', 'Classic', 0);
 const fortunate: PlayerCard = {
   name: 'FORTUNATE',
-  type: 'green',
+  type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
     inst.finalA = 1;
@@ -79,7 +79,7 @@ const free_will: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    inst.setOverride('type', inst.metadata.colour!)
+    inst.setOverride('type', [inst.metadata.colour!])
   },
   metadataRequired: [['colour', 'CardType']]
 };
