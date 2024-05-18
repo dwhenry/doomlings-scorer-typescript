@@ -53,8 +53,8 @@ const boredom: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const effectCards = playerCards.filter(
-      (inst) => {
-        const val = hasEffect(inst.card.name)
+      (card) => {
+        const val = hasEffect(card.card.name)
         return val
       }
     );
@@ -81,7 +81,7 @@ const branches: PlayerCard = {
     // point for each pair of green cards in each players hand
     allPlayerCards.forEach((playerCards, index) => {
       if(index !== currentPlayer) {
-        points = points + Math.floor(playerCards.filter((inst) => inst.card.type.includes('green')).length / 2)
+        points = points + Math.floor(playerCards.filter((inst) => inst.type.includes('green')).length / 2)
       }
     });
 

@@ -26,12 +26,20 @@ export class Scorer {
 
   // Functions
   scores(): number[] {
+    // calc A (base score) and apply any modifiers
     this.allPlayerCards.forEach((playerCards, i) => {
       playerCards.forEach((inst) => {
         inst.card.calcA?.(inst, this.allPlayerCards, i);
+        inst.card.modify?.(inst, this.allPlayerCards, i);
+      });
+    });
+    // calc B (modifiers based on traits)
+    this.allPlayerCards.forEach((playerCards, i) => {
+      playerCards.forEach((inst) => {
         inst.card.calcB?.(inst, this.allPlayerCards, i);
       });
     });
+    // calc C (catastophes)
     this.catastopheCards.forEach((inst) => {
       inst.card.calcC?.(inst, this.allPlayerCards);
     });
