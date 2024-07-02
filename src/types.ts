@@ -26,7 +26,7 @@ const PackTypes = [
 ] as const;
 export type PackType = (typeof PackTypes)[number];
 
-const simpleMetaDataTypes = ['number', 'trait'] as const;
+const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
   ...simpleMetaDataTypes,
@@ -41,6 +41,11 @@ export interface Card {
   pack: PackType;
   effect?: string;
   calcA?(
+    card: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void;
+  modify?(
     card: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -66,12 +71,36 @@ export interface PlayerCard extends Card {
   ): void;
 }
 
-export interface CardInstance {
+type Metadata = {
+  [key: string]: string | number | string[] | undefined,
+  fromColour?: CardType,
+  toColour?: CardType,
+  colour?: CardType
+};
+
+export class CardInstance {
   card: Card;
-  traitPoints: number;
-  finalA: number;
-  finalB: number;
-  metadata: { [key: string]: string | number | string[] };
+  traitPoints: number = 0;
+  overrides: { [key: string]: string[] | string | number } = {};
+  finalA: number = 0;
+  finalB: number = 0;
+  metadata: Metadata
+
+  constructor(card: Card, metadata: Metadata) {
+    this.card = card;
+    this.metadata = metadata
+  }
+
+  get type(): string[] {
+    if(Array.isArray(this.overrides['type'])) {
+      return this.overrides['type']
+    }
+    return this.card.type
+  }
+
+  setOverride(key: string, value: string[] | string | number ) {
+    this.overrides[key] = value
+  }
 }
 
 export interface PlayerInput {

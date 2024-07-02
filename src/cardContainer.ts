@@ -34,13 +34,7 @@ export function addBasicCard(
 export function getCard(name: string, metadata: PlayerInput): CardInstance {
   const card = findCard(name);
 
-  const inst: CardInstance = {
-    card: card,
-    traitPoints: 0,
-    finalA: 0,
-    finalB: 0,
-    metadata: metadata
-  };
+  const inst: CardInstance = new CardInstance(card, metadata);
   if (card.metadataRequired === undefined) {
     return inst;
   }

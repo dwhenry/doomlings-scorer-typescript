@@ -39,7 +39,7 @@ const cranialCrest: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const types = playerCards.map((inst) => inst.card.type).flat()
+    const types = playerCards.map((inst) => inst.type).flat()
     // we minus one as we have at least one colourless that doesn't count
     inst.finalB = -([...new Set(types)].length - 1);
   },

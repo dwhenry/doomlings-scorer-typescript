@@ -9,7 +9,7 @@ const aiTakeover: CatastopheCard = {
     const colourlessCards: Array<CardInstance> = allPlayerCards.reduce(
       (allCards, playerCards) => {
         const clessCards: Array<CardInstance> = playerCards.filter(
-          (inst: CardInstance) => inst.card.type.includes('colourless')
+          (inst: CardInstance) => inst.type.includes('colourless')
         );
         return [...clessCards, ...allCards];
       },
@@ -76,5 +76,5 @@ addCard(bio_plague);
 // TODO
 // addBasicCard('GLACIAL MELTDOWN', 'blue', 'Classic', );
 
-// TODO 
+// TODO
 // addBasicCard('GREY GOO', 'colourless', 'Classic', );
