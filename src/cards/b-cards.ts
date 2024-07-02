@@ -39,6 +39,7 @@ addBasicCard('BONE REINFORCEMENT', 'red', 'Techlings', 4);
 addBasicCard('BONES', 'colourless', 'Classic', 2);
 addBasicCard('BONY PLATES', 'green', 'Dinolings', 2);
 
+// TODO: Cards in hand is **not** played cards. This is buggy.
 const boredom: PlayerCard = {
   name: 'BOREDOM',
   type: ['colourless'],

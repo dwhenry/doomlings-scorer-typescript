@@ -19,11 +19,11 @@ app.get('/', async (req: Request, res: Response): Promise<Response> => {
 });
 
 app.get('/score', async (req: Request, res: Response): Promise<Response> => {
-  const scorer: Scorer = new Scorer([{'name': 'ACROBATIC' }]);
-  const scores: number[] = scorer.scores();
+  const scorer = new Scorer([{'name': 'ACROBATIC' }]);
+  const scores = scorer.scores();
   let message = '';
-  for (const p in scores) {
-    message = `${message}Player ${p}: ${scores[p]}\n`;
+  for (const p of scores.getPlayerScores()) {
+    message = `${message}Player ${p}: ${p.total}\n`;
   }
 
   return res.status(200).send({ message });

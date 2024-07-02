@@ -1,30 +1,38 @@
-import { Scorer } from '../src/scorer';
+import { Player, Scorer } from '../src/scorer';
 import { zeroPointBlueCard, zeroPointColourlessCard } from './helpers';
 
 describe('Using CAMOUFLAGE + other cards', () => {
   it('addition points for each card in hand', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'CAMOUFLAGE', 'cards_in_hand': 5}],
-    );
-    expect(scorer.scores()).toStrictEqual([7]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 7,
+      finalA: 2, 
+      finalB: 5, 
+    })
   })
 })
 
 describe('Using CRANIAL CREST + other cards', () => {
-  it('base cost when only colourless cards', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+  it('base score when only colourless cards', () => {
+    const scores = new Scorer(
       [{'name': 'CRANIAL CREST'}, zeroPointColourlessCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([4]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 4,
+      finalA: 4, 
+    })
   })
 
-  it('Adjust when other colours', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+  it('scores -1 for each colourless card', () => {
+    const scores = new Scorer(
       [{'name': 'CRANIAL CREST'}, zeroPointBlueCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 3,
+      finalA: 4, 
+      finalB: -1
+    })
   })
 })

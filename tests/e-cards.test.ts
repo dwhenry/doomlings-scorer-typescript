@@ -1,82 +1,112 @@
-import { Scorer } from '../src/scorer';
+import { Player, Scorer } from '../src/scorer';
 import { zeroPointBlueCard, zeroPointColourlessCard } from './helpers';
 
 describe('Using EGG CLUSTERS + other cards', () => {
-  it('just the egg cards cancels itself out', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+  it('single card', () => {
+    const scores = new Scorer(
       [{'name': 'EGG CLUSTERS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([0]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 0,
+      finalA: -1, 
+      finalB: 1
+    })
   })
 
-  it('point for each blue card', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+  it('+1 point for each blue card', () => {
+    const scores = new Scorer(
       [{'name': 'EGG CLUSTERS'}, zeroPointBlueCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([1]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: -1, 
+      finalB: 2
+    })
   })
 
   it('no points for other colour cards', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'EGG CLUSTERS'}, zeroPointColourlessCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([0]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 0,
+      finalA: -1, 
+      finalB: 1
+    })
   })
 
   it('multiple egg clusters grow together', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'EGG CLUSTERS'}, {'name': 'EGG CLUSTERS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([2]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: -1, 
+      finalB: 2
+    })
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(1)).toMatchObject({
+      finalA: -1, 
+      finalB: 2
+    })
   })
 })
 
-describe('Using ELVEN EARS + other cards', () => {
-  it('just the elven eard cards cancels itself out', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+describe('ELVEN EARS', () => {
+  it('single card', () => {
+    const scores = new Scorer(
       [{'name': 'ELVEN EARS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([0]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 0,
+      finalA: -1,
+      finalB: 1
+    });
   })
 
   it('1 point for each mythling card (including itself)', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       // -1 points from Elven Ears
       // 1 point for each mythling
       // 2 points from Ancient
       [{'name': 'ELVEN EARS'}, {'name': 'ANCIENT'}],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: -1,
+      finalB: 2
+    });
   })
 
   it('no points for other pack cards', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'ELVEN EARS'}, zeroPointColourlessCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([0]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: -1,
+      finalB: 1
+    });
   })
 
   it('multiple elven ears grow together', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'ELVEN EARS'}, {'name': 'ELVEN EARS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([2]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: -1,
+      finalB: 2
+    });
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(1)).toMatchObject({
+      finalA: -1,
+      finalB: 2
+    });
   })
 
-  it('mythling in other players hand', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+  it('mythlings in other players trait piles', () => {
+    const scores = new Scorer(
       [{'name': 'ELVEN EARS'}],
       [{'name': 'ANCIENT'}],
-    );
-    expect(scorer.scores()).toStrictEqual([1, 2]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 1,
+      finalA: -1,
+      finalB: 2
+    });
   })
 })

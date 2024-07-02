@@ -38,7 +38,7 @@ const elven_ears: PlayerCard = {
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
+    _currentPlayer: number
   ): void => {
     const allCards = allPlayerCards.flat();
     const mythlingCards = allCards.filter(
