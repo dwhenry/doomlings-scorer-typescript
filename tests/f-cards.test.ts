@@ -1,88 +1,135 @@
-import { Scorer } from '../src/scorer';
+import { Player, Scorer } from '../src/scorer';
 import { zeroPointColourlessCard, zeroPointGreenCard, zeroPointRedCard } from './helpers';
 
 describe('Using FAITH + other cards', () => {
   it('faith card just has base points', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FAITH', fromColour: 'colourless', toColour: 'blue'}],
-    );
-    expect(scorer.scores()).toStrictEqual([4]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 4,
+      finalA: 4,
+      finalB: 0
+    });
   })
 
   it('faith card can change colours to effect total', () => {
     // 4 for Faith
     // -1 for EGG CLUSTER
     // 3 for blue cards
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FAITH', fromColour: 'colourless', toColour: 'blue'}, {'name': 'EGG CLUSTERS'}, zeroPointColourlessCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([6]);
+    ).scores();
+    // Faith should score the same
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 4,
+      finalA: 4,
+      finalB: 0
+    });
+    // Egg Clusters should score for 3 blue cards (Faith and Egg Clusters)
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(1)).toMatchObject({
+      finalB: 3
+    });
   })
 
   it('faith card can change colours to effect total', () => {
     // 4 for Faith
     // -1 for EGG CLUSTER
     // 0 for blue cards
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FAITH', fromColour: 'blue', toColour: 'red'}, {'name': 'EGG CLUSTERS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+
+    // Faith should score the same
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 4,
+      finalA: 4,
+      finalB: 0
+    });
+
+    // Egg Clusters should score less
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(1)).toMatchObject({
+      finalB: 0
+    });
   })
 })
 
-describe('Using FORTUNATE + other cards', () => {
+describe('FORTUNATE', () => {
   it('FORTUNATE when only card', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FORTUNATE'}],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 3,
+      finalA: 1,
+      finalB: 2,
+    });
   })
 
   it('when matching number of colour cards', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FORTUNATE'}, zeroPointRedCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([1]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 1,
+      finalA: 1,
+      finalB: 0,
+    });
   })
 
   it('when more green cards', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FORTUNATE'}, zeroPointGreenCard(), zeroPointRedCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 3,
+      finalA: 1,
+      finalB: 2,
+    });
   })
 
   it('when less green', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FORTUNATE'}, zeroPointRedCard(), zeroPointRedCard()],
-    );
-    expect(scorer.scores()).toStrictEqual([1]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 1,
+      finalA: 1,
+      finalB: 0,
+    });
   })
 })
-describe('Using FREE WILL + other cards', () => {
+
+describe('Using FREE WILL', () => {
   it('FREE WILL card just has base points', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FREE WILL', colour: 'blue'}],
-    );
-    expect(scorer.scores()).toStrictEqual([2]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 2,
+      finalA: 2,
+      finalB: 0,
+    });
   })
 
-  it('faith card can change colours to effect total', () => {
+  it('FREE WILL can change colours to effect total', () => {
     // 2 for Faith
     // -1 for EGG CLUSTER
     // 2 for blue cards
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'FREE WILL', colour: 'blue'}, {'name': 'EGG CLUSTERS'}],
-    );
-    expect(scorer.scores()).toStrictEqual([3]);
+    ).scores();
+
+    // FREE WILL should score the same
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      total: 2,
+      finalA: 2,
+      finalB: 0
+    });
+
+    // Egg Clusters should score less
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(1)).toMatchObject({
+      finalB: 2
+    });
   })
 })

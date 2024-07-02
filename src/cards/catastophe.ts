@@ -78,3 +78,7 @@ addCard(bio_plague);
 
 // TODO
 // addBasicCard('GREY GOO', 'colourless', 'Classic', );
+
+// TODO
+// addBasicCard('ICE AGE', 'blue', 'Classic', );
+// addBasicCard('IMPACT EVENT', 'red', 'Dinolings', );
