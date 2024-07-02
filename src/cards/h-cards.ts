@@ -14,7 +14,6 @@ const heat_vision: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const currentPlayerCards = allPlayerCards[currentPlayer];
     const redCards = allPlayerCards[currentPlayer].filter(a => a.card.type.find(type => 'red'))
     inst.finalB = redCards.length
   }

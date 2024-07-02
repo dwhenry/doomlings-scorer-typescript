@@ -8,3 +8,5 @@ import './f-cards';
 import './g-cards';
 import './h-cards';
 import './i-cards';
+import './j-cards';
+import './k-cards';
