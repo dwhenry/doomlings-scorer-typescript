@@ -80,6 +80,7 @@ type Metadata = {
 
 export class CardInstance {
   card: Card;
+  // TODO AF: See if we can delete traitPoints?
   traitPoints: number = 0;
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
