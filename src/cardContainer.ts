@@ -11,6 +11,9 @@ function findCard(name: string): Card {
 }
 
 export function addCard(card: Card) {
+  if (cardsMap.has(card.name)) {
+    throw new Error(`Duplicate card name ${card.name} was attempted to be added`);
+  }
   cardsMap.set(card.name, card);
 }
 
