@@ -6,3 +6,4 @@ import './catastophe';
 import './e-cards';
 import './f-cards';
 import './g-cards';
+import './h-cards';
