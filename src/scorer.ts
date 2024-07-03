@@ -68,7 +68,7 @@ export class Scorer {
     });
 
     const winningPlayersIndices = playerScores.reduce((maxScorePlayerIndices: number[], playerScore, index, arr) => {
-      const currentMax = arr[maxScorePlayerIndices[0]] // Get value of first max, but we can have multiple "max" values
+      const currentMax = arr[maxScorePlayerIndices[0]] // Get value of first max, but we can have multiple "max" values however they should all be equal to be "equal winners" so we can always take the first.
       if (playerScore.total === currentMax.total ) {
         return [...maxScorePlayerIndices, index]
       } else if (playerScore.total > currentMax.total) {
@@ -126,7 +126,7 @@ export class PlayerScore {
   public getCardScoreByIndex(cardIndex: number) : CardScore {
     const cardScore = this.playerCardsScores.at(cardIndex);
     if (!cardScore) {
-      throw new Error(`Player of index ${cardIndex} not found`)
+      throw new Error(`No card exists at index ${cardIndex}`)
     }
     return cardScore;
   }
