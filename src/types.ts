@@ -85,11 +85,13 @@ export class CardInstance {
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
   finalB: number = 0;
-  metadata: Metadata
+  metadata: Metadata;
+  attached: Card[];
 
-  constructor(card: Card, metadata: Metadata) {
+  constructor(card: Card, metadata: Metadata, attached: Card[] = []) {
     this.card = card;
-    this.metadata = metadata
+    this.metadata = metadata;
+    this.attached = attached;
   }
 
   get type(): string[] {
