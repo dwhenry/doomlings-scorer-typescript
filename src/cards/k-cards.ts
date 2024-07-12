@@ -1,7 +1,6 @@
 import { addBasicCard, addCard } from "../cardContainer";
 import { CardInstance, CardType, PlayerCard } from "../types";
 
-addBasicCard('KIDNEY', 'red', 'Classic', 0);
 const gmo: PlayerCard = {
   name: 'KIDNEY',
   type: ['red'],

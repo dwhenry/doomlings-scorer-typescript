@@ -1,29 +1,35 @@
-import { Scorer } from '../src/scorer';
+import { Player, Scorer } from '../src/scorer';
 import { zeroPointBlueCard, zeroPointColourlessCard, zeroPointGreenCard, zeroPointPurpleCard, zeroPointRedCard } from './helpers';
 
 describe('KIDNEY', () => {
   it('scores 1 by itself', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'KIDNEY'}],
-    );
-    expect(scorer.scores()).toStrictEqual([1]);
+    ).scores()
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: 0,
+      finalB: 1,
+    })
   })
 
   it('other cards don;t add points', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'KIDNEY'}, zeroPointRedCard(), ],
-    );
-    expect(scorer.scores()).toStrictEqual([1]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: 0,
+      finalB: 1,
+    })
   })
 
   it('more points for each kidney', () => {
-    const scorer: Scorer = new Scorer(
-      [],
+    const scores = new Scorer(
       [{'name': 'KIDNEY'}, {'name': 'KIDNEY'}, {'name': 'KIDNEY'}],
-    );
-    expect(scorer.scores()).toStrictEqual([9]);
+    ).scores();
+    expect(scores.getPlayerScore(Player.One).getCardScoreByIndex(0)).toMatchObject({
+      finalA: 0,
+      finalB: 3,
+    })
   })
 })
 
