@@ -93,10 +93,10 @@ type Metadata = {
   fromColour?: CardType,
   toColour?: CardType,
   missing?: number,
-  attached_trait: CardType,
-  trait: CardType,
-  biggest_gene_pool_size: number,
-  card_per_person: number
+  attached_trait?: CardType[],
+  trait?: CardType,
+  biggest_gene_pool_size?: number,
+  card_per_person?: number,
 };
 
 export class CardInstance {
@@ -133,7 +133,7 @@ export class CardInstance {
 
 export type PlayerInput = {
   // [key: string]: string | number | string[] | [name: string, metadata: PlayerInput][] | undefined,
-  // [key: string]: any,
+  [key: string]: any,
   cards_in_hand?: number,
   discard?: string[],
   gene_pool_size?: number,
@@ -142,7 +142,7 @@ export type PlayerInput = {
   toColour?: CardType,
   missing?: number,
   attached?: [name: string, metadata: PlayerInput][],
-  attached_trait?: CardType,
+  attached_trait?: CardType[],
   trait?: CardType,
   biggest_gene_pool_size?: number,
   card_per_person?: number

@@ -40,7 +40,7 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
 
   // validate metadata fields
   if (card.metadataRequired !== undefined) {
-    card.metadataRequired.forEach(([key]) => {
+    card.metadataRequired.forEach((key) => {
       if (metadata[key] === undefined) {
         throw new Error(`missing metadata field ${key}`);
       }
@@ -51,7 +51,7 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
     attached = metadata.attached.map((attached: [name: string, metadata: PlayerInput]): [card: Card, metadata: PlayerInput] => {
       const attachedCard = findCard(attached[0])
       if (attachedCard.metadataRequired !== undefined) {
-        attachedCard.metadataRequired.forEach(([key]) => {
+        attachedCard.metadataRequired.forEach((key) => {
           if (attached[1][key] === undefined) {
             throw new Error(`missing metadata field ${key}`);
           }
@@ -63,6 +63,6 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
     delete metadata.attached
   }
 
- const inst: CardInstance = new CardInstance(card, metadata, attached);
+  const inst: CardInstance = new CardInstance(card, metadata, attached);
   return inst;
 }
