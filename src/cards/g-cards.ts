@@ -23,7 +23,7 @@ const gmo: PlayerCard = {
     inst.finalB = playerCardsMatchingTrait.length
   },
   // TODO: Change me to use a better mechanism
-  metadataRequired: [['attached_trait', 'trait']]
+  metadataRequired: ['attached_trait', 'trait']
 };
 addCard(gmo);
 

@@ -14,7 +14,7 @@ const camouflage: PlayerCard = {
     }
     inst.finalB = inst.metadata.cards_in_hand
   },
-  metadataRequired: [['cards_in_hand', 'number']]
+  metadataRequired: ['cards_in_hand']
 };
 addCard(camouflage);
 addBasicCard('CARNOSAUR JAW', 'red', 'Dinolings', 9);

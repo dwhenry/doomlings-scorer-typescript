@@ -60,7 +60,7 @@ const bio_plague: CatastopheCard = {
       }
     });
   },
-  metadataRequired: [['discard', 'card_per_person']]
+  metadataRequired: ['discard', 'card_per_person']
 };
 addCard(bio_plague);
 

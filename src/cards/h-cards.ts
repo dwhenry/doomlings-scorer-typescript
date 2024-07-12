@@ -37,6 +37,6 @@ const hyperMyelination: PlayerCard = {
     }
     inst.finalB = inst.metadata.biggest_gene_pool_size;
   },
-  metadataRequired: [['biggest_gene_pool_size', 'number']]
+  metadataRequired: ['biggest_gene_pool_size']
 };
 addCard(hyperMyelination);
