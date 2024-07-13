@@ -6,26 +6,27 @@ addBasicCard('GELATINOUS', 'red', 'Mythlings', 1);
 addBasicCard('GILLS', 'blue', 'Classic', 1);
 addBasicCard('GLACIAL DRIFT', 'blue', 'Classic', 0);
 
-const gmo: PlayerCard = {
-  name: 'GMO',
-  type: ['colourless'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
-  },
-  calcB: (
-    inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
-  ): void => {
-    const chosenTraits = inst.metadata['attached_trait']! as CardType[];
-    const playerCardsMatchingTrait = allPlayerCards[currentPlayer].filter(a => a.card.type.find(type => chosenTraits.includes(type)))
-    inst.finalB = playerCardsMatchingTrait.length
-  },
-  // TODO: Change me to use a better mechanism
-  metadataRequired: [['attached_trait', 'trait']]
-};
-addCard(gmo);
+// TODO: redo as an attached card
+// const gmo: PlayerCard = {
+//   name: 'GMO',
+//   type: ['colourless'],
+//   pack: 'Techlings',
+//   calcA: (inst: CardInstance): void => {
+//     inst.finalA = -1;
+//   },
+//   calcB: (
+//     inst: CardInstance,
+//     allPlayerCards: Array<Array<CardInstance>>,
+//     currentPlayer: number
+//   ): void => {
+//     const chosenTraits = inst.metadata['attached_trait']! as CardType[];
+//     const playerCardsMatchingTrait = allPlayerCards[currentPlayer].filter(a => a.card.type.find(type => chosenTraits.includes(type)))
+//     inst.finalB = playerCardsMatchingTrait.length
+//   },
+//   // TODO: Change me to use a better mechanism
+//   metadataRequired: ['attached_trait', 'trait']
+// };
+// addCard(gmo);
 
 
 const gratitude: PlayerCard = {

@@ -17,7 +17,7 @@ const altruistic: PlayerCard = {
     }
     inst.finalB = inst.metadata.gene_pool_size;
   },
-  metadataRequired: [['gene_pool_size', 'number']]
+  metadataRequired: ['gene_pool_size']
 };
 addCard(altruistic);
 

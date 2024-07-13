@@ -36,16 +36,33 @@ export function addBasicCard(
 
 export function getCard(name: string, metadata: PlayerInput): CardInstance {
   const card = findCard(name);
+  let attached: [card: Card, metadata: PlayerInput][] = [];
 
-  const inst: CardInstance = new CardInstance(card, metadata);
-  if (card.metadataRequired === undefined) {
-    return inst;
+  // validate metadata fields
+  if (card.metadataRequired !== undefined) {
+    card.metadataRequired.forEach((key) => {
+      if (metadata[key] === undefined) {
+        throw new Error(`missing metadata field ${key}`);
+      }
+    });
   }
-  card.metadataRequired.forEach(([key]) => {
-    if (metadata[key] === undefined) {
-      throw new Error(`missing metadata field ${key}`);
-    }
-  });
 
+  if(metadata.attached) {
+    attached = metadata.attached.map((attached: [name: string, metadata: PlayerInput]): [card: Card, metadata: PlayerInput] => {
+      const attachedCard = findCard(attached[0])
+      if (attachedCard.metadataRequired !== undefined) {
+        attachedCard.metadataRequired.forEach((key) => {
+          if (attached[1][key] === undefined) {
+            throw new Error(`missing metadata field ${key}`);
+          }
+        });
+      }
+
+      return [attachedCard, attached[1]]
+    })
+    delete metadata.attached
+  }
+
+  const inst: CardInstance = new CardInstance(card, metadata, attached);
   return inst;
 }

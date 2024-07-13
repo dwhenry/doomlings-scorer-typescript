@@ -22,7 +22,7 @@ const faith: PlayerCard = {
       }
     );
   },
-  metadataRequired: [['fromColour', 'CardType'], ['toColour', 'CardType']]
+  metadataRequired: ['fromColour', 'toColour']
 };
 addCard(faith)
 addBasicCard('FANGS', 'red', 'Classic', 1);
@@ -81,7 +81,7 @@ const free_will: PlayerCard = {
   ): void => {
     inst.setOverride('type', [inst.metadata.colour!])
   },
-  metadataRequired: [['colour', 'CardType']]
+  metadataRequired: ['colour']
 };
 addCard(free_will);
 addBasicCard('FRONDS', 'green', 'Dinolings', 0);

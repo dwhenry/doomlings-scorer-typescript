@@ -24,7 +24,7 @@ export class Scorer {
           getCard(playerInput.name, playerInput)
       );
     });
-    
+
   }
 
   addCatastrophes(catastopheInput: Array<PlayerInput>) {
@@ -42,14 +42,21 @@ export class Scorer {
       playerCards.forEach((inst) => {
         inst.card.calcA?.(inst, this.allPlayerCards, playerIndex);
         inst.card.modify?.(inst, this.allPlayerCards, playerIndex);
+        inst.attached.forEach((attched) => {
+          attched.card.calcA?.(inst, this.allPlayerCards, playerIndex);
+          attched.card.modify?.(inst, this.allPlayerCards, playerIndex);
+        })
       });
     });
     // calc B (modifiers based on traits)
-    this.allPlayerCards.forEach((playerCards, i) => {
+    this.allPlayerCards.forEach((playerCards, playerIndex) => {
       playerCards.forEach((inst) => {
-        inst.card.calcB?.(inst, this.allPlayerCards, i);
+        inst.card.calcB?.(inst, this.allPlayerCards, playerIndex);
+        inst.attached.forEach((attched) => {
+          attched.card.calcB?.(inst, this.allPlayerCards, playerIndex);
+        })
       });
-    });
+  });
     // calc C (catastophes)
     this.catastopheCards.forEach((inst) => {
       inst.card.calcC?.(inst, this.allPlayerCards);
@@ -57,11 +64,18 @@ export class Scorer {
 
     const playerScores: PlayerScore[] = this.allPlayerCards.map((playerCards) => {
       // TODO AF: Add calcC when implemented
-      const playerCardsScores: CardScore[] = playerCards.map(c => {
+      const playerCardsScores: CardScore[] = playerCards.flatMap(c => {
         const finalA = c.finalA;
         const finalB = c.finalB ?? 0
         const total = finalA + finalB;
-        return {finalA, finalB, total}
+        let scores = [{finalA, finalB, total, card: c.card.name}]
+        c.attached.forEach((attached) => {
+          const attachedfinalA = attached.finalA;
+          const attachedfinalB = attached.finalB ?? 0
+          const attachedtotal = attachedfinalA + attachedfinalB;
+          scores.push({finalA: attachedfinalA, finalB: attachedfinalB, total: attachedtotal, card: "Attached: " || attached.card.name})
+        })
+        return scores
       });
 
       return new PlayerScore(playerCardsScores)
@@ -95,7 +109,7 @@ export class GameScore {
     this.winningPlayersIndices = winningPlayersIndices;
     this.playerScores = playerScores;
   };
-  
+
   getPlayerScores() : PlayerScore[] {
     return this.playerScores;
   }
@@ -118,7 +132,7 @@ export class PlayerScore {
     this._total = playerCardsScores.reduce((sum, current) => sum + current.total, 0)
   }
 
-  
+
   public get total() {
       return this._total;
   }

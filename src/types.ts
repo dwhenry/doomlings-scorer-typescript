@@ -26,14 +26,14 @@ const PackTypes = [
 ] as const;
 export type PackType = (typeof PackTypes)[number];
 
-const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
-const catastropheMetaDataTypes = ['card_per_person'] as const;
-const MetaDataTypes = [
-  ...simpleMetaDataTypes,
-  ...catastropheMetaDataTypes
-] as const;
-type MetaDataType = (typeof MetaDataTypes)[number];
-type MetaData = [string, MetaDataType];
+// const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
+// const catastropheMetaDataTypes = ['card_per_person'] as const;
+// const MetaDataTypes = [
+//   ...simpleMetaDataTypes,
+//   ...catastropheMetaDataTypes
+// ] as const;
+// type MetaDataType = (typeof MetaDataTypes)[number];
+// type MetaData = [string, MetaDataType];
 
 export interface Card {
   name: string;
@@ -56,7 +56,7 @@ export interface Card {
     currentPlayer: number
   ): void;
   calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
-  metadataRequired?: Array<MetaData>;
+  metadataRequired?: MetaDataKeys[];
 }
 
 export interface CatastopheCard extends Card {
@@ -71,11 +71,32 @@ export interface PlayerCard extends Card {
   ): void;
 }
 
+type MetaDataKeys = (
+  'cards_in_hand' |
+  'discard' |
+  'gene_pool_size' |
+  'colour' |
+  'fromColour' |
+  'toColour' |
+  'missing' |
+  'attached_trait' |
+  'trait' |
+  'biggest_gene_pool_size' |
+  // catastrophe
+  'card_per_person'
+)
 type Metadata = {
-  [key: string]: string | number | string[] | undefined,
+  cards_in_hand?: number,
+  discard?: string[],
+  gene_pool_size?: number,
+  colour?: CardType,
   fromColour?: CardType,
   toColour?: CardType,
-  colour?: CardType
+  missing?: number,
+  attached_trait?: CardType[],
+  trait?: CardType,
+  biggest_gene_pool_size?: number,
+  card_per_person?: number,
 };
 
 export class CardInstance {
@@ -85,11 +106,17 @@ export class CardInstance {
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
   finalB: number = 0;
-  metadata: Metadata
+  metadata: Metadata;
+  attached: CardInstance[];
+  parent: (CardInstance | undefined);
 
-  constructor(card: Card, metadata: Metadata) {
+  constructor(card: Card, metadata: Metadata, attached: [card: Card, metadata: Metadata][] = [], parent: (CardInstance | undefined) = undefined) {
     this.card = card;
-    this.metadata = metadata
+    this.metadata = metadata;
+    this.attached = attached.map((attached: [card: Card, metadata: Metadata]): CardInstance => {
+      return new CardInstance(attached[0], attached[1], [], this);
+    })
+    this.parent = parent;
   }
 
   get type(): string[] {
@@ -104,7 +131,21 @@ export class CardInstance {
   }
 }
 
-export interface PlayerInput {
-  name: string;
-  [key: string]: string | number | string[];
+export type PlayerInput = {
+  // [key: string]: string | number | string[] | [name: string, metadata: PlayerInput][] | undefined,
+  [key: string]: any,
+  cards_in_hand?: number,
+  discard?: string[],
+  gene_pool_size?: number,
+  colour?: CardType,
+  fromColour?: CardType,
+  toColour?: CardType,
+  missing?: number,
+  attached?: [name: string, metadata: PlayerInput][],
+  attached_trait?: CardType[],
+  trait?: CardType,
+  biggest_gene_pool_size?: number,
+  card_per_person?: number
+  name: string,
 }
+

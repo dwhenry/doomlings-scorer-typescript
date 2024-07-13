@@ -30,14 +30,14 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
     .scores();
     const playerScores = scores.getPlayerScores();
 
-    // Cards are discarded 
+    // Cards are discarded
     for (const playerScore of playerScores) {
       expect(playerScore.getCardScores().length).toBe(0)
     }
   })
 
   it("removes only one when multiple cards of discard type", () => {
-    const players: PlayerInput[][] = 
+    const players: PlayerInput[][] =
       [[{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}]]
     const scores = new Scorer(
       ...players
@@ -81,12 +81,12 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
     expect(scores.getPlayerScore(Player.Two).getCardScores().length).toEqual(1);
   })
 
-  it("error when discard is not an array", () => {
-    const scorer = new Scorer(
-      [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}]
-    ).addCatastrophes(
-      [{'name': 'BIOENGINEERED PLAGUE', 'discard': 1}],);
-    const t = () => { scorer.scores() }
-    expect(t).toThrow(new Error('discard is not an array'))
-  })
+  // it("error when discard is not an array", () => {
+  //   const scorer = new Scorer(
+  //     [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}], [{'name': 'ACROBATIC'}, {'name': 'ACROBATIC'}]
+  //   ).addCatastrophes(
+  //     [{'name': 'BIOENGINEERED PLAGUE', 'discard': 1}],);
+  //   const t = () => { scorer.scores() }
+  //   expect(t).toThrow(new Error('discard is not an array'))
+  // })
 })
