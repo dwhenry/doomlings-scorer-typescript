@@ -1,5 +1,20 @@
-addBasicCard('KIDNEY (1)', 'red', 'Classic', 0);
-addBasicCard('KIDNEY (2)', 'red', 'Classic', 0);
-addBasicCard('KIDNEY (3)', 'red', 'Classic', 0);
-addBasicCard('KIDNEY (4)', 'red', 'Classic', 0);
-addBasicCard('KIDNEY (5)', 'red', 'Classic', 0);
+import { addBasicCard, addCard } from "../cardContainer";
+import { CardInstance, CardType, PlayerCard } from "../types";
+
+const gmo: PlayerCard = {
+  name: 'KIDNEY',
+  type: ['red'],
+  pack: 'Classic',
+  calcA: (inst: CardInstance): void => {
+    inst.finalA = 0;
+  },
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const kidneyCards = allPlayerCards[currentPlayer].filter(a => a.card.name == 'KIDNEY')
+    inst.finalB = kidneyCards.length
+  }
+};
+addCard(gmo);
