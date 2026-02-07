@@ -60,7 +60,8 @@ function buildCardGroups(
       return;
     }
 
-    const existing = groups.get(card.name);
+    const key = `${card.name}-${isDiscarded ? 'discarded' : ''}`;
+    const existing = groups.get(key);
     if (existing) {
       existing.count++;
       existing.perCardScores.push(cardScore);
@@ -74,7 +75,7 @@ function buildCardGroups(
       // If any instance is missing metadata, mark the group
       if (metadataMissing) existing.metadataMissing = true;
     } else {
-      groups.set(card.name, {
+      groups.set(key, {
         name: card.name,
         count: 1,
         totalScore: gameScore && cardScore.total !== undefined ? cardScore.total : null,
