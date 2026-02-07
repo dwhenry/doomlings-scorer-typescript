@@ -16,22 +16,48 @@ const packBehavior: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {};
+
+    const multiColourCount = playerCards.filter(
+      (c) => c.type.length > 1
+    ).length;
+
     playerCards.forEach((c) => {
-      c.type.forEach((type) => {
-        if (
-          type !== 'colourless' &&
-          type !== 'catastrophe' &&
-          type !== 'none'
-        ) {
-          colourCounts[type] = (colourCounts[type] || 0) + 1;
-        }
-      });
+      // we have already counter the multi colour cards, so we only need to
+      // count the single colour cards
+      if (c.type.length === 1) {
+        c.type.forEach((type) => {
+          if (
+            type !== 'colourless' &&
+            type !== 'catastrophe' &&
+            type !== 'none'
+          ) {
+            colourCounts[type] = (colourCounts[type] || 0) + 1;
+          }
+        });
+      }
     });
-    const pairCount = Object.values(colourCounts).reduce(
-      (sum, count) => sum + Math.floor(count / 2),
+    const totalCards = Object.values(colourCounts).reduce(
+      (max, count) => max + count,
       0
     );
-    inst.finalB = pairCount;
+
+    // maximum number of pairs is either half the total cards if count of any
+    // single color is lower half or the count of other cards if the single
+    // colour is over half the cards
+    const maxPairCount = Math.floor(totalCards / 2);
+
+    const maxSingleColourCount = Object.values(colourCounts).sort(
+      (a, b) => b - a
+    )[0];
+
+    let pairCount: number;
+    if (maxSingleColourCount > maxPairCount) {
+      pairCount = totalCards - maxSingleColourCount;
+    } else {
+      pairCount = maxPairCount;
+    }
+
+    inst.finalB = pairCount + multiColourCount;
   }
 };
 addCard(packBehavior);
@@ -57,6 +83,8 @@ const pollination: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
+    // TODO: we actually modify the finalA value in the catastrophe processing.
+    // We need to change this so that finalA is static - Plan add finalC to these adjustments
     const faceValueOneCount = playerCards.filter((c) => c.finalA === 1).length;
     inst.finalB = faceValueOneCount;
   }

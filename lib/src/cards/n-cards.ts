@@ -2,6 +2,7 @@ import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 
 // Attach to a trait in any trait pile. Value is equal to the face value of the host trait.
+// TODO: this would be better if we got to select the card instead of entering the face value.
 const nano: PlayerCard = {
   name: 'NANO',
   type: ['green'],
