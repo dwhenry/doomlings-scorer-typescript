@@ -293,7 +293,7 @@
 }
 
 .player-card {
-  width: 40px;
+  width: 60px;
   position: relative;
   flex-shrink: 0;
   cursor: pointer;
@@ -318,14 +318,15 @@
 .card-score {
   position: absolute;
   bottom: 2px;
-  right: 2px;
+  left: 10%;
+  right: 10%;
   background: rgba(38, 187, 80, 0.95);
   color: white;
   padding: 2px 4px;
   border-radius: 3px;
   font-size: 9px;
   font-weight: bold;
-  width: 80%;
+  text-align: center;
 }
 
 .card-score--missing {
@@ -624,6 +625,8 @@
   flex-wrap: wrap;
   gap: 8px;
   align-items: flex-start;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Multiselect Component */
@@ -808,7 +811,7 @@
 
   .pack-card,
   .player-card {
-    width: 35px;
+    width: 56px;
   }
 
   .card-zoom img {
@@ -827,4 +830,368 @@
   .multiselect .options {
     max-height: 200px;
   }
+
+  /* Hide pack-display on mobile — drawer replaces it */
+  .pack-display {
+    display: none;
+  }
+
+  /* Hide CardZoom on mobile — no hover on touch */
+  .card-zoom {
+    display: none !important;
+  }
+}
+
+/* ======================== */
+/* Color Tabs               */
+/* ======================== */
+.color-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 8px 0;
+}
+
+.color-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.color-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 2px solid #dee2e6;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.color-tab:hover {
+  background: #f8f9fa;
+}
+
+.color-tab--active {
+  border-color: #495057;
+  background: #495057;
+  color: white;
+}
+
+.color-tab-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.color-tab-label {
+  line-height: 1;
+}
+
+/* ======================== */
+/* Search Bar               */
+/* ======================== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+}
+
+.search-bar:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.search-bar-icon {
+  font-size: 14px;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.search-bar-input {
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+  color: #495057;
+  min-width: 0;
+}
+
+.search-bar-input::placeholder {
+  color: #adb5bd;
+}
+
+.search-bar-clear {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.search-bar-clear:hover {
+  color: #dc3545;
+}
+
+/* ======================== */
+/* Card Grid (tabbed)       */
+/* ======================== */
+.cards-grid--tabbed {
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.pack-card--labeled {
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pack-card-name {
+  font-size: 10px;
+  color: #495057;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.card-grid-empty {
+  padding: 20px;
+  text-align: center;
+  color: #adb5bd;
+  font-size: 14px;
+}
+
+/* Catastrophe tab content */
+.catastrophe-tab-content {
+  padding: 8px 0;
+}
+
+.catastrophe-tab-content .catastrophe-card {
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ======================== */
+/* Bottom Drawer (mobile)   */
+/* ======================== */
+.bottom-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100vh - 60px);
+  background: white;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1500;
+  will-change: transform;
+  overscroll-behavior: contain;
+}
+
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1499;
+}
+
+.drawer-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0 8px;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.drawer-handle:active {
+  cursor: grabbing;
+}
+
+.drawer-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: #dee2e6;
+  border-radius: 2px;
+}
+
+.drawer-content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  height: calc(100% - 36px);
+  padding: 0 16px 16px;
+}
+
+/* Drawer-specific overrides */
+.bottom-drawer .player-selection-hint {
+  font-size: 13px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+.bottom-drawer .pack-card--labeled {
+  width: 56px;
+}
+
+.bottom-drawer .pack-card-name {
+  max-width: 56px;
+}
+
+/* ======================== */
+/* "Add cards" button        */
+/* ======================== */
+.add-cards-btn {
+  display: none;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+  transition: opacity 0.2s;
+}
+
+.add-cards-btn:active {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .add-cards-btn {
+    display: block;
+  }
+
+  /* On mobile, stack player card vertically so button fits below hand */
+  .player {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .player-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+    padding-right: 0;
+    padding-bottom: 8px;
+    min-width: 0;
+  }
+
+  .player-header h3 {
+    margin: 0;
+  }
+}
+
+/* ======================== */
+/* Focused Player View       */
+/* (mobile, when adding)     */
+/* ======================== */
+.players-section--focused {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px 12px;
+  background: white;
+  border-bottom: 2px solid #dee2e6;
+  margin-top: 8px;
+}
+
+.focused-player-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.focused-player-done {
+  padding: 6px 14px;
+  background: #495057;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.focused-player-done:active {
+  opacity: 0.8;
+}
+
+.focused-player-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #495057;
+}
+
+.focused-player-score {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #28a745;
+  margin-left: auto;
+}
+
+.focused-player-hand {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding: 8px 0;
+  min-height: 50px;
+}
+
+.focused-player-hand::-webkit-scrollbar {
+  height: 6px;
+}
+
+.focused-player-hand::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.focused-player-hand::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
 }
