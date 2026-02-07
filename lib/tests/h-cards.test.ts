@@ -33,8 +33,10 @@ describe('HYPER-MYELINATION', () => {
     expect(scorer.scores()).toStrictEqual([8, 4]);
   });
 
-  test('missing metadata raises a missing metadata error', () => {
-    const t = () => { new Scorer([], [{'name': 'HYPER-MYELINATION', 'missing': 4}]) }
-    expect(t).toThrow(new Error('missing metadata field biggest_gene_pool_size'));
+  test('missing metadata does not throw and sets finalB to undefined', () => {
+    const scores = new Scorer([], [{'name': 'HYPER-MYELINATION', 'missing': 4}]).scores();
+    const cardScore = scores.getPlayerScore(1).getCardScoreByIndex(0);
+    expect(cardScore.finalB).toBeUndefined();
+    expect(cardScore.total).toBeUndefined();
   });
 })

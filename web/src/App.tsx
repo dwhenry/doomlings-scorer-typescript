@@ -2,13 +2,15 @@ import { useReducer, useEffect, useState, useCallback } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import { PACK_TYPES } from '@scorer/types';
 import '@scorer/cards';
-import type { Card } from './types';
+import type { Card, ModalState } from './types';
 import type { PlayerState, PlayerCardEntry } from './types';
 import { useScorer } from './hooks/useScorer';
+import { getCardMetadataFields } from './utils/cardMetadata';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
 import CardZoom from './components/CardZoom';
+import MetadataModal from './components/MetadataModal';
 
 // State
 interface AppState {
@@ -18,16 +20,20 @@ interface AppState {
   playerCount: number;
   selectedCatastrophes: string[];
   hoveredCard: string | null;
+  modal: ModalState | null;
 }
 
 type Action =
   | { type: 'SET_PLAYER_COUNT'; count: number }
   | { type: 'SELECT_PLAYER'; id: number }
   | { type: 'ADD_CARD'; playerId: number; cardName: string }
-  | { type: 'REMOVE_CARD'; playerId: number; cardName: string }
+  | { type: 'REMOVE_CARD'; playerId: number; cardIndex: number }
   | { type: 'SET_PACKS'; packs: string[] }
   | { type: 'TOGGLE_CATASTROPHE'; cardName: string }
-  | { type: 'SET_HOVERED'; cardName: string | null };
+  | { type: 'SET_HOVERED'; cardName: string | null }
+  | { type: 'OPEN_MODAL'; playerId: number; cardIndex: number; cardName: string }
+  | { type: 'CLOSE_MODAL' }
+  | { type: 'UPDATE_CARD_METADATA'; playerId: number; cardIndex: number; cardName: string; values: Record<string, string | number>; scope: string };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -37,11 +43,47 @@ function createPlayers(count: number): PlayerState[] {
   }));
 }
 
+function applyMetadataByScope(
+  players: PlayerState[],
+  playerId: number,
+  cardIndex: number,
+  cardName: string,
+  values: Record<string, string | number>,
+  scope: string
+): PlayerState[] {
+  return players.map((p) => {
+    if (scope === 'card') {
+      if (p.id !== playerId) return p;
+      return {
+        ...p,
+        cards: p.cards.map((c, i) =>
+          i === cardIndex ? { ...c, ...values } : c
+        ),
+      };
+    }
+    if (scope === 'player') {
+      if (p.id !== playerId) return p;
+      return {
+        ...p,
+        cards: p.cards.map((c) =>
+          c.name === cardName ? { ...c, ...values } : c
+        ),
+      };
+    }
+    // global: update all players
+    return {
+      ...p,
+      cards: p.cards.map((c) =>
+        c.name === cardName ? { ...c, ...values } : c
+      ),
+    };
+  });
+}
+
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_PLAYER_COUNT': {
       const count = action.count;
-      // Preserve existing players, trim or add as needed
       const players = createPlayers(count).map((newPlayer, i) => {
         if (i < state.players.length) {
           return { ...state.players[i], id: i };
@@ -65,7 +107,28 @@ function reducer(state: AppState, action: Action): AppState {
           state.selectedPlayerId === action.id ? null : action.id,
       };
     case 'ADD_CARD': {
+      const fields = getCardMetadataFields(action.cardName);
       const entry: PlayerCardEntry = { name: action.cardName };
+
+      // For player/global scoped metadata, copy values from existing cards
+      if (fields.length > 0) {
+        const allSameScope = fields.every((f) => f.scope !== 'card');
+        if (allSameScope) {
+          // Find existing card with same name to copy metadata from
+          const sourcePlayer = fields.some((f) => f.scope === 'global')
+            ? state.players.find((p) => p.cards.some((c) => c.name === action.cardName))
+            : state.players.find((p) => p.id === action.playerId);
+          const sourceCard = sourcePlayer?.cards.find((c) => c.name === action.cardName);
+          if (sourceCard) {
+            fields.forEach((f) => {
+              if (sourceCard[f.key] !== undefined) {
+                entry[f.key] = sourceCard[f.key];
+              }
+            });
+          }
+        }
+      }
+
       return {
         ...state,
         players: state.players.map((p) =>
@@ -80,12 +143,13 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         players: state.players.map((p) => {
           if (p.id !== action.playerId) return p;
-          const idx = p.cards.findIndex((c) => c.name === action.cardName);
-          if (idx === -1) return p;
           const newCards = [...p.cards];
-          newCards.splice(idx, 1);
+          newCards.splice(action.cardIndex, 1);
           return { ...p, cards: newCards };
         }),
+        modal: state.modal?.playerId === action.playerId && state.modal?.cardIndex === action.cardIndex
+          ? null
+          : state.modal,
       };
     }
     case 'SET_PACKS':
@@ -101,6 +165,26 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'SET_HOVERED':
       return { ...state, hoveredCard: action.cardName };
+    case 'OPEN_MODAL':
+      return {
+        ...state,
+        modal: { playerId: action.playerId, cardIndex: action.cardIndex, cardName: action.cardName },
+      };
+    case 'CLOSE_MODAL':
+      return { ...state, modal: null };
+    case 'UPDATE_CARD_METADATA':
+      return {
+        ...state,
+        players: applyMetadataByScope(
+          state.players,
+          action.playerId,
+          action.cardIndex,
+          action.cardName,
+          action.values,
+          action.scope
+        ),
+        modal: null,
+      };
     default:
       return state;
   }
@@ -113,6 +197,7 @@ const initialState: AppState = {
   playerCount: 2,
   selectedCatastrophes: [],
   hoveredCard: null,
+  modal: null,
 };
 
 export default function App() {
@@ -134,7 +219,6 @@ export default function App() {
     }
     adjustPadding();
     window.addEventListener('resize', adjustPadding);
-    // Re-adjust when players change (header height may shift)
     const timer = setTimeout(adjustPadding, 100);
     return () => {
       window.removeEventListener('resize', adjustPadding);
@@ -144,24 +228,70 @@ export default function App() {
 
   const gameScore = useScorer(state.players, state.selectedCatastrophes);
 
-  const handleClickCard = useCallback(
-    (cardName: string) => {
-      if (state.selectedPlayerId === null) return;
-      dispatch({ type: 'ADD_CARD', playerId: state.selectedPlayerId, cardName });
-    },
-    [state.selectedPlayerId]
-  );
-
-  const handleDropCard = useCallback(
-    (playerId: number, cardName: string) => {
-      dispatch({ type: 'ADD_CARD', playerId, cardName });
+  const openModalIfNeeded = useCallback(
+    (playerId: number, cardIndex: number, cardName: string) => {
+      const fields = getCardMetadataFields(cardName);
+      if (fields.length > 0) {
+        dispatch({ type: 'OPEN_MODAL', playerId, cardIndex, cardName });
+      }
     },
     []
   );
 
-  const handleRemoveCard = useCallback(
+  const handleClickCard = useCallback(
+    (cardName: string) => {
+      if (state.selectedPlayerId === null) return;
+      const playerId = state.selectedPlayerId;
+      const player = state.players.find((p) => p.id === playerId);
+      const newCardIndex = player ? player.cards.length : 0;
+      dispatch({ type: 'ADD_CARD', playerId, cardName });
+      // Auto-open modal for cards that need metadata
+      const fields = getCardMetadataFields(cardName);
+      if (fields.length > 0) {
+        // Check if metadata would be auto-filled (player/global scope from existing cards)
+        const allNonCard = fields.every((f) => f.scope !== 'card');
+        const hasExistingSource = allNonCard && state.players.some((p) =>
+          (fields.some((f) => f.scope === 'global') || p.id === playerId) &&
+          p.cards.some((c) => c.name === cardName && fields.every((f) => c[f.key] !== undefined))
+        );
+        if (!hasExistingSource) {
+          dispatch({ type: 'OPEN_MODAL', playerId, cardIndex: newCardIndex, cardName });
+        }
+      }
+    },
+    [state.selectedPlayerId, state.players]
+  );
+
+  const handleDropCard = useCallback(
     (playerId: number, cardName: string) => {
-      dispatch({ type: 'REMOVE_CARD', playerId, cardName });
+      const player = state.players.find((p) => p.id === playerId);
+      const newCardIndex = player ? player.cards.length : 0;
+      dispatch({ type: 'ADD_CARD', playerId, cardName });
+      const fields = getCardMetadataFields(cardName);
+      if (fields.length > 0) {
+        const allNonCard = fields.every((f) => f.scope !== 'card');
+        const hasExistingSource = allNonCard && state.players.some((p) =>
+          (fields.some((f) => f.scope === 'global') || p.id === playerId) &&
+          p.cards.some((c) => c.name === cardName && fields.every((f) => c[f.key] !== undefined))
+        );
+        if (!hasExistingSource) {
+          dispatch({ type: 'OPEN_MODAL', playerId, cardIndex: newCardIndex, cardName });
+        }
+      }
+    },
+    [state.players]
+  );
+
+  const handleRemoveCard = useCallback(
+    (playerId: number, cardIndex: number) => {
+      dispatch({ type: 'REMOVE_CARD', playerId, cardIndex });
+    },
+    []
+  );
+
+  const handleOpenModal = useCallback(
+    (playerId: number, cardIndex: number, cardName: string) => {
+      dispatch({ type: 'OPEN_MODAL', playerId, cardIndex, cardName });
     },
     []
   );
@@ -177,6 +307,25 @@ export default function App() {
   const handleToggleCatastrophe = useCallback((cardName: string) => {
     dispatch({ type: 'TOGGLE_CATASTROPHE', cardName });
   }, []);
+
+  const handleDeselectCatastrophe = useCallback((cardName: string) => {
+    if (state.selectedCatastrophes.includes(cardName)) {
+      dispatch({ type: 'TOGGLE_CATASTROPHE', cardName });
+    }
+  }, [state.selectedCatastrophes]);
+
+  // Modal data
+  const modalFields = state.modal ? getCardMetadataFields(state.modal.cardName) : [];
+  const modalCard = state.modal
+    ? state.players.find((p) => p.id === state.modal!.playerId)?.cards[state.modal.cardIndex]
+    : null;
+
+  // Determine the dominant scope for save propagation
+  const modalScope = modalFields.length > 0
+    ? (modalFields.some((f) => f.scope === 'global') ? 'global'
+      : modalFields.some((f) => f.scope === 'player') ? 'player'
+      : 'card')
+    : 'card';
 
   return (
     <div className="game-container">
@@ -196,9 +345,11 @@ export default function App() {
           selectedPlayerId={state.selectedPlayerId}
           onSelectPlayer={handleSelectPlayer}
           onRemoveCard={handleRemoveCard}
+          onOpenModal={handleOpenModal}
           onHover={handleHover}
           onDropCard={handleDropCard}
           gameScore={gameScore}
+          cardsMap={cardsMap}
         />
       </Header>
 
@@ -210,7 +361,27 @@ export default function App() {
         onHover={handleHover}
         selectedCatastrophes={state.selectedCatastrophes}
         onToggleCatastrophe={handleToggleCatastrophe}
+        onDeselectCatastrophe={handleDeselectCatastrophe}
       />
+
+      {state.modal && modalCard && (
+        <MetadataModal
+          cardName={state.modal.cardName}
+          fields={modalFields}
+          currentValues={modalCard}
+          onSave={(values) =>
+            dispatch({
+              type: 'UPDATE_CARD_METADATA',
+              playerId: state.modal!.playerId,
+              cardIndex: state.modal!.cardIndex,
+              cardName: state.modal!.cardName,
+              values,
+              scope: modalScope,
+            })
+          }
+          onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
+        />
+      )}
     </div>
   );
 }

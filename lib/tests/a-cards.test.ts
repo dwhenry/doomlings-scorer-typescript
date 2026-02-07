@@ -41,9 +41,33 @@ describe('Using ALTRUISTIC card', () => {
     expect(scores.getPlayerScore(Player.Two).getCardScoreByIndex(0)).toMatchObject({total: 6});
   });
 
-  test('missing metadata throws a missing metadata error', () => {
-    const t = () => { new Scorer([{'name': 'ALTRUISTIC', 'missing': 4}]).scores() }
-    expect(t).toThrow(new Error('missing metadata field gene_pool_size'));
+  test('missing metadata does not throw and sets finalB to undefined', () => {
+    const scores = new Scorer([{'name': 'ALTRUISTIC', 'missing': 4}]).scores();
+    const cardScore = scores.getPlayerScore(Player.One).getCardScoreByIndex(0);
+    expect(cardScore.finalB).toBeUndefined();
+    expect(cardScore.total).toBeUndefined();
+  });
+
+  test('missing metadata does not break scoring for other cards', () => {
+    const scores = new Scorer(
+      [{'name': 'ALTRUISTIC', 'missing': 4}, {'name': 'ACROBATIC'}]
+    ).scores();
+    // ALTRUISTIC with missing metadata has undefined score
+    const altruisticScore = scores.getPlayerScore(Player.One).getCardScoreByIndex(0);
+    expect(altruisticScore.finalB).toBeUndefined();
+    expect(altruisticScore.total).toBeUndefined();
+
+    // ACROBATIC still scores normally
+    const acrobaticScore = scores.getPlayerScore(Player.One).getCardScoreByIndex(1);
+    expect(acrobaticScore).toMatchObject({total: 2, finalA: 2, finalB: 0});
+  });
+
+  test('missing metadata card does not contribute to player total', () => {
+    const scores = new Scorer(
+      [{'name': 'ALTRUISTIC', 'missing': 4}, {'name': 'ACROBATIC'}]
+    ).scores();
+    // Player total should only include ACROBATIC's 2 points
+    expect(scores.getPlayerScore(Player.One).total).toBe(2);
   });
 
   test('invalid metadata throws an invalid data error', () => {
@@ -51,6 +75,16 @@ describe('Using ALTRUISTIC card', () => {
     const t = () => { scores.scores() }
     expect(t).toThrow(Error);
     expect(t).toThrow(new Error('invalid data for metadata field gene_pool_size'));
+  });
+});
+
+describe('Using AUTOMIMICRY card', () => {
+  test('card with 0 score has finalB of 0, not undefined', () => {
+    const scores = new Scorer([{'name': 'AUTOMIMICRY'}]).scores();
+    const cardScore = scores.getPlayerScore(Player.One).getCardScoreByIndex(0);
+    expect(cardScore.finalA).toBe(0);
+    expect(cardScore.finalB).toBe(0);
+    expect(cardScore.total).toBe(0);
   });
 });
 

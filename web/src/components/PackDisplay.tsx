@@ -9,6 +9,7 @@ interface PackDisplayProps {
   onHover: (cardName: string | null) => void;
   selectedCatastrophes: string[];
   onToggleCatastrophe: (cardName: string) => void;
+  onDeselectCatastrophe: (cardName: string) => void;
 }
 
 export default function PackDisplay({
@@ -19,6 +20,7 @@ export default function PackDisplay({
   onHover,
   selectedCatastrophes,
   onToggleCatastrophe,
+  onDeselectCatastrophe,
 }: PackDisplayProps) {
   // Group cards by their first trait color
   const colorGroups = new Map<CardType, Card[]>();
@@ -59,6 +61,7 @@ export default function PackDisplay({
         catastropheCards={catastropheCards}
         selectedCatastrophes={selectedCatastrophes}
         onToggle={onToggleCatastrophe}
+        onDeselect={onDeselectCatastrophe}
         onHover={onHover}
       />
 
@@ -116,11 +119,13 @@ function CatastropheInline({
   catastropheCards,
   selectedCatastrophes,
   onToggle,
+  onDeselect,
   onHover,
 }: {
   catastropheCards: Card[];
   selectedCatastrophes: string[];
   onToggle: (name: string) => void;
+  onDeselect: (name: string) => void;
   onHover: (name: string | null) => void;
 }) {
   const sorted = [...catastropheCards].sort((a, b) => a.name.localeCompare(b.name));
@@ -129,21 +134,35 @@ function CatastropheInline({
     <section className="catastrophe-section">
       <h2>Catastrophe Cards</h2>
       <div className="catastrophe-cards">
-        {sorted.map((card) => (
-          <div
-            key={card.name}
-            className={`card catastrophe-card${selectedCatastrophes.includes(card.name) ? ' selected' : ''}`}
-            onClick={() => onToggle(card.name)}
-            onMouseEnter={() => onHover(card.name)}
-            onMouseLeave={() => onHover(null)}
-          >
-            <img
-              src={`/cards/${encodeURIComponent(card.name)}.small.png`}
-              alt={card.name}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          </div>
-        ))}
+        {sorted.map((card) => {
+          const isSelected = selectedCatastrophes.includes(card.name);
+          return (
+            <div
+              key={card.name}
+              className={`card catastrophe-card${isSelected ? ' selected' : ''}`}
+              onClick={() => onToggle(card.name)}
+              onMouseEnter={() => onHover(card.name)}
+              onMouseLeave={() => onHover(null)}
+            >
+              <img
+                src={`/cards/${encodeURIComponent(card.name)}.small.png`}
+                alt={card.name}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+              {isSelected && (
+                <button
+                  className="remove-card remove-card--visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeselect(card.name);
+                  }}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
