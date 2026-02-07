@@ -5,7 +5,11 @@ import '@scorer/cards';
 import type { Card, ModalState } from './types';
 import type { PlayerState, PlayerCardEntry } from './types';
 import { useScorer } from './hooks/useScorer';
-import { getCardMetadataFields, getEditableMetadataFields, getInternalMetadataFields } from './utils/cardMetadata';
+import {
+  getCardMetadataFields,
+  getEditableMetadataFields,
+  getInternalMetadataFields
+} from './utils/cardMetadata';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
@@ -19,7 +23,10 @@ interface AppState {
   selectedPacks: string[];
   playerCount: number;
   selectedCatastrophes: string[];
-  catastropheMetadata: Record<string, Record<string, string | number | string[]>>;
+  catastropheMetadata: Record<
+    string,
+    Record<string, string | number | string[]>
+  >;
   hoveredCard: string | null;
   modal: ModalState | null;
   mobileAddingForPlayer: number | null;
@@ -33,10 +40,25 @@ type Action =
   | { type: 'SET_PACKS'; packs: string[] }
   | { type: 'TOGGLE_CATASTROPHE'; cardName: string }
   | { type: 'SET_HOVERED'; cardName: string | null }
-  | { type: 'OPEN_MODAL'; playerId: number; cardIndex: number; cardName: string }
+  | {
+      type: 'OPEN_MODAL';
+      playerId: number;
+      cardIndex: number;
+      cardName: string;
+    }
   | { type: 'CLOSE_MODAL' }
-  | { type: 'UPDATE_CARD_METADATA'; playerId: number; cardIndex: number; cardName: string; values: Record<string, string | number>; scope: string }
-  | { type: 'UPDATE_CATASTROPHE_METADATA'; metadata: Record<string, Record<string, string | number | string[]>> }
+  | {
+      type: 'UPDATE_CARD_METADATA';
+      playerId: number;
+      cardIndex: number;
+      cardName: string;
+      values: Record<string, string | number>;
+      scope: string;
+    }
+  | {
+      type: 'UPDATE_CATASTROPHE_METADATA';
+      metadata: Record<string, Record<string, string | number | string[]>>;
+    }
   | { type: 'START_ADDING_FOR_PLAYER'; playerId: number }
   | { type: 'STOP_ADDING' };
 
@@ -44,7 +66,7 @@ function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     name: `Player ${i + 1}`,
-    cards: [],
+    cards: []
   }));
 }
 
@@ -63,7 +85,7 @@ function applyMetadataByScope(
         ...p,
         cards: p.cards.map((c, i) =>
           i === cardIndex ? { ...c, ...values } : c
-        ),
+        )
       };
     }
     if (scope === 'player') {
@@ -72,15 +94,13 @@ function applyMetadataByScope(
         ...p,
         cards: p.cards.map((c) =>
           c.name === cardName ? { ...c, ...values } : c
-        ),
+        )
       };
     }
     // global: update all players
     return {
       ...p,
-      cards: p.cards.map((c) =>
-        c.name === cardName ? { ...c, ...values } : c
-      ),
+      cards: p.cards.map((c) => (c.name === cardName ? { ...c, ...values } : c))
     };
   });
 }
@@ -102,14 +122,14 @@ function reducer(state: AppState, action: Action): AppState {
         selectedPlayerId:
           state.selectedPlayerId !== null && state.selectedPlayerId < count
             ? state.selectedPlayerId
-            : null,
+            : null
       };
     }
     case 'SELECT_PLAYER':
       return {
         ...state,
         selectedPlayerId:
-          state.selectedPlayerId === action.id ? null : action.id,
+          state.selectedPlayerId === action.id ? null : action.id
       };
     case 'ADD_CARD': {
       const fields = getCardMetadataFields(action.cardName);
@@ -122,9 +142,13 @@ function reducer(state: AppState, action: Action): AppState {
         if (allSameScope) {
           // Find existing card with same name to copy metadata from
           const sourcePlayer = editableFields.some((f) => f.scope === 'global')
-            ? state.players.find((p) => p.cards.some((c) => c.name === action.cardName))
+            ? state.players.find((p) =>
+                p.cards.some((c) => c.name === action.cardName)
+              )
             : state.players.find((p) => p.id === action.playerId);
-          const sourceCard = sourcePlayer?.cards.find((c) => c.name === action.cardName);
+          const sourceCard = sourcePlayer?.cards.find(
+            (c) => c.name === action.cardName
+          );
           if (sourceCard) {
             editableFields.forEach((f) => {
               if (sourceCard[f.key] !== undefined) {
@@ -138,10 +162,8 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         players: state.players.map((p) =>
-          p.id === action.playerId
-            ? { ...p, cards: [...p.cards, entry] }
-            : p
-        ),
+          p.id === action.playerId ? { ...p, cards: [...p.cards, entry] } : p
+        )
       };
     }
     case 'REMOVE_CARD': {
@@ -153,9 +175,11 @@ function reducer(state: AppState, action: Action): AppState {
           newCards.splice(action.cardIndex, 1);
           return { ...p, cards: newCards };
         }),
-        modal: state.modal?.playerId === action.playerId && state.modal?.cardIndex === action.cardIndex
-          ? null
-          : state.modal,
+        modal:
+          state.modal?.playerId === action.playerId &&
+          state.modal?.cardIndex === action.cardIndex
+            ? null
+            : state.modal
       };
     }
     case 'SET_PACKS':
@@ -173,7 +197,7 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         selectedCatastrophes: newCatastrophes,
-        catastropheMetadata: newCatMeta,
+        catastropheMetadata: newCatMeta
       };
     }
     case 'SET_HOVERED':
@@ -181,7 +205,11 @@ function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_MODAL':
       return {
         ...state,
-        modal: { playerId: action.playerId, cardIndex: action.cardIndex, cardName: action.cardName },
+        modal: {
+          playerId: action.playerId,
+          cardIndex: action.cardIndex,
+          cardName: action.cardName
+        }
       };
     case 'CLOSE_MODAL':
       return { ...state, modal: null };
@@ -196,24 +224,24 @@ function reducer(state: AppState, action: Action): AppState {
           action.values,
           action.scope
         ),
-        modal: null,
+        modal: null
       };
     case 'UPDATE_CATASTROPHE_METADATA':
       return {
         ...state,
-        catastropheMetadata: action.metadata,
+        catastropheMetadata: action.metadata
       };
     case 'START_ADDING_FOR_PLAYER':
       return {
         ...state,
         selectedPlayerId: action.playerId,
-        mobileAddingForPlayer: action.playerId,
+        mobileAddingForPlayer: action.playerId
       };
     case 'STOP_ADDING':
       return {
         ...state,
         selectedPlayerId: null,
-        mobileAddingForPlayer: null,
+        mobileAddingForPlayer: null
       };
     default:
       return state;
@@ -229,7 +257,7 @@ const initialState: AppState = {
   catastropheMetadata: {},
   hoveredCard: null,
   modal: null,
-  mobileAddingForPlayer: null,
+  mobileAddingForPlayer: null
 };
 
 export default function App() {
@@ -243,8 +271,12 @@ export default function App() {
   // Adjust padding for fixed header
   useEffect(() => {
     function adjustPadding() {
-      const header = document.querySelector('.game-header') as HTMLElement | null;
-      const container = document.querySelector('.game-container') as HTMLElement | null;
+      const header = document.querySelector(
+        '.game-header'
+      ) as HTMLElement | null;
+      const container = document.querySelector(
+        '.game-container'
+      ) as HTMLElement | null;
       if (header && container) {
         container.style.paddingTop = `${header.offsetHeight + 20}px`;
       }
@@ -258,7 +290,11 @@ export default function App() {
     };
   }, [state.players, state.selectedPlayerId, state.playerCount]);
 
-  const gameScore = useScorer(state.players, state.selectedCatastrophes, state.catastropheMetadata);
+  const gameScore = useScorer(
+    state.players,
+    state.selectedCatastrophes,
+    state.catastropheMetadata
+  );
 
   // Merge catastrophe generated metadata back into state
   const prevCatMetaRef = useRef<string>('');
@@ -267,7 +303,10 @@ export default function App() {
     const catGenMeta = gameScore.getCatastropheGeneratedMetadata();
     if (catGenMeta.length === 0) return;
 
-    const newMeta: Record<string, Record<string, string | number | string[]>> = {};
+    const newMeta: Record<
+      string,
+      Record<string, string | number | string[]>
+    > = {};
     state.selectedCatastrophes.forEach((name, i) => {
       if (catGenMeta[i] && Object.keys(catGenMeta[i]).length > 0) {
         newMeta[name] = catGenMeta[i];
@@ -304,12 +343,25 @@ export default function App() {
       if (editableFields.length > 0) {
         // Check if metadata would be auto-filled (player/global scope from existing cards)
         const allNonCard = editableFields.every((f) => f.scope !== 'card');
-        const hasExistingSource = allNonCard && state.players.some((p) =>
-          (editableFields.some((f) => f.scope === 'global') || p.id === playerId) &&
-          p.cards.some((c) => c.name === cardName && editableFields.every((f) => c[f.key] !== undefined))
-        );
+        const hasExistingSource =
+          allNonCard &&
+          state.players.some(
+            (p) =>
+              (editableFields.some((f) => f.scope === 'global') ||
+                p.id === playerId) &&
+              p.cards.some(
+                (c) =>
+                  c.name === cardName &&
+                  editableFields.every((f) => c[f.key] !== undefined)
+              )
+          );
         if (!hasExistingSource) {
-          dispatch({ type: 'OPEN_MODAL', playerId, cardIndex: newCardIndex, cardName });
+          dispatch({
+            type: 'OPEN_MODAL',
+            playerId,
+            cardIndex: newCardIndex,
+            cardName
+          });
         }
       }
     },
@@ -325,12 +377,25 @@ export default function App() {
       const editableFields = getEditableMetadataFields(cardName);
       if (editableFields.length > 0) {
         const allNonCard = editableFields.every((f) => f.scope !== 'card');
-        const hasExistingSource = allNonCard && state.players.some((p) =>
-          (editableFields.some((f) => f.scope === 'global') || p.id === playerId) &&
-          p.cards.some((c) => c.name === cardName && editableFields.every((f) => c[f.key] !== undefined))
-        );
+        const hasExistingSource =
+          allNonCard &&
+          state.players.some(
+            (p) =>
+              (editableFields.some((f) => f.scope === 'global') ||
+                p.id === playerId) &&
+              p.cards.some(
+                (c) =>
+                  c.name === cardName &&
+                  editableFields.every((f) => c[f.key] !== undefined)
+              )
+          );
         if (!hasExistingSource) {
-          dispatch({ type: 'OPEN_MODAL', playerId, cardIndex: newCardIndex, cardName });
+          dispatch({
+            type: 'OPEN_MODAL',
+            playerId,
+            cardIndex: newCardIndex,
+            cardName
+          });
         }
       }
     },
@@ -371,25 +436,38 @@ export default function App() {
     dispatch({ type: 'TOGGLE_CATASTROPHE', cardName });
   }, []);
 
-  const handleDeselectCatastrophe = useCallback((cardName: string) => {
-    if (state.selectedCatastrophes.includes(cardName)) {
-      dispatch({ type: 'TOGGLE_CATASTROPHE', cardName });
-    }
-  }, [state.selectedCatastrophes]);
+  const handleDeselectCatastrophe = useCallback(
+    (cardName: string) => {
+      if (state.selectedCatastrophes.includes(cardName)) {
+        dispatch({ type: 'TOGGLE_CATASTROPHE', cardName });
+      }
+    },
+    [state.selectedCatastrophes]
+  );
 
   // Modal data - separate editable fields from internal
-  const modalEditableFields = state.modal ? getEditableMetadataFields(state.modal.cardName) : [];
-  const modalInternalFields = state.modal ? getInternalMetadataFields(state.modal.cardName) : [];
+  const modalEditableFields = state.modal
+    ? getEditableMetadataFields(state.modal.cardName)
+    : [];
+  const modalInternalFields = state.modal
+    ? getInternalMetadataFields(state.modal.cardName)
+    : [];
   const modalCard = state.modal
-    ? state.players.find((p) => p.id === state.modal!.playerId)?.cards[state.modal.cardIndex]
+    ? state.players.find((p) => p.id === state.modal!.playerId)?.cards[
+        state.modal.cardIndex
+      ]
     : null;
 
   // Build internal values from generated metadata in game score
   const modalInternalValues: Record<string, string | number | string[]> = {};
   if (state.modal && gameScore && modalInternalFields.length > 0) {
     try {
-      const playerIndex = state.players.findIndex((p) => p.id === state.modal!.playerId);
-      const genMeta = gameScore.getPlayerScore(playerIndex).getGeneratedMetadata(state.modal.cardIndex);
+      const playerIndex = state.players.findIndex(
+        (p) => p.id === state.modal!.playerId
+      );
+      const genMeta = gameScore
+        .getPlayerScore(playerIndex)
+        .getGeneratedMetadata(state.modal.cardIndex);
       if (genMeta) {
         Object.assign(modalInternalValues, genMeta);
       }
@@ -399,14 +477,18 @@ export default function App() {
   }
 
   // Determine the dominant scope for save propagation (only from editable fields)
-  const modalScope = modalEditableFields.length > 0
-    ? (modalEditableFields.some((f) => f.scope === 'global') ? 'global'
-      : modalEditableFields.some((f) => f.scope === 'player') ? 'player'
-      : 'card')
-    : 'card';
+  const modalScope =
+    modalEditableFields.length > 0
+      ? modalEditableFields.some((f) => f.scope === 'global')
+        ? 'global'
+        : modalEditableFields.some((f) => f.scope === 'player')
+          ? 'player'
+          : 'card'
+      : 'card';
 
   // Show modal if there are any fields (editable or internal)
-  const hasAnyModalFields = modalEditableFields.length > 0 || modalInternalFields.length > 0;
+  const hasAnyModalFields =
+    modalEditableFields.length > 0 || modalInternalFields.length > 0;
 
   return (
     <div className="game-container">
@@ -452,6 +534,7 @@ export default function App() {
       {state.modal && modalCard && hasAnyModalFields && (
         <MetadataModal
           cardName={state.modal.cardName}
+          selectedCatastrophes={state.selectedCatastrophes}
           fields={modalEditableFields}
           internalFields={modalInternalFields}
           internalValues={modalInternalValues}
@@ -463,7 +546,7 @@ export default function App() {
               cardIndex: state.modal!.cardIndex,
               cardName: state.modal!.cardName,
               values,
-              scope: modalScope,
+              scope: modalScope
             })
           }
           onClose={() => dispatch({ type: 'CLOSE_MODAL' })}

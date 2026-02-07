@@ -15,16 +15,16 @@ interface MetadataModalProps {
 
 const COLOR_OPTIONS = TRAIT_CARD_TYPES.map((c) => ({
   value: c,
-  label: c.charAt(0).toUpperCase() + c.slice(1),
+  label: c.charAt(0).toUpperCase() + c.slice(1)
 }));
 
 function formatLabel(key: string): string {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatInternalValue(value: string | number | string[] | undefined): string {
+function formatInternalValue(
+  value: string | number | string[] | undefined
+): string {
   if (value === undefined) return '-';
   if (Array.isArray(value)) return value.filter(Boolean).join(', ') || '-';
   return String(value);
@@ -37,7 +37,7 @@ export default function MetadataModal({
   internalValues,
   currentValues,
   onSave,
-  onClose,
+  onClose
 }: MetadataModalProps) {
   const [values, setValues] = useState<Record<string, string | number>>({});
   const hasEditableFields = fields.length > 0;
@@ -83,7 +83,9 @@ export default function MetadataModal({
             src={`/cards/${encodeURIComponent(cardName)}.small.png`}
             alt={cardName}
             className="modal-card-image"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
           />
           <h3>{cardName}</h3>
         </div>
@@ -102,7 +104,8 @@ export default function MetadataModal({
                   onChange={(e) =>
                     setValues((v) => ({
                       ...v,
-                      [field.key]: e.target.value === '' ? '' : Number(e.target.value),
+                      [field.key]:
+                        e.target.value === '' ? '' : Number(e.target.value)
                     }))
                   }
                 />
@@ -129,10 +132,15 @@ export default function MetadataModal({
             <div className="modal-internal-section">
               <div className="modal-internal-header">Engine Generated</div>
               {internalFields.map((field) => (
-                <div key={field.key} className="modal-field modal-field--internal">
+                <div
+                  key={field.key}
+                  className="modal-field modal-field--internal"
+                >
                   <label>
                     {formatLabel(field.key)}
-                    <span className="field-scope field-scope--internal">internal</span>
+                    <span className="field-scope field-scope--internal">
+                      internal
+                    </span>
                   </label>
                   <div className="modal-internal-value">
                     {formatInternalValue(internalValues[field.key])}

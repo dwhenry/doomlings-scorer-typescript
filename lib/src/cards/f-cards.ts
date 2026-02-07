@@ -14,17 +14,18 @@ const faith: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    playerCards.forEach(
-      (card) => {
-        if(card.type.includes(inst.metadata.fromColour!)) {
-          card.setOverride('type', [inst.metadata.toColour!])
-        }
+    playerCards.forEach((card) => {
+      if (card.type.includes(inst.metadata.fromColour!)) {
+        card.setOverride('type', [inst.metadata.toColour!]);
       }
-    );
+    });
   },
-  metadataRequired: [['fromColour', 'CardType', 'card'], ['toColour', 'CardType', 'card']]
+  metadataRequired: [
+    ['fromColour', 'CardType', 'card'],
+    ['toColour', 'CardType', 'card']
+  ]
 };
-addCard(faith)
+addCard(faith);
 addBasicCard('FANGS', 'red', 'Classic', 1);
 addBasicCard('FEAR', 'colourless', 'Classic', 1);
 addBasicCard('FECUNDITY', 'green', 'Classic', 1);
@@ -46,23 +47,21 @@ const fortunate: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    let greenSize = 0
-    let colours: { [key: string]: number } = {}
-    playerCards.forEach(
-      (inst) => {
-        inst.type.forEach(type => {
-          if(type =='green') {
-            greenSize += 1
-          } else  {
-            colours[type] = colours[type] ?? 0
-            colours[type] += 1
-          }
-        })
-      }
-    );
-    let maxSize = Math.max(...Object.values(colours))
+    let greenSize = 0;
+    let colours: { [key: string]: number } = {};
+    playerCards.forEach((inst) => {
+      inst.type.forEach((type) => {
+        if (type == 'green') {
+          greenSize += 1;
+        } else {
+          colours[type] = colours[type] ?? 0;
+          colours[type] += 1;
+        }
+      });
+    });
+    let maxSize = Math.max(...Object.values(colours));
     // only when more green than others
-    inst.finalB = maxSize < greenSize ? 2 : 0
+    inst.finalB = maxSize < greenSize ? 2 : 0;
   }
 };
 addCard(fortunate);
@@ -78,7 +77,7 @@ const free_will: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    inst.setOverride('type', [inst.metadata.colour!])
+    inst.setOverride('type', [inst.metadata.colour!]);
   },
   metadataRequired: [['colour', 'CardType', 'card']]
 };

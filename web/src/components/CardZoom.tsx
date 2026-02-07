@@ -10,7 +10,9 @@ export default function CardZoom({ cardName }: CardZoomProps) {
       <img
         src={`/cards/${encodeURIComponent(cardName)}.png`}
         alt={cardName}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
       />
       <div className="card-zoom-name">{cardName}</div>
     </div>

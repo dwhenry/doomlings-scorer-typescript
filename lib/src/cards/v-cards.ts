@@ -25,7 +25,7 @@ const viral: PlayerCard = {
     // Apply -1 per trait of chosen color to each opponent
     allPlayerCards.forEach((playerCards, playerIndex) => {
       if (playerIndex !== currentPlayer) {
-        playerCards.forEach(card => {
+        playerCards.forEach((card) => {
           if (card.type.includes(chosenColour)) {
             card.finalA -= 1;
           }

@@ -12,7 +12,11 @@ export interface MetadataField {
 export function getCardMetadataFields(cardName: string): MetadataField[] {
   const card = allCards().get(cardName);
   if (!card?.metadataRequired) return [];
-  return card.metadataRequired.map(([key, type, scope]) => ({ key, type, scope }));
+  return card.metadataRequired.map(([key, type, scope]) => ({
+    key,
+    type,
+    scope
+  }));
 }
 
 /** Returns only user-editable metadata fields (excludes internal scope) */
@@ -26,10 +30,15 @@ export function getInternalMetadataFields(cardName: string): MetadataField[] {
 }
 
 /** Checks if user-required metadata is complete (ignores internal fields) */
-export function isMetadataComplete(card: PlayerCardEntry, fields: MetadataField[]): boolean {
+export function isMetadataComplete(
+  card: PlayerCardEntry,
+  fields: MetadataField[]
+): boolean {
   const editableFields = fields.filter((f) => f.scope !== 'internal');
   if (editableFields.length === 0) return true;
-  return editableFields.every((field) => card[field.key] !== undefined && card[field.key] !== '');
+  return editableFields.every(
+    (field) => card[field.key] !== undefined && card[field.key] !== ''
+  );
 }
 
 export function hasCardScopedMetadata(fields: MetadataField[]): boolean {

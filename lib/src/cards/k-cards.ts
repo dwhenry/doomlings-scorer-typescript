@@ -16,7 +16,9 @@ function createKidney(name: string): PlayerCard {
       currentPlayer: number
     ): void => {
       const playerCards = allPlayerCards[currentPlayer];
-      const kidneyCount = playerCards.filter(c => c.card.name.startsWith('KIDNEY')).length;
+      const kidneyCount = playerCards.filter((c) =>
+        c.card.name.startsWith('KIDNEY')
+      ).length;
       inst.finalB = kidneyCount;
     }
   };

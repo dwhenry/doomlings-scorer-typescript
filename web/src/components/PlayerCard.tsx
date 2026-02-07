@@ -25,7 +25,7 @@ export default function PlayerCard({
   totalScore,
   onDrop,
   showAddButton,
-  onStartAdding,
+  onStartAdding
 }: PlayerCardProps) {
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -70,7 +70,9 @@ export default function PlayerCard({
         onDrop={handleDrop}
       >
         {cardGroups.length === 0 ? (
-          <div className="drop-zone">Drop cards here or click to select player</div>
+          <div className="drop-zone">
+            Drop cards here or click to select player
+          </div>
         ) : (
           cardGroups.map((group) => {
             const allDiscarded = group.discardedIndices.length === group.count;
@@ -90,9 +92,13 @@ export default function PlayerCard({
                 <img
                   src={`/cards/${encodeURIComponent(group.name)}.png`}
                   alt={group.name}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
                 />
-                {group.count > 1 && <div className="card-count">{group.count}</div>}
+                {group.count > 1 && (
+                  <div className="card-count">{group.count}</div>
+                )}
                 {allDiscarded ? (
                   <div className="card-score card-score--discarded">0 pts</div>
                 ) : group.totalScore !== null ? (

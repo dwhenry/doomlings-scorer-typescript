@@ -6,7 +6,7 @@ export enum Player {
   One = 0,
   Two = 1,
   Three = 2,
-  Four = 3,
+  Four = 3
 }
 
 export class Scorer {
@@ -15,23 +15,23 @@ export class Scorer {
   private allPlayerCards: Array<Array<CardInstance>>;
   private catastopheCards: Array<CardInstance> = [];
 
-  constructor(
-    ...cardsInput: Array<Array<PlayerInput>>
-  ) {
+  constructor(...cardsInput: Array<Array<PlayerInput>>) {
     this.allPlayerCards = cardsInput.map((playerCards) => {
       return playerCards.map(
         (playerInput: PlayerInput): CardInstance =>
           getCard(playerInput.name, playerInput)
       );
     });
-    
   }
 
   addCatastrophes(catastopheInput: Array<PlayerInput>) {
-    this.catastopheCards = [...this.catastopheCards, ...catastopheInput.map(
-      (playerInput: PlayerInput): CardInstance =>
-        getCard(playerInput.name, playerInput)
-    )];
+    this.catastopheCards = [
+      ...this.catastopheCards,
+      ...catastopheInput.map(
+        (playerInput: PlayerInput): CardInstance =>
+          getCard(playerInput.name, playerInput)
+      )
+    ];
     return this;
   }
 
@@ -71,37 +71,55 @@ export class Scorer {
       });
     });
 
-    const playerScores: PlayerScore[] = this.allPlayerCards.map((playerCards) => {
-      const playerCardsScores: CardScore[] = playerCards.map(c => {
-        const finalA = c.finalA;
-        const finalB = c.finalB;
-        const discarded = c.discarded;
-        const total = discarded ? 0 : (finalB !== undefined ? finalA + finalB : undefined);
-        const generatedMetadata = Object.keys(c.generatedMetadata).length > 0
-          ? { ...c.generatedMetadata }
-          : undefined;
-        return { finalA, finalB, total, discarded, generatedMetadata };
-      });
+    const playerScores: PlayerScore[] = this.allPlayerCards.map(
+      (playerCards) => {
+        const playerCardsScores: CardScore[] = playerCards.map((c) => {
+          const finalA = c.finalA;
+          const finalB = c.finalB;
+          const discarded = c.discarded;
+          const total = discarded
+            ? 0
+            : finalB !== undefined
+              ? finalA + finalB
+              : undefined;
+          const generatedMetadata =
+            Object.keys(c.generatedMetadata).length > 0
+              ? { ...c.generatedMetadata }
+              : undefined;
+          return { finalA, finalB, total, discarded, generatedMetadata };
+        });
 
-      return new PlayerScore(playerCardsScores);
-    });
-
-    const catastropheGeneratedMetadata: Array<Record<string, string | number | string[]>> = this.catastopheCards.map(c =>
-      Object.keys(c.generatedMetadata).length > 0 ? { ...c.generatedMetadata } : {}
+        return new PlayerScore(playerCardsScores);
+      }
     );
 
-    const winningPlayersIndices = playerScores.reduce((maxScorePlayerIndices: number[], playerScore, index, arr) => {
-      const currentMax = arr[maxScorePlayerIndices[0]];
-      if (playerScore.total === currentMax.total) {
-        return [...maxScorePlayerIndices, index];
-      } else if (playerScore.total > currentMax.total) {
-        return [index];
-      } else {
-        return maxScorePlayerIndices;
-      }
-    }, [0]);
+    const catastropheGeneratedMetadata: Array<
+      Record<string, string | number | string[]>
+    > = this.catastopheCards.map((c) =>
+      Object.keys(c.generatedMetadata).length > 0
+        ? { ...c.generatedMetadata }
+        : {}
+    );
 
-    return new GameScore(winningPlayersIndices, playerScores, catastropheGeneratedMetadata);
+    const winningPlayersIndices = playerScores.reduce(
+      (maxScorePlayerIndices: number[], playerScore, index, arr) => {
+        const currentMax = arr[maxScorePlayerIndices[0]];
+        if (playerScore.total === currentMax.total) {
+          return [...maxScorePlayerIndices, index];
+        } else if (playerScore.total > currentMax.total) {
+          return [index];
+        } else {
+          return maxScorePlayerIndices;
+        }
+      },
+      [0]
+    );
+
+    return new GameScore(
+      winningPlayersIndices,
+      playerScores,
+      catastropheGeneratedMetadata
+    );
   }
 
   getPlayerCards(playerIndex: Player): CardInstance[] {
@@ -113,18 +131,22 @@ export class Scorer {
 export class GameScore {
   private winningPlayersIndices: Player[];
   private playerScores: PlayerScore[];
-  private _catastropheGeneratedMetadata: Array<Record<string, string | number | string[]>>;
+  private _catastropheGeneratedMetadata: Array<
+    Record<string, string | number | string[]>
+  >;
 
   constructor(
     winningPlayersIndices: Player[],
     playerScores: PlayerScore[],
-    catastropheGeneratedMetadata: Array<Record<string, string | number | string[]>> = []
+    catastropheGeneratedMetadata: Array<
+      Record<string, string | number | string[]>
+    > = []
   ) {
     this.winningPlayersIndices = winningPlayersIndices;
     this.playerScores = playerScores;
     this._catastropheGeneratedMetadata = catastropheGeneratedMetadata;
   }
-  
+
   getPlayerScores(): PlayerScore[] {
     return this.playerScores;
   }
@@ -137,7 +159,9 @@ export class GameScore {
     return playerScore;
   }
 
-  getCatastropheGeneratedMetadata(): Array<Record<string, string | number | string[]>> {
+  getCatastropheGeneratedMetadata(): Array<
+    Record<string, string | number | string[]>
+  > {
     return this._catastropheGeneratedMetadata;
   }
 }
@@ -148,7 +172,10 @@ export class PlayerScore {
 
   constructor(playerCardsScores: CardScore[]) {
     this.playerCardsScores = playerCardsScores;
-    this._total = playerCardsScores.reduce((sum, current) => sum + (current.total ?? 0), 0);
+    this._total = playerCardsScores.reduce(
+      (sum, current) => sum + (current.total ?? 0),
+      0
+    );
   }
 
   public get total() {
@@ -167,12 +194,13 @@ export class PlayerScore {
     return this.playerCardsScores;
   }
 
-  public getGeneratedMetadata(cardIndex: number): Record<string, string | number | string[]> | undefined {
+  public getGeneratedMetadata(
+    cardIndex: number
+  ): Record<string, string | number | string[]> | undefined {
     const cardScore = this.playerCardsScores.at(cardIndex);
     return cardScore?.generatedMetadata;
   }
 }
-
 
 export interface CardScore {
   total: number | undefined;

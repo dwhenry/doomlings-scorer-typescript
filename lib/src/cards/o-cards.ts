@@ -18,9 +18,10 @@ const overgrowth: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const greenCount = playerCards.filter(c => c.type.includes('green')).length;
+    const greenCount = playerCards.filter((c) =>
+      c.type.includes('green')
+    ).length;
     inst.finalB = greenCount;
   }
 };
 addCard(overgrowth);
-

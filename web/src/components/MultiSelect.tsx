@@ -6,13 +6,20 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void;
 }
 
-export default function MultiSelect({ options, selected, onChange }: MultiSelectProps) {
+export default function MultiSelect({
+  options,
+  selected,
+  onChange
+}: MultiSelectProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -31,7 +38,9 @@ export default function MultiSelect({ options, selected, onChange }: MultiSelect
   function displayText() {
     if (selected.length === 0) return 'Select';
     if (selected.length > 2) {
-      return selected.slice(0, 2).join(', ') + ` [+ ${selected.length - 2} more]`;
+      return (
+        selected.slice(0, 2).join(', ') + ` [+ ${selected.length - 2} more]`
+      );
     }
     return selected.join(', ');
   }

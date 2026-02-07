@@ -1,6 +1,10 @@
 import type { PlayerState, CardGroup, Card } from '../types';
 import type { GameScore } from '@scorer/scorer';
-import { getCardMetadataFields, isMetadataComplete, hasCardScopedMetadata } from '../utils/cardMetadata';
+import {
+  getCardMetadataFields,
+  isMetadataComplete,
+  hasCardScopedMetadata
+} from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import PlayerCard from './PlayerCard';
 
@@ -33,12 +37,22 @@ function buildCardGroups(
     const metadataMissing = hasMetadata && !isMetadataComplete(card, fields);
     const isCardScoped = hasCardScopedMetadata(fields);
 
-    let cardScore: { finalA: number; finalB: number | undefined; total: number | undefined; discarded?: boolean } = { finalA: 0, finalB: 0, total: 0 };
+    let cardScore: {
+      finalA: number;
+      finalB: number | undefined;
+      total: number | undefined;
+      discarded?: boolean;
+    } = { finalA: 0, finalB: 0, total: 0 };
     if (gameScore) {
       try {
         const ps = gameScore.getPlayerScore(playerIndex);
         const cs = ps.getCardScoreByIndex(cardIndex);
-        cardScore = { finalA: cs.finalA, finalB: cs.finalB, total: cs.total, discarded: cs.discarded };
+        cardScore = {
+          finalA: cs.finalA,
+          finalB: cs.finalB,
+          total: cs.total,
+          discarded: cs.discarded
+        };
       } catch {
         // card may not have a score yet
       }
@@ -50,12 +64,13 @@ function buildCardGroups(
       individualCards.push({
         name: card.name,
         count: 1,
-        totalScore: gameScore && cardScore.total !== undefined ? cardScore.total : null,
+        totalScore:
+          gameScore && cardScore.total !== undefined ? cardScore.total : null,
         perCardScores: [cardScore],
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
-        discardedIndices: isDiscarded ? [cardIndex] : [],
+        discardedIndices: isDiscarded ? [cardIndex] : []
       });
       return;
     }
@@ -78,12 +93,13 @@ function buildCardGroups(
       groups.set(key, {
         name: card.name,
         count: 1,
-        totalScore: gameScore && cardScore.total !== undefined ? cardScore.total : null,
+        totalScore:
+          gameScore && cardScore.total !== undefined ? cardScore.total : null,
         perCardScores: [cardScore],
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
-        discardedIndices: isDiscarded ? [cardIndex] : [],
+        discardedIndices: isDiscarded ? [cardIndex] : []
       });
     }
   });
@@ -103,17 +119,21 @@ export default function PlayerSection({
   onHover,
   onDropCard,
   gameScore,
-  cardsMap,
+  cardsMap
 }: PlayerSectionProps) {
   const isMobile = !useMediaQuery('(min-width: 768px)');
 
   // Mobile focused view: only show the player we're adding cards for
   if (isMobile && mobileAddingForPlayer !== null) {
-    const playerIndex = players.findIndex((p) => p.id === mobileAddingForPlayer);
+    const playerIndex = players.findIndex(
+      (p) => p.id === mobileAddingForPlayer
+    );
     const player = players[playerIndex];
     if (!player) return null;
     const cardGroups = buildCardGroups(player, gameScore, playerIndex);
-    const totalScore = gameScore ? gameScore.getPlayerScore(playerIndex).total : 0;
+    const totalScore = gameScore
+      ? gameScore.getPlayerScore(playerIndex).total
+      : 0;
 
     return (
       <section className="players-section players-section--focused">
@@ -143,9 +163,13 @@ export default function PlayerSection({
                 <img
                   src={`/cards/${encodeURIComponent(group.name)}.png`}
                   alt={group.name}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
                 />
-                {group.count > 1 && <div className="card-count">{group.count}</div>}
+                {group.count > 1 && (
+                  <div className="card-count">{group.count}</div>
+                )}
                 {allDiscarded ? (
                   <div className="card-score card-score--discarded">0 pts</div>
                 ) : group.totalScore !== null ? (

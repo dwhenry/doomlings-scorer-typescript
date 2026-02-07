@@ -16,15 +16,20 @@ const packBehavior: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {};
-    playerCards.forEach(c => {
-      c.type.forEach(type => {
-        if (type !== 'colourless' && type !== 'catastrophe' && type !== 'none') {
+    playerCards.forEach((c) => {
+      c.type.forEach((type) => {
+        if (
+          type !== 'colourless' &&
+          type !== 'catastrophe' &&
+          type !== 'none'
+        ) {
           colourCounts[type] = (colourCounts[type] || 0) + 1;
         }
       });
     });
     const pairCount = Object.values(colourCounts).reduce(
-      (sum, count) => sum + Math.floor(count / 2), 0
+      (sum, count) => sum + Math.floor(count / 2),
+      0
     );
     inst.finalB = pairCount;
   }
@@ -52,7 +57,7 @@ const pollination: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const faceValueOneCount = playerCards.filter(c => c.finalA === 1).length;
+    const faceValueOneCount = playerCards.filter((c) => c.finalA === 1).length;
     inst.finalB = faceValueOneCount;
   }
 };

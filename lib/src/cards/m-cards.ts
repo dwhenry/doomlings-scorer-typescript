@@ -20,7 +20,9 @@ const mindful: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const colourlessCount = playerCards.filter(c => c.type.includes('colourless')).length;
+    const colourlessCount = playerCards.filter((c) =>
+      c.type.includes('colourless')
+    ).length;
     inst.finalB = colourlessCount;
   }
 };

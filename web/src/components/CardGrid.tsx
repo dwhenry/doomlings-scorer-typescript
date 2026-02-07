@@ -13,7 +13,7 @@ export default function CardGrid({
   selectedPlayerId,
   onClickCard,
   onHover,
-  onDragStart,
+  onDragStart
 }: CardGridProps) {
   if (cards.length === 0) {
     return <div className="card-grid-empty">No cards found</div>;

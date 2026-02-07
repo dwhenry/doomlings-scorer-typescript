@@ -11,7 +11,10 @@ export interface CatastropheState {
 export function useScorer(
   players: PlayerState[],
   selectedCatastrophes: string[],
-  catastropheMetadata: Record<string, Record<string, string | number | string[]>>
+  catastropheMetadata: Record<
+    string,
+    Record<string, string | number | string[]>
+  >
 ): GameScore | null {
   return useMemo(() => {
     // Need at least one player with cards to score
@@ -23,10 +26,12 @@ export function useScorer(
       const scorer = new Scorer(...playerCards);
 
       if (selectedCatastrophes.length > 0) {
-        const catastropheInputs: PlayerInput[] = selectedCatastrophes.map((name) => ({
-          name,
-          ...catastropheMetadata[name],
-        }));
+        const catastropheInputs: PlayerInput[] = selectedCatastrophes.map(
+          (name) => ({
+            name,
+            ...catastropheMetadata[name]
+          })
+        );
         scorer.addCatastrophes(catastropheInputs);
       }
 

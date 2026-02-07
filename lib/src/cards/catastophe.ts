@@ -5,7 +5,7 @@ import { addCard } from '../cardContainer';
 
 /** Returns only non-discarded cards from a player's hand */
 function activeCards(playerCards: CardInstance[]): CardInstance[] {
-  return playerCards.filter(c => !c.discarded);
+  return playerCards.filter((c) => !c.discarded);
 }
 
 /** Soft-delete a card: marks it as discarded (scorer zeros its score) */
@@ -20,7 +20,10 @@ function softDiscard(card: CardInstance): void {
  */
 function deterministicPick(candidates: CardInstance[]): CardInstance {
   if (candidates.length === 1) return candidates[0];
-  const key = candidates.map(c => c.card.name).sort().join('|');
+  const key = candidates
+    .map((c) => c.card.name)
+    .sort()
+    .join('|');
   let hash = 0;
   for (let i = 0; i < key.length; i++) {
     hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
@@ -38,12 +41,14 @@ function selectCardByColour(
   colour: CardType,
   previousName?: string
 ): CardInstance | undefined {
-  const candidates = activeCards(playerCards).filter(c => c.type.includes(colour));
+  const candidates = activeCards(playerCards).filter((c) =>
+    c.type.includes(colour)
+  );
   if (candidates.length === 0) return undefined;
 
   // Reuse previous selection if still valid
   if (previousName) {
-    const prev = candidates.find(c => c.card.name === previousName);
+    const prev = candidates.find((c) => c.card.name === previousName);
     if (prev) return prev;
   }
 
@@ -61,9 +66,10 @@ function colourDiscard(
   allPlayerCards: Array<Array<CardInstance>>,
   colour: CardType
 ): void {
-  const previousDiscard = inst.metadata.discard instanceof Array
-    ? inst.metadata.discard as string[]
-    : [];
+  const previousDiscard =
+    inst.metadata.discard instanceof Array
+      ? (inst.metadata.discard as string[])
+      : [];
 
   const discardNames: string[] = allPlayerCards.map((playerCards, position) => {
     const previousName = previousDiscard[position] as string | undefined;
@@ -111,61 +117,64 @@ const bioPlague: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Techlings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const previousDiscard = inst.metadata.discard instanceof Array
-      ? inst.metadata.discard as string[]
-      : [];
+    const previousDiscard =
+      inst.metadata.discard instanceof Array
+        ? (inst.metadata.discard as string[])
+        : [];
 
-    const discardNames: string[] = allPlayerCards.map((playerCards, position) => {
-      const active = activeCards(playerCards);
-      if (active.length === 0) return '';
+    const discardNames: string[] = allPlayerCards.map(
+      (playerCards, position) => {
+        const active = activeCards(playerCards);
+        if (active.length === 0) return '';
 
-      // get the colour counts first to ensure removing a otehr cards in the same group
-      // are not autoselected for discard
-      const colourCounts = new Map<string, number>();
-      active.forEach(c => {
-        c.type.forEach(t => {
-          if (['colourless', 'purple', 'red', 'green', 'blue'].includes(t)) {
-            colourCounts.set(t, (colourCounts.get(t) || 0) + 1);
+        // get the colour counts first to ensure removing a otehr cards in the same group
+        // are not autoselected for discard
+        const colourCounts = new Map<string, number>();
+        active.forEach((c) => {
+          c.type.forEach((t) => {
+            if (['colourless', 'purple', 'red', 'green', 'blue'].includes(t)) {
+              colourCounts.set(t, (colourCounts.get(t) || 0) + 1);
+            }
+          });
+        });
+
+        let maxColour: string[] = [];
+        let maxCount = 0;
+        colourCounts.forEach((count, colour) => {
+          if (count > maxCount) {
+            maxCount = count;
+            maxColour = [colour];
+          } else if (count === maxCount) {
+            maxColour.push(colour);
           }
         });
-      });
 
-      let maxColour: string[] = [];
-      let maxCount = 0;
-      colourCounts.forEach((count, colour) => {
-        if (count > maxCount) {
-          maxCount = count;
-          maxColour = [colour];
-        } else if (count === maxCount) {
-          maxColour.push(colour);
+        // Check if previous selection is still valid
+        const previousName = previousDiscard[position] as string | undefined;
+        if (previousName) {
+          const prev = active.find((c) => c.card.name === previousName);
+          // if the colour of the previous selection is in the max colour list, use it,
+          // other we need a new card to discard
+          if (prev && !!maxColour.find((c) => prev.type.includes(c))) {
+            softDiscard(prev);
+            return prev.card.name;
+          }
         }
-      });
 
-      // Check if previous selection is still valid
-      const previousName = previousDiscard[position] as string | undefined;
-      if (previousName) {
-        const prev = active.find(c => c.card.name === previousName);
-        // if the colour of the previous selection is in the max colour list, use it,
-        // other we need a new card to discard
-        if (prev && !!maxColour.find(c => prev.type.includes(c))) {
-          softDiscard(prev);
-          return prev.card.name;
+        if (maxColour.length > 0) {
+          const targets = active.filter(
+            (card) => !!maxColour.find((colour) => card.type.includes(colour))
+          );
+          if (targets.length > 0) {
+            const target = deterministicPick(targets);
+            softDiscard(target);
+            return target.card.name;
+          }
         }
+
+        return '';
       }
-
-
-      if (maxColour.length > 0) {
-        const targets = active.filter(
-          card => !!(maxColour.find(colour => card.type.includes(colour))));
-        if (targets.length > 0) {
-          const target = deterministicPick(targets);
-          softDiscard(target);
-          return target.card.name;
-        }
-      }
-
-      return '';
-    });
+    );
 
     inst.generatedMetadata.discard = discardNames;
   },
@@ -205,32 +214,35 @@ const eyesOpenFromBehindTheStars: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Mythlings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const previousDiscard = inst.metadata.discard instanceof Array
-      ? inst.metadata.discard as string[]
-      : [];
+    const previousDiscard =
+      inst.metadata.discard instanceof Array
+        ? (inst.metadata.discard as string[])
+        : [];
 
-    const discardNames: string[] = allPlayerCards.map((playerCards, position) => {
-      const active = activeCards(playerCards);
-      if (active.length === 0) return '';
+    const discardNames: string[] = allPlayerCards.map(
+      (playerCards, position) => {
+        const active = activeCards(playerCards);
+        if (active.length === 0) return '';
 
-      // Auto-compute: find highest face value card(s), then pick deterministically among ties
-      const maxValue = Math.max(...active.map(c => c.finalA));
+        // Auto-compute: find highest face value card(s), then pick deterministically among ties
+        const maxValue = Math.max(...active.map((c) => c.finalA));
 
-      // Check if previous selection is still valid
-      const previousName = previousDiscard[position] as string | undefined;
-      if (previousName) {
-        const prev = active.find(c => c.card.name === previousName);
-        if (prev && prev.finalA === maxValue) {
-          softDiscard(prev);
-          return prev.card.name;
+        // Check if previous selection is still valid
+        const previousName = previousDiscard[position] as string | undefined;
+        if (previousName) {
+          const prev = active.find((c) => c.card.name === previousName);
+          if (prev && prev.finalA === maxValue) {
+            softDiscard(prev);
+            return prev.card.name;
+          }
         }
-      }
 
-      const tied = active.filter(c => c.finalA === maxValue);
-      const target = deterministicPick(tied);
-      softDiscard(target);
-      return target.card.name;
-    });
+        const tied = active.filter((c) => c.finalA === maxValue);
+        const target = deterministicPick(tied);
+        softDiscard(target);
+        return target.card.name;
+      }
+    );
 
     inst.generatedMetadata.discard = discardNames;
   },
@@ -256,7 +268,9 @@ const greyGoo: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const maxTraits = Math.max(...allPlayerCards.map(pc => activeCards(pc).length));
+    const maxTraits = Math.max(
+      ...allPlayerCards.map((pc) => activeCards(pc).length)
+    );
     allPlayerCards.forEach((playerCards) => {
       const active = activeCards(playerCards);
       if (active.length === maxTraits && active.length > 0) {
@@ -292,7 +306,7 @@ const impactEvent: CatastopheCard = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards) => {
       const active = activeCards(playerCards);
-      const highValueCount = active.filter(c => c.finalA >= 3).length;
+      const highValueCount = active.filter((c) => c.finalA >= 3).length;
       if (active.length > 0) {
         active[0].finalA -= highValueCount;
       }
@@ -343,7 +357,9 @@ const overpopulation: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const minTraits = Math.min(...allPlayerCards.map(pc => activeCards(pc).length));
+    const minTraits = Math.min(
+      ...allPlayerCards.map((pc) => activeCards(pc).length)
+    );
     allPlayerCards.forEach((playerCards) => {
       const active = activeCards(playerCards);
       if (active.length === minTraits && active.length > 0) {
@@ -425,9 +441,12 @@ const theBigOne: CatastopheCard = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards) => {
       const active = activeCards(playerCards);
-      active.sort((a, b) => a.finalA - b.finalA).splice(7, active.length - 7).forEach((card) => {
-        card.finalA -= 2;
-      })
+      active
+        .sort((a, b) => a.finalA - b.finalA)
+        .splice(7, active.length - 7)
+        .forEach((card) => {
+          card.finalA -= 2;
+        });
     });
   }
 };
@@ -439,30 +458,33 @@ const theFourHorsemen: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const previousDiscard = inst.metadata.discard instanceof Array
-      ? inst.metadata.discard as string[]
-      : [];
+    const previousDiscard =
+      inst.metadata.discard instanceof Array
+        ? (inst.metadata.discard as string[])
+        : [];
 
-    const discardNames: string[] = allPlayerCards.map((playerCards, position) => {
-      const active = activeCards(playerCards);
-      const candidates = active.filter(c => c.finalA >= 3);
-      if (candidates.length === 0) return '';
+    const discardNames: string[] = allPlayerCards.map(
+      (playerCards, position) => {
+        const active = activeCards(playerCards);
+        const candidates = active.filter((c) => c.finalA >= 3);
+        if (candidates.length === 0) return '';
 
-      // Check if previous selection is still valid
-      const previousName = previousDiscard[position] as string | undefined;
-      if (previousName) {
-        const prev = candidates.find(c => c.card.name === previousName);
-        if (prev) {
-          softDiscard(prev);
-          return prev.card.name;
+        // Check if previous selection is still valid
+        const previousName = previousDiscard[position] as string | undefined;
+        if (previousName) {
+          const prev = candidates.find((c) => c.card.name === previousName);
+          if (prev) {
+            softDiscard(prev);
+            return prev.card.name;
+          }
         }
-      }
 
-      // Deterministically pick from candidates with face value >= 3
-      const target = deterministicPick(candidates);
-      softDiscard(target);
-      return target.card.name;
-    });
+        // Deterministically pick from candidates with face value >= 3
+        const target = deterministicPick(candidates);
+        softDiscard(target);
+        return target.card.name;
+      }
+    );
 
     inst.generatedMetadata.discard = discardNames;
   },

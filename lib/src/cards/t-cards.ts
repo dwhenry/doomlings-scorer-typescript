@@ -23,7 +23,9 @@ const tetrachromatic: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const colourlessCount = playerCards.filter(c => c.type.includes('colourless')).length;
+    const colourlessCount = playerCards.filter((c) =>
+      c.type.includes('colourless')
+    ).length;
     inst.finalB = -colourlessCount;
   }
 };
@@ -48,7 +50,9 @@ const theBilbies: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const { isDominant } = require('./effect_cards');
-    const dominantCount = playerCards.filter((c: CardInstance) => isDominant(c.card.name)).length;
+    const dominantCount = playerCards.filter((c: CardInstance) =>
+      isDominant(c.card.name)
+    ).length;
     if (dominantCount === 0) {
       inst.finalB = 8;
     } else if (dominantCount <= 1) {
@@ -74,7 +78,7 @@ const theCabochon: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const redCount = playerCards.filter(c => c.type.includes('red')).length;
+    const redCount = playerCards.filter((c) => c.type.includes('red')).length;
     if (redCount === 0) {
       inst.finalB = 6;
     } else if (redCount <= 2) {
@@ -147,7 +151,7 @@ const theFellmonger: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const blueCount = playerCards.filter(c => c.type.includes('blue')).length;
+    const blueCount = playerCards.filter((c) => c.type.includes('blue')).length;
     if (blueCount === 0) {
       inst.finalB = 6;
     } else if (blueCount <= 2) {
@@ -173,7 +177,7 @@ const theJellyfish: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const blueCount = playerCards.filter(c => c.type.includes('blue')).length;
+    const blueCount = playerCards.filter((c) => c.type.includes('blue')).length;
     if (blueCount >= 6) {
       inst.finalB = 6;
     } else if (blueCount >= 3) {
@@ -199,7 +203,9 @@ const theLogician: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const effectlessCount = playerCards.filter(c => isEffectless(c.card.name)).length;
+    const effectlessCount = playerCards.filter((c) =>
+      isEffectless(c.card.name)
+    ).length;
     if (effectlessCount >= 6) {
       inst.finalB = 6;
     } else if (effectlessCount >= 3) {
@@ -225,7 +231,9 @@ const theLumberjack: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const greenCount = playerCards.filter(c => c.type.includes('green')).length;
+    const greenCount = playerCards.filter((c) =>
+      c.type.includes('green')
+    ).length;
     if (greenCount === 0) {
       inst.finalB = 6;
     } else if (greenCount <= 2) {
@@ -251,7 +259,9 @@ const theMagician: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const colourlessCount = playerCards.filter(c => c.type.includes('colourless')).length;
+    const colourlessCount = playerCards.filter((c) =>
+      c.type.includes('colourless')
+    ).length;
     if (colourlessCount === 0) {
       inst.finalB = 6;
     } else if (colourlessCount <= 2) {
@@ -302,7 +312,9 @@ const theSoothsayer: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const purpleCount = playerCards.filter(c => c.type.includes('purple')).length;
+    const purpleCount = playerCards.filter((c) =>
+      c.type.includes('purple')
+    ).length;
     if (purpleCount === 0) {
       inst.finalB = 6;
     } else if (purpleCount <= 2) {
@@ -328,7 +340,9 @@ const theSpiritGardener: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const colourlessCount = playerCards.filter(c => c.type.includes('colourless')).length;
+    const colourlessCount = playerCards.filter((c) =>
+      c.type.includes('colourless')
+    ).length;
     if (colourlessCount >= 6) {
       inst.finalB = 6;
     } else if (colourlessCount >= 3) {
@@ -356,7 +370,9 @@ const theTigris: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const actionCount = playerCards.filter(c => hasAction(c.card.name)).length;
+    const actionCount = playerCards.filter((c) =>
+      hasAction(c.card.name)
+    ).length;
     if (actionCount >= 6) {
       inst.finalB = 6;
     } else if (actionCount >= 3) {
@@ -384,7 +400,7 @@ const theVagrant: PlayerCard = {
     const myCount = allPlayerCards[currentPlayer].length;
     const otherCounts = allPlayerCards
       .filter((_, i) => i !== currentPlayer)
-      .map(pc => pc.length);
+      .map((pc) => pc.length);
     const minOther = Math.min(...otherCounts);
 
     if (myCount < minOther) {
@@ -412,7 +428,9 @@ const theVixen: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const purpleCount = playerCards.filter(c => c.type.includes('purple')).length;
+    const purpleCount = playerCards.filter((c) =>
+      c.type.includes('purple')
+    ).length;
     if (purpleCount >= 6) {
       inst.finalB = 6;
     } else if (purpleCount >= 3) {
@@ -438,7 +456,9 @@ const theWarbler: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const greenCount = playerCards.filter(c => c.type.includes('green')).length;
+    const greenCount = playerCards.filter((c) =>
+      c.type.includes('green')
+    ).length;
     if (greenCount >= 6) {
       inst.finalB = 6;
     } else if (greenCount >= 3) {
@@ -464,7 +484,7 @@ const theWarrior: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const redCount = playerCards.filter(c => c.type.includes('red')).length;
+    const redCount = playerCards.filter((c) => c.type.includes('red')).length;
     if (redCount >= 6) {
       inst.finalB = 6;
     } else if (redCount >= 3) {
@@ -491,10 +511,13 @@ const theWeaver: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {
-      red: 0, green: 0, blue: 0, purple: 0
+      red: 0,
+      green: 0,
+      blue: 0,
+      purple: 0
     };
-    playerCards.forEach(c => {
-      c.type.forEach(type => {
+    playerCards.forEach((c) => {
+      c.type.forEach((type) => {
         if (type in colourCounts) {
           colourCounts[type]++;
         }

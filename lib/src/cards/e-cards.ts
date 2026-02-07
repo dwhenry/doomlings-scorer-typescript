@@ -16,10 +16,8 @@ const egg_clusters: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const blueCards = playerCards.filter(
-      (inst) => inst.type.includes('blue')
-    );
-    inst.finalB = blueCards.length
+    const blueCards = playerCards.filter((inst) => inst.type.includes('blue'));
+    inst.finalB = blueCards.length;
   }
 };
 addCard(egg_clusters);
@@ -43,7 +41,7 @@ const elven_ears: PlayerCard = {
     const mythlingCards = allCards.filter(
       (card) => card.card.pack === 'Mythlings'
     );
-    inst.finalB = mythlingCards.length
+    inst.finalB = mythlingCards.length;
   }
 };
 addCard(elven_ears);

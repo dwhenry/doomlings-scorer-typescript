@@ -28,7 +28,9 @@ const sentience: PlayerCard = {
     }
     const chosenColour = inst.metadata.colour as CardType;
     const playerCards = allPlayerCards[currentPlayer];
-    const matchingCount = playerCards.filter(c => c.type.includes(chosenColour)).length;
+    const matchingCount = playerCards.filter((c) =>
+      c.type.includes(chosenColour)
+    ).length;
     inst.finalB = matchingCount;
   },
   metadataRequired: [['colour', 'CardType', 'card']]
@@ -49,7 +51,9 @@ const serratedTeeth: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const dominantCount = playerCards.filter(c => isDominant(c.card.name)).length;
+    const dominantCount = playerCards.filter((c) =>
+      isDominant(c.card.name)
+    ).length;
     inst.finalB = -(dominantCount * 2);
   }
 };
@@ -72,7 +76,9 @@ const stickySecretions: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const purpleCount = playerCards.filter(c => c.type.includes('purple')).length;
+    const purpleCount = playerCards.filter((c) =>
+      c.type.includes('purple')
+    ).length;
     inst.finalB = purpleCount;
   }
 };
@@ -96,7 +102,9 @@ function createSwarm(name: string): PlayerCard {
       allPlayerCards: Array<Array<CardInstance>>
     ): void => {
       const allCards = allPlayerCards.flat();
-      const swarmCount = allCards.filter(c => c.card.name.startsWith('SWARM')).length;
+      const swarmCount = allCards.filter((c) =>
+        c.card.name.startsWith('SWARM')
+      ).length;
       inst.finalB = swarmCount;
     }
   };
@@ -126,9 +134,13 @@ const symbiosis: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {};
-    playerCards.forEach(c => {
-      c.type.forEach(type => {
-        if (type !== 'colourless' && type !== 'catastrophe' && type !== 'none') {
+    playerCards.forEach((c) => {
+      c.type.forEach((type) => {
+        if (
+          type !== 'colourless' &&
+          type !== 'catastrophe' &&
+          type !== 'none'
+        ) {
           colourCounts[type] = (colourCounts[type] || 0) + 1;
         }
       });

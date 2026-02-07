@@ -35,7 +35,12 @@ const MetaDataTypes = [
 ] as const;
 export type MetaDataType = (typeof MetaDataTypes)[number];
 
-export const META_DATA_SCOPES = ['card', 'player', 'global', 'internal'] as const;
+export const META_DATA_SCOPES = [
+  'card',
+  'player',
+  'global',
+  'internal'
+] as const;
 export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 
 type MetaData = [string, MetaDataType, MetaDataScope];
@@ -77,10 +82,10 @@ export interface PlayerCard extends Card {
 }
 
 type Metadata = {
-  [key: string]: string | number | string[] | undefined,
-  fromColour?: CardType,
-  toColour?: CardType,
-  colour?: CardType
+  [key: string]: string | number | string[] | undefined;
+  fromColour?: CardType;
+  toColour?: CardType;
+  colour?: CardType;
 };
 
 export class CardInstance {
@@ -102,14 +107,14 @@ export class CardInstance {
   }
 
   get type(): string[] {
-    if(Array.isArray(this.overrides['type'])) {
-      return this.overrides['type']
+    if (Array.isArray(this.overrides['type'])) {
+      return this.overrides['type'];
     }
-    return this.card.type
+    return this.card.type;
   }
 
-  setOverride(key: string, value: string[] | string | number ) {
-    this.overrides[key] = value
+  setOverride(key: string, value: string[] | string | number) {
+    this.overrides[key] = value;
   }
 }
 

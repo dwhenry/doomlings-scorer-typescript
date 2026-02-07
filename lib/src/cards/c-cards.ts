@@ -12,7 +12,7 @@ const camouflage: PlayerCard = {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
       throw new Error('invalid data for metadata field cards_in_hand');
     }
-    inst.finalB = inst.metadata.cards_in_hand
+    inst.finalB = inst.metadata.cards_in_hand;
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
 };
@@ -37,11 +37,11 @@ const cranialCrest: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const types = playerCards.map((inst) => inst.type).flat()
+    const types = playerCards.map((inst) => inst.type).flat();
     // we minus one as we have at least one colourless that doesn't count
     inst.finalB = -([...new Set(types)].length - 1);
-  },
-}
+  }
+};
 addCard(cranialCrest);
 addBasicCard('CURIOSITY', ['blue', 'red'], 'multi-colour', 1);
 addBasicCard('CYBERNETIC', 'blue', 'Techlings', 1);

@@ -20,20 +20,26 @@ const getErrorMessage = (error: unknown) => {
 };
 
 // API routes
-app.get('/api/health', async (req: Request, res: Response): Promise<Response> => {
-  return res.status(200).send({ message: 'OK' });
-});
-
-app.get('/api/score', async (req: Request, res: Response): Promise<Response> => {
-  const scorer = new Scorer([{'name': 'ACROBATIC' }]);
-  const scores = scorer.scores();
-  let message = '';
-  for (const p of scores.getPlayerScores()) {
-    message = `${message}Player ${p}: ${p.total}\n`;
+app.get(
+  '/api/health',
+  async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).send({ message: 'OK' });
   }
+);
 
-  return res.status(200).send({ message });
-});
+app.get(
+  '/api/score',
+  async (req: Request, res: Response): Promise<Response> => {
+    const scorer = new Scorer([{ name: 'ACROBATIC' }]);
+    const scores = scorer.scores();
+    let message = '';
+    for (const p of scores.getPlayerScores()) {
+      message = `${message}Player ${p}: ${p.total}\n`;
+    }
+
+    return res.status(200).send({ message });
+  }
+);
 
 // Fallback: serve index.html for client-side routing
 app.get('*', (req: Request, res: Response): void => {
