@@ -21,6 +21,7 @@ interface AppState {
   selectedCatastrophes: string[];
   hoveredCard: string | null;
   modal: ModalState | null;
+  mobileAddingForPlayer: number | null;
 }
 
 type Action =
@@ -33,7 +34,9 @@ type Action =
   | { type: 'SET_HOVERED'; cardName: string | null }
   | { type: 'OPEN_MODAL'; playerId: number; cardIndex: number; cardName: string }
   | { type: 'CLOSE_MODAL' }
-  | { type: 'UPDATE_CARD_METADATA'; playerId: number; cardIndex: number; cardName: string; values: Record<string, string | number>; scope: string };
+  | { type: 'UPDATE_CARD_METADATA'; playerId: number; cardIndex: number; cardName: string; values: Record<string, string | number>; scope: string }
+  | { type: 'START_ADDING_FOR_PLAYER'; playerId: number }
+  | { type: 'STOP_ADDING' };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -185,6 +188,18 @@ function reducer(state: AppState, action: Action): AppState {
         ),
         modal: null,
       };
+    case 'START_ADDING_FOR_PLAYER':
+      return {
+        ...state,
+        selectedPlayerId: action.playerId,
+        mobileAddingForPlayer: action.playerId,
+      };
+    case 'STOP_ADDING':
+      return {
+        ...state,
+        selectedPlayerId: null,
+        mobileAddingForPlayer: null,
+      };
     default:
       return state;
   }
@@ -198,6 +213,7 @@ const initialState: AppState = {
   selectedCatastrophes: [],
   hoveredCard: null,
   modal: null,
+  mobileAddingForPlayer: null,
 };
 
 export default function App() {
@@ -300,6 +316,14 @@ export default function App() {
     dispatch({ type: 'SELECT_PLAYER', id });
   }, []);
 
+  const handleStartAdding = useCallback((playerId: number) => {
+    dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
+  }, []);
+
+  const handleStopAdding = useCallback(() => {
+    dispatch({ type: 'STOP_ADDING' });
+  }, []);
+
   const handleHover = useCallback((cardName: string | null) => {
     dispatch({ type: 'SET_HOVERED', cardName });
   }, []);
@@ -343,7 +367,10 @@ export default function App() {
         <PlayerSection
           players={state.players}
           selectedPlayerId={state.selectedPlayerId}
+          mobileAddingForPlayer={state.mobileAddingForPlayer}
           onSelectPlayer={handleSelectPlayer}
+          onStartAdding={handleStartAdding}
+          onStopAdding={handleStopAdding}
           onRemoveCard={handleRemoveCard}
           onOpenModal={handleOpenModal}
           onHover={handleHover}
@@ -357,8 +384,10 @@ export default function App() {
         cards={cardsMap}
         selectedPacks={state.selectedPacks}
         selectedPlayerId={state.selectedPlayerId}
+        mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}
         onHover={handleHover}
+        onStopAdding={handleStopAdding}
         selectedCatastrophes={state.selectedCatastrophes}
         onToggleCatastrophe={handleToggleCatastrophe}
         onDeselectCatastrophe={handleDeselectCatastrophe}

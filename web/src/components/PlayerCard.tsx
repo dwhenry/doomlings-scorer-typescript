@@ -10,6 +10,8 @@ interface PlayerCardProps {
   cardGroups: CardGroup[];
   totalScore: number;
   onDrop: (playerId: number, cardName: string) => void;
+  showAddButton?: boolean;
+  onStartAdding?: (playerId: number) => void;
 }
 
 export default function PlayerCard({
@@ -22,6 +24,8 @@ export default function PlayerCard({
   cardGroups,
   totalScore,
   onDrop,
+  showAddButton,
+  onStartAdding,
 }: PlayerCardProps) {
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -68,7 +72,7 @@ export default function PlayerCard({
         {cardGroups.length === 0 ? (
           <div className="drop-zone">Drop cards here or click to select player</div>
         ) : (
-          cardGroups.map((group, groupIndex) => (
+          cardGroups.map((group) => (
             <div
               key={`${group.name}-${group.cardIndices[0]}`}
               className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}`}
@@ -82,7 +86,7 @@ export default function PlayerCard({
               }}
             >
               <img
-                src={`/cards/${encodeURIComponent(group.name)}.small.png`}
+                src={`/cards/${encodeURIComponent(group.name)}.png`}
                 alt={group.name}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
@@ -105,6 +109,17 @@ export default function PlayerCard({
           ))
         )}
       </div>
+      {showAddButton && onStartAdding && (
+        <button
+          className="add-cards-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onStartAdding(player.id);
+          }}
+        >
+          + Add cards
+        </button>
+      )}
     </div>
   );
 }

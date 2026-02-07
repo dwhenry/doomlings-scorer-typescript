@@ -1,12 +1,20 @@
+import { useState, useMemo, useCallback } from 'react';
 import type { Card, CardType } from '../types';
 import { TRAIT_CARD_TYPES } from '@scorer/types';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import ColorTabs, { type TabId } from './ColorTabs';
+import SearchBar from './SearchBar';
+import CardGrid from './CardGrid';
+import BottomDrawer from './BottomDrawer';
 
 interface PackDisplayProps {
   cards: Map<string, Card>;
   selectedPacks: string[];
   selectedPlayerId: number | null;
+  mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
   onHover: (cardName: string | null) => void;
+  onStopAdding: () => void;
   selectedCatastrophes: string[];
   onToggleCatastrophe: (cardName: string) => void;
   onDeselectCatastrophe: (cardName: string) => void;
@@ -16,55 +24,167 @@ export default function PackDisplay({
   cards,
   selectedPacks,
   selectedPlayerId,
+  mobileAddingForPlayer,
   onClickCard,
   onHover,
+  onStopAdding,
   selectedCatastrophes,
   onToggleCatastrophe,
   onDeselectCatastrophe,
 }: PackDisplayProps) {
-  // Group cards by their first trait color
-  const colorGroups = new Map<CardType, Card[]>();
-  const catastropheCards: Card[] = [];
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [activeTab, setActiveTab] = useState<TabId>('purple');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  for (const card of cards.values()) {
-    if (card.type.includes('catastrophe')) {
-      catastropheCards.push(card);
-      continue;
+  // Group cards by color and catastrophes
+  const { colorGroups, catastropheCards } = useMemo(() => {
+    const groups = new Map<CardType, Card[]>();
+    const catastrophes: Card[] = [];
+
+    for (const card of cards.values()) {
+      if (card.type.includes('catastrophe')) {
+        catastrophes.push(card);
+        continue;
+      }
+      if (card.type.includes('none')) continue;
+
+      const colors = (TRAIT_CARD_TYPES as readonly string[]).filter((t) =>
+        card.type.includes(t as CardType)
+      ) as CardType[];
+
+      for (const color of colors) {
+        const group = groups.get(color) || [];
+        group.push(card);
+        groups.set(color, group);
+      }
     }
-    if (card.type.includes('none')) continue;
 
-    // Use first trait type for grouping
-    const color = (TRAIT_CARD_TYPES as readonly string[]).find((t) =>
-      card.type.includes(t as CardType)
-    ) as CardType | undefined;
-
-    if (color) {
-      const group = colorGroups.get(color) || [];
-      group.push(card);
-      colorGroups.set(color, group);
-    }
-  }
-
-  function handleDragStart(e: React.DragEvent, cardName: string) {
-    e.dataTransfer.effectAllowed = 'copy';
-    e.dataTransfer.setData('cardName', cardName);
-  }
+    return { colorGroups: groups, catastropheCards: catastrophes };
+  }, [cards]);
 
   function isVisible(card: Card): boolean {
     if (selectedPacks.length === 0) return true;
     return selectedPacks.includes(card.pack);
   }
 
-  return (
-    <section className={`pack-display${selectedPlayerId !== null ? ' player-selected' : ''}`}>
-      <CatastropheInline
-        catastropheCards={catastropheCards}
-        selectedCatastrophes={selectedCatastrophes}
-        onToggle={onToggleCatastrophe}
-        onDeselect={onDeselectCatastrophe}
-        onHover={onHover}
-      />
+  const isSearching = searchQuery.length > 0;
 
+  // Get filtered cards for current tab (or all tabs when searching)
+  const filteredCards = useMemo(() => {
+    if (!isSearching && activeTab === 'catastrophe') return [];
+
+    const query = searchQuery.toLowerCase();
+
+    if (isSearching) {
+      // Search across all color groups
+      const allColorCards = new Map<string, Card>();
+      for (const group of colorGroups.values()) {
+        for (const card of group) {
+          if (!allColorCards.has(card.name)) {
+            allColorCards.set(card.name, card);
+          }
+        }
+      }
+      return Array.from(allColorCards.values())
+        .filter(isVisible)
+        .filter((card) => card.name.toLowerCase().includes(query))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const group = colorGroups.get(activeTab as CardType) || [];
+    return group
+      .filter(isVisible)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [activeTab, colorGroups, selectedPacks, searchQuery, isSearching]);
+
+  const filteredCatastrophes = useMemo(() => {
+    if (isSearching) {
+      const query = searchQuery.toLowerCase();
+      return [...catastropheCards]
+        .filter(isVisible)
+        .filter((card) => card.name.toLowerCase().includes(query))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (activeTab !== 'catastrophe') return [];
+    return [...catastropheCards]
+      .filter(isVisible)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [activeTab, catastropheCards, selectedPacks, searchQuery, isSearching]);
+
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, cardName: string) => {
+      e.dataTransfer.effectAllowed = 'copy';
+      e.dataTransfer.setData('cardName', cardName);
+    },
+    []
+  );
+
+  const handleTabChange = useCallback((tab: TabId) => {
+    setActiveTab(tab);
+    setSearchQuery('');
+  }, []);
+
+  const tabbedContent = (
+    <>
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
+      {!isSearching && (
+        <ColorTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      )}
+
+      {isSearching ? (
+        <>
+          <CardGrid
+            cards={filteredCards}
+            selectedPlayerId={selectedPlayerId}
+            onClickCard={onClickCard}
+            onHover={onHover}
+            onDragStart={handleDragStart}
+          />
+          {filteredCatastrophes.length > 0 && (
+            <CatastropheInline
+              catastropheCards={filteredCatastrophes}
+              selectedCatastrophes={selectedCatastrophes}
+              onToggle={onToggleCatastrophe}
+              onDeselect={onDeselectCatastrophe}
+              onHover={onHover}
+            />
+          )}
+        </>
+      ) : activeTab === 'catastrophe' ? (
+        <CatastropheInline
+          catastropheCards={filteredCatastrophes}
+          selectedCatastrophes={selectedCatastrophes}
+          onToggle={onToggleCatastrophe}
+          onDeselect={onDeselectCatastrophe}
+          onHover={onHover}
+        />
+      ) : (
+        <CardGrid
+          cards={filteredCards}
+          selectedPlayerId={selectedPlayerId}
+          onClickCard={onClickCard}
+          onHover={onHover}
+          onDragStart={handleDragStart}
+        />
+      )}
+    </>
+  );
+
+  if (!isDesktop) {
+    // Only render drawer on mobile when actively adding cards for a player
+    if (mobileAddingForPlayer === null) return null;
+
+    return (
+      <BottomDrawer onClose={onStopAdding}>
+        {tabbedContent}
+      </BottomDrawer>
+    );
+  }
+
+  return (
+    <section
+      className={`pack-display${selectedPlayerId !== null ? ' player-selected' : ''}`}
+    >
       <h2>Card Pack</h2>
 
       {selectedPlayerId !== null && (
@@ -73,43 +193,7 @@ export default function PackDisplay({
         </div>
       )}
 
-      {(TRAIT_CARD_TYPES as readonly CardType[]).map((color) => {
-        const group = colorGroups.get(color);
-        if (!group) return null;
-
-        const visibleCards = group
-          .filter(isVisible)
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        if (visibleCards.length === 0) return null;
-
-        return (
-          <div key={color} className="color-group">
-            <h3 className={`color-header ${color}`}>
-              {color.charAt(0).toUpperCase() + color.slice(1)}
-            </h3>
-            <div className="cards-grid">
-              {visibleCards.map((card) => (
-                <div
-                  key={card.name}
-                  className="card pack-card"
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, card.name)}
-                  onClick={() => onClickCard(card.name)}
-                  onMouseEnter={() => onHover(card.name)}
-                  onMouseLeave={() => onHover(null)}
-                >
-                  <img
-                    src={`/cards/${encodeURIComponent(card.name)}.small.png`}
-                    alt={card.name}
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+      {tabbedContent}
     </section>
   );
 }
@@ -128,13 +212,10 @@ function CatastropheInline({
   onDeselect: (name: string) => void;
   onHover: (name: string | null) => void;
 }) {
-  const sorted = [...catastropheCards].sort((a, b) => a.name.localeCompare(b.name));
-
   return (
-    <section className="catastrophe-section">
-      <h2>Catastrophe Cards</h2>
+    <div className="catastrophe-tab-content">
       <div className="catastrophe-cards">
-        {sorted.map((card) => {
+        {catastropheCards.map((card) => {
           const isSelected = selectedCatastrophes.includes(card.name);
           return (
             <div
@@ -145,10 +226,13 @@ function CatastropheInline({
               onMouseLeave={() => onHover(null)}
             >
               <img
-                src={`/cards/${encodeURIComponent(card.name)}.small.png`}
+                src={`/cards/${encodeURIComponent(card.name)}.png`}
                 alt={card.name}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
               />
+              <span className="pack-card-name">{card.name}</span>
               {isSelected && (
                 <button
                   className="remove-card remove-card--visible"
@@ -164,6 +248,6 @@ function CatastropheInline({
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }
