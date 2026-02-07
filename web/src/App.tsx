@@ -140,22 +140,27 @@ function reducer(state: AppState, action: Action): AppState {
       if (editableFields.length > 0) {
         const allSameScope = editableFields.every((f) => f.scope !== 'card');
         if (allSameScope) {
-          // Find existing card with same name to copy metadata from
-          const sourcePlayer = editableFields.some((f) => f.scope === 'global')
-            ? state.players.find((p) =>
-                p.cards.some((c) => c.name === action.cardName)
-              )
-            : state.players.find((p) => p.id === action.playerId);
-          const sourceCard = sourcePlayer?.cards.find(
-            (c) => c.name === action.cardName
-          );
-          if (sourceCard) {
-            editableFields.forEach((f) => {
-              if (sourceCard[f.key] !== undefined) {
+          // we can pull the metadata from any card that has the same field
+          // for global scope we can pull from any card
+          // for player scope we can pull from any card in the current player
+          editableFields.forEach((f) => {
+            if (f.scope === 'global') {
+              const sourceCard = state.players
+                .map((p) => p.cards.find((c) => c[f.key]))
+                .filter((c) => c !== undefined)[0];
+
+              if (sourceCard) {
                 entry[f.key] = sourceCard[f.key];
               }
-            });
-          }
+            } else if (f.scope === 'player') {
+              const sourceCard = state.players
+                .find((p) => p.id === action.playerId)
+                ?.cards.find((c) => c[f.key]);
+              if (sourceCard) {
+                entry[f.key] = sourceCard[f.key];
+              }
+            }
+          });
         }
       }
 
@@ -349,10 +354,9 @@ export default function App() {
             (p) =>
               (editableFields.some((f) => f.scope === 'global') ||
                 p.id === playerId) &&
-              p.cards.some(
-                (c) =>
-                  c.name === cardName &&
-                  editableFields.every((f) => c[f.key] !== undefined)
+              // for global and player scope we can pull the value from any card
+              editableFields.every((f) =>
+                p.cards.some((c) => c[f.key] !== undefined)
               )
           );
         if (!hasExistingSource) {
@@ -383,10 +387,8 @@ export default function App() {
             (p) =>
               (editableFields.some((f) => f.scope === 'global') ||
                 p.id === playerId) &&
-              p.cards.some(
-                (c) =>
-                  c.name === cardName &&
-                  editableFields.every((f) => c[f.key] !== undefined)
+              editableFields.every((f) =>
+                p.cards.some((c) => c[f.key] !== undefined)
               )
           );
         if (!hasExistingSource) {
