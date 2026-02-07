@@ -45,11 +45,10 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
   if (card.metadataRequired === undefined) {
     return inst;
   }
-  card.metadataRequired.forEach(([key]) => {
-    if (metadata[key] === undefined) {
-      throw new Error(`missing metadata field ${key}`);
-    }
-  });
+  const allMetadataPresent = card.metadataRequired.every(([key]) => metadata[key] !== undefined);
+  if (!allMetadataPresent) {
+    inst.metadataComplete = false;
+  }
 
   return inst;
 }

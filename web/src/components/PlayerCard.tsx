@@ -4,7 +4,8 @@ interface PlayerCardProps {
   player: PlayerState;
   isSelected: boolean;
   onSelect: (id: number) => void;
-  onRemoveCard: (playerId: number, cardName: string) => void;
+  onRemoveCard: (playerId: number, cardIndex: number) => void;
+  onOpenModal: (playerId: number, cardIndex: number, cardName: string) => void;
   onHover: (cardName: string | null) => void;
   cardGroups: CardGroup[];
   totalScore: number;
@@ -16,6 +17,7 @@ export default function PlayerCard({
   isSelected,
   onSelect,
   onRemoveCard,
+  onOpenModal,
   onHover,
   cardGroups,
   totalScore,
@@ -66,15 +68,17 @@ export default function PlayerCard({
         {cardGroups.length === 0 ? (
           <div className="drop-zone">Drop cards here or click to select player</div>
         ) : (
-          cardGroups.map((group) => (
+          cardGroups.map((group, groupIndex) => (
             <div
-              key={group.name}
-              className="card player-card"
+              key={`${group.name}-${group.cardIndices[0]}`}
+              className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}`}
               onMouseEnter={() => onHover(group.name)}
               onMouseLeave={() => onHover(null)}
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveCard(player.id, group.name);
+                if (group.hasMetadata) {
+                  onOpenModal(player.id, group.cardIndices[0], group.name);
+                }
               }}
             >
               <img
@@ -83,14 +87,16 @@ export default function PlayerCard({
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               {group.count > 1 && <div className="card-count">{group.count}</div>}
-              {group.totalScore !== null && (
+              {group.totalScore !== null ? (
                 <div className="card-score">{group.totalScore} pts</div>
-              )}
+              ) : group.metadataMissing ? (
+                <div className="card-score card-score--missing">-</div>
+              ) : null}
               <button
-                className="remove-card"
+                className="remove-card remove-card--visible"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRemoveCard(player.id, group.name);
+                  onRemoveCard(player.id, group.cardIndices[0]);
                 }}
               >
                 &times;

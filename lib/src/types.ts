@@ -32,8 +32,12 @@ const MetaDataTypes = [
   ...simpleMetaDataTypes,
   ...catastropheMetaDataTypes
 ] as const;
-type MetaDataType = (typeof MetaDataTypes)[number];
-type MetaData = [string, MetaDataType];
+export type MetaDataType = (typeof MetaDataTypes)[number];
+
+export const META_DATA_SCOPES = ['card', 'player', 'global'] as const;
+export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
+
+type MetaData = [string, MetaDataType, MetaDataScope];
 
 export interface Card {
   name: string;
@@ -84,7 +88,8 @@ export class CardInstance {
   traitPoints: number = 0;
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
-  finalB: number = 0;
+  finalB: number | undefined = 0;
+  metadataComplete: boolean = true;
   metadata: Metadata
 
   constructor(card: Card, metadata: Metadata) {

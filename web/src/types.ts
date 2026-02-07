@@ -15,7 +15,16 @@ export interface CardGroup {
   name: string;
   count: number;
   totalScore: number | null;
-  perCardScores: Array<{ finalA: number; finalB: number; total: number }>;
+  perCardScores: Array<{ finalA: number; finalB: number | undefined; total: number | undefined }>;
+  hasMetadata: boolean;
+  metadataMissing: boolean;
+  cardIndices: number[];
+}
+
+export interface ModalState {
+  playerId: number;
+  cardIndex: number;
+  cardName: string;
 }
 
 export type { Card, CardType, PackType };

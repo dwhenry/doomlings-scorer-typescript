@@ -47,7 +47,11 @@ export class Scorer {
     // calc B (modifiers based on traits)
     this.allPlayerCards.forEach((playerCards, i) => {
       playerCards.forEach((inst) => {
-        inst.card.calcB?.(inst, this.allPlayerCards, i);
+        if (!inst.metadataComplete) {
+          inst.finalB = undefined;
+        } else {
+          inst.card.calcB?.(inst, this.allPlayerCards, i);
+        }
       });
     });
     // calc C (catastophes)
@@ -59,8 +63,8 @@ export class Scorer {
       // TODO AF: Add calcC when implemented
       const playerCardsScores: CardScore[] = playerCards.map(c => {
         const finalA = c.finalA;
-        const finalB = c.finalB ?? 0
-        const total = finalA + finalB;
+        const finalB = c.finalB;
+        const total = finalB !== undefined ? finalA + finalB : undefined;
         return {finalA, finalB, total}
       });
 
@@ -115,7 +119,7 @@ export class PlayerScore {
 
   constructor(playerCardsScores: CardScore[]) {
     this.playerCardsScores = playerCardsScores
-    this._total = playerCardsScores.reduce((sum, current) => sum + current.total, 0)
+    this._total = playerCardsScores.reduce((sum, current) => sum + (current.total ?? 0), 0)
   }
 
   
@@ -138,7 +142,7 @@ export class PlayerScore {
 
 
 export interface CardScore {
-  total: number;
+  total: number | undefined;
   finalA: number;
   finalB?: number;
   finalC?: number;

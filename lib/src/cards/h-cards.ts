@@ -1,5 +1,5 @@
-import { addBasicCard, addCard } from "../cardContainer";
-import { CardInstance, CardType, PlayerCard } from "../types";
+import { addBasicCard, addCard } from '../cardContainer';
+import { CardInstance, CardType, PlayerCard } from '../types';
 
 addBasicCard('HAND-WING', ['red', 'purple'], 'multi-colour', 1);
 const heat_vision: PlayerCard = {
@@ -15,8 +15,10 @@ const heat_vision: PlayerCard = {
     currentPlayer: number
   ): void => {
     const currentPlayerCards = allPlayerCards[currentPlayer];
-    const redCards = allPlayerCards[currentPlayer].filter(a => a.card.type.find(type => 'red'))
-    inst.finalB = redCards.length
+    const redCards = allPlayerCards[currentPlayer].filter((a) =>
+      a.card.type.find((type) => 'red')
+    );
+    inst.finalB = redCards.length;
   }
 };
 addCard(heat_vision);
@@ -38,6 +40,6 @@ const hyperMyelination: PlayerCard = {
     }
     inst.finalB = inst.metadata.biggest_gene_pool_size;
   },
-  metadataRequired: [['biggest_gene_pool_size', 'number']]
+  metadataRequired: [['biggest_gene_pool_size', 'number', 'global']]
 };
 addCard(hyperMyelination);
