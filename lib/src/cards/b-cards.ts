@@ -1,11 +1,11 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
-import { hasEffect  } from './effect_cards';
+import { hasEffect } from './effect_cards';
 
 addBasicCard('BAD', 'red', 'Classic', 1);
 addBasicCard('BARK', 'green', 'Classic', 2);
 addBasicCard('BEAUTY', 'green', 'Classic', 2);
-addBasicCard('BIG EARS', 'green', 'Classic', 2);
+addBasicCard('BIG EARS', 'purple', 'Classic', 2);
 addBasicCard('BINARY', 'colourless', 'Techlings', 0);
 
 const bionic_arm: PlayerCard = {
@@ -53,12 +53,10 @@ const boredom: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const effectCards = playerCards.filter(
-      (card) => {
-        const val = hasEffect(card.card.name)
-        return val
-      }
-    );
+    const effectCards = playerCards.filter((card) => {
+      const val = hasEffect(card.card.name);
+      return val;
+    });
 
     inst.finalB = effectCards.length;
   }
@@ -77,12 +75,16 @@ const branches: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    let points = 0
+    let points = 0;
 
     // point for each pair of green cards in each players hand
     allPlayerCards.forEach((playerCards, index) => {
-      if(index !== currentPlayer) {
-        points = points + Math.floor(playerCards.filter((inst) => inst.type.includes('green')).length / 2)
+      if (index !== currentPlayer) {
+        points =
+          points +
+          Math.floor(
+            playerCards.filter((inst) => inst.type.includes('green')).length / 2
+          );
       }
     });
 
@@ -94,4 +96,3 @@ addCard(branches);
 addBasicCard('BRAVE', 'red', 'Classic', 2);
 addBasicCard('BRUTE STRENGTH', 'red', 'Classic', 4);
 addBasicCard('BULLHEADED', ['red', 'green'], 'Classic', 1);
-
