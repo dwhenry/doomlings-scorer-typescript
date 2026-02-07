@@ -116,6 +116,7 @@ const theCosmicJinx: PlayerCard = {
 addCard(theCosmicJinx);
 
 // +12 if you have the fewest points before Meaning of Life bonuses
+// TODO: fix this card as
 const theDancer: PlayerCard = {
   name: 'THE DANCER',
   type: ['colourless'],
@@ -128,12 +129,12 @@ const theDancer: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    if (typeof inst.metadata.has_fewest_points !== 'number') {
+    if (typeof inst.metadata.bonus_post_as_not_implemented !== 'number') {
       throw new Error('invalid data for metadata field has_fewest_points');
     }
-    inst.finalB = inst.metadata.has_fewest_points === 1 ? 12 : 0;
+    inst.finalB = inst.metadata.bonus_post_as_not_implemented
   },
-  metadataRequired: [['has_fewest_points', 'number', 'player']]
+  metadataRequired: [['bonus_post_as_not_implemented', 'number', 'player']]
 };
 addCard(theDancer);
 
