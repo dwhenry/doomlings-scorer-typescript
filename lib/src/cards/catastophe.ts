@@ -213,18 +213,19 @@ const eyesOpenFromBehindTheStars: CatastopheCard = {
       const active = activeCards(playerCards);
       if (active.length === 0) return '';
 
+      // Auto-compute: find highest face value card(s), then pick deterministically among ties
+      const maxValue = Math.max(...active.map(c => c.finalA));
+
       // Check if previous selection is still valid
       const previousName = previousDiscard[position] as string | undefined;
       if (previousName) {
         const prev = active.find(c => c.card.name === previousName);
-        if (prev) {
+        if (prev && prev.finalA === maxValue) {
           softDiscard(prev);
           return prev.card.name;
         }
       }
 
-      // Auto-compute: find highest face value card(s), then pick deterministically among ties
-      const maxValue = Math.max(...active.map(c => c.finalA));
       const tied = active.filter(c => c.finalA === maxValue);
       const target = deterministicPick(tied);
       softDiscard(target);
@@ -424,10 +425,9 @@ const theBigOne: CatastopheCard = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards) => {
       const active = activeCards(playerCards);
-      const excessCards = Math.max(0, active.length - 7);
-      if (excessCards > 0 && active.length > 0) {
-        active[0].finalA -= excessCards * 2;
-      }
+      active.sort((a, b) => a.finalA - b.finalA).splice(7, active.length - 7).forEach((card) => {
+        card.finalA -= 2;
+      })
     });
   }
 };
