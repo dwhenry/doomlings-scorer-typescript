@@ -31,6 +31,7 @@ export default function ColorTabs({ activeTab, onTabChange }: ColorTabsProps) {
           role="tab"
           aria-selected={activeTab === tab.id}
           className={`color-tab${activeTab === tab.id ? ' color-tab--active' : ''}`}
+          style={activeTab === tab.id ? { borderColor: tab.color, backgroundColor: tab.color, color: 'white' } : undefined}
           onClick={() => onTabChange(tab.id)}
         >
           <span
