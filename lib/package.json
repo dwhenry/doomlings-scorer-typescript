@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "nodemon src/server.ts",
+    "build": "tsc",
     "test": "jest",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
