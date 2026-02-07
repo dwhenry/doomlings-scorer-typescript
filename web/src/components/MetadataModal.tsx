@@ -6,6 +6,8 @@ import type { PlayerCardEntry } from '../types';
 interface MetadataModalProps {
   cardName: string;
   fields: MetadataField[];
+  internalFields: MetadataField[];
+  internalValues: Record<string, string | number | string[]>;
   currentValues: PlayerCardEntry;
   onSave: (values: Record<string, string | number>) => void;
   onClose: () => void;
@@ -22,14 +24,23 @@ function formatLabel(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function formatInternalValue(value: string | number | string[] | undefined): string {
+  if (value === undefined) return '-';
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ') || '-';
+  return String(value);
+}
+
 export default function MetadataModal({
   cardName,
   fields,
+  internalFields,
+  internalValues,
   currentValues,
   onSave,
   onClose,
 }: MetadataModalProps) {
   const [values, setValues] = useState<Record<string, string | number>>({});
+  const hasEditableFields = fields.length > 0;
 
   useEffect(() => {
     const initial: Record<string, string | number> = {};
@@ -51,6 +62,10 @@ export default function MetadataModal({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!hasEditableFields) {
+      onClose();
+      return;
+    }
     if (!allValid) return;
     const coerced: Record<string, string | number> = {};
     fields.forEach((f) => {
@@ -109,13 +124,33 @@ export default function MetadataModal({
               )}
             </div>
           ))}
+
+          {internalFields.length > 0 && (
+            <div className="modal-internal-section">
+              <div className="modal-internal-header">Engine Generated</div>
+              {internalFields.map((field) => (
+                <div key={field.key} className="modal-field modal-field--internal">
+                  <label>
+                    {formatLabel(field.key)}
+                    <span className="field-scope field-scope--internal">internal</span>
+                  </label>
+                  <div className="modal-internal-value">
+                    {formatInternalValue(internalValues[field.key])}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="modal-actions">
             <button type="button" className="modal-cancel" onClick={onClose}>
-              Cancel
+              {hasEditableFields ? 'Cancel' : 'Close'}
             </button>
-            <button type="submit" className="modal-save" disabled={!allValid}>
-              Save
-            </button>
+            {hasEditableFields && (
+              <button type="submit" className="modal-save" disabled={!allValid}>
+                Save
+              </button>
+            )}
           </div>
         </form>
       </div>

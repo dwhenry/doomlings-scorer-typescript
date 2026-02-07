@@ -612,6 +612,64 @@ body {
   transform: scale(0.97);
 }
 
+/* Internal metadata (read-only) section in modal */
+.modal-internal-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #dee2e6;
+}
+
+.modal-internal-header {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  margin-bottom: 12px;
+}
+
+.modal-field--internal {
+  opacity: 0.85;
+}
+
+.modal-internal-value {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #6c757d;
+  min-height: 20px;
+}
+
+.field-scope--internal {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Discarded card visual treatment */
+.card--discarded {
+  opacity: 0.45;
+  position: relative;
+}
+
+.card--discarded::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: #dc3545;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.card-score--discarded {
+  background: #dc3545 !important;
+  color: white !important;
+}
+
 /* Card Zoom Preview */
 .card-zoom {
   position: fixed;

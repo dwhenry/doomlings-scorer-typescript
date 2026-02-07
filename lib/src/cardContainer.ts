@@ -45,7 +45,8 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
   if (card.metadataRequired === undefined) {
     return inst;
   }
-  const allMetadataPresent = card.metadataRequired.every(([key]) => metadata[key] !== undefined);
+  const userMetadata = card.metadataRequired.filter(([, , scope]) => scope !== 'internal');
+  const allMetadataPresent = userMetadata.every(([key]) => metadata[key] !== undefined);
   if (!allMetadataPresent) {
     inst.metadataComplete = false;
   }

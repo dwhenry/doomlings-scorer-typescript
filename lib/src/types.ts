@@ -35,7 +35,7 @@ const MetaDataTypes = [
 ] as const;
 export type MetaDataType = (typeof MetaDataTypes)[number];
 
-export const META_DATA_SCOPES = ['card', 'player', 'global'] as const;
+export const META_DATA_SCOPES = ['card', 'player', 'global', 'internal'] as const;
 export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 
 type MetaData = [string, MetaDataType, MetaDataScope];
@@ -91,11 +91,14 @@ export class CardInstance {
   finalA: number = 0;
   finalB: number | undefined = 0;
   metadataComplete: boolean = true;
-  metadata: Metadata
+  metadata: Metadata;
+  discarded: boolean = false;
+  skipCalcB: boolean = false;
+  generatedMetadata: Record<string, string | number | string[]> = {};
 
   constructor(card: Card, metadata: Metadata) {
     this.card = card;
-    this.metadata = metadata
+    this.metadata = metadata;
   }
 
   get type(): string[] {

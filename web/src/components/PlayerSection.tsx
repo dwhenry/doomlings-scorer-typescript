@@ -33,16 +33,17 @@ function buildCardGroups(
     const metadataMissing = hasMetadata && !isMetadataComplete(card, fields);
     const isCardScoped = hasCardScopedMetadata(fields);
 
-    let cardScore: { finalA: number; finalB: number | undefined; total: number | undefined } = { finalA: 0, finalB: 0, total: 0 };
+    let cardScore: { finalA: number; finalB: number | undefined; total: number | undefined; discarded?: boolean } = { finalA: 0, finalB: 0, total: 0 };
     if (gameScore) {
       try {
         const ps = gameScore.getPlayerScore(playerIndex);
         const cs = ps.getCardScoreByIndex(cardIndex);
-        cardScore = { finalA: cs.finalA, finalB: cs.finalB, total: cs.total };
+        cardScore = { finalA: cs.finalA, finalB: cs.finalB, total: cs.total, discarded: cs.discarded };
       } catch {
         // card may not have a score yet
       }
     }
+    const isDiscarded = cardScore.discarded === true;
 
     // Card-scoped metadata cards are never grouped
     if (isCardScoped) {
@@ -54,6 +55,7 @@ function buildCardGroups(
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
+        discardedIndices: isDiscarded ? [cardIndex] : [],
       });
       return;
     }
@@ -63,6 +65,7 @@ function buildCardGroups(
       existing.count++;
       existing.perCardScores.push(cardScore);
       existing.cardIndices.push(cardIndex);
+      if (isDiscarded) existing.discardedIndices.push(cardIndex);
       if (cardScore.total !== undefined && existing.totalScore !== null) {
         existing.totalScore = existing.totalScore + cardScore.total;
       } else {
@@ -79,6 +82,7 @@ function buildCardGroups(
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
+        discardedIndices: isDiscarded ? [cardIndex] : [],
       });
     }
   });
@@ -120,41 +124,46 @@ export default function PlayerSection({
           <span className="focused-player-score">{totalScore} pts</span>
         </div>
         <div className="focused-player-hand">
-          {cardGroups.map((group) => (
-            <div
-              key={`${group.name}-${group.cardIndices[0]}`}
-              className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}`}
-              onMouseEnter={() => onHover(group.name)}
-              onMouseLeave={() => onHover(null)}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (group.hasMetadata) {
-                  onOpenModal(player.id, group.cardIndices[0], group.name);
-                }
-              }}
-            >
-              <img
-                src={`/cards/${encodeURIComponent(group.name)}.png`}
-                alt={group.name}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-              {group.count > 1 && <div className="card-count">{group.count}</div>}
-              {group.totalScore !== null ? (
-                <div className="card-score">{group.totalScore} pts</div>
-              ) : group.metadataMissing ? (
-                <div className="card-score card-score--missing">-</div>
-              ) : null}
-              <button
-                className="remove-card remove-card--visible"
+          {cardGroups.map((group) => {
+            const allDiscarded = group.discardedIndices.length === group.count;
+            return (
+              <div
+                key={`${group.name}-${group.cardIndices[0]}`}
+                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+                onMouseEnter={() => onHover(group.name)}
+                onMouseLeave={() => onHover(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRemoveCard(player.id, group.cardIndices[0]);
+                  if (group.hasMetadata) {
+                    onOpenModal(player.id, group.cardIndices[0], group.name);
+                  }
                 }}
               >
-                &times;
-              </button>
-            </div>
-          ))}
+                <img
+                  src={`/cards/${encodeURIComponent(group.name)}.png`}
+                  alt={group.name}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+                {group.count > 1 && <div className="card-count">{group.count}</div>}
+                {allDiscarded ? (
+                  <div className="card-score card-score--discarded">0 pts</div>
+                ) : group.totalScore !== null ? (
+                  <div className="card-score">{group.totalScore} pts</div>
+                ) : group.metadataMissing ? (
+                  <div className="card-score card-score--missing">-</div>
+                ) : null}
+                <button
+                  className="remove-card remove-card--visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveCard(player.id, group.cardIndices[0]);
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
     );

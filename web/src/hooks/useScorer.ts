@@ -1,10 +1,17 @@
 import { useMemo } from 'react';
 import { Scorer, GameScore } from '@scorer/scorer';
 import type { PlayerState } from '../types';
+import type { PlayerInput } from '@scorer/types';
+
+export interface CatastropheState {
+  name: string;
+  metadata: Record<string, string | number | string[]>;
+}
 
 export function useScorer(
   players: PlayerState[],
-  selectedCatastrophes: string[]
+  selectedCatastrophes: string[],
+  catastropheMetadata: Record<string, Record<string, string | number | string[]>>
 ): GameScore | null {
   return useMemo(() => {
     // Need at least one player with cards to score
@@ -16,9 +23,11 @@ export function useScorer(
       const scorer = new Scorer(...playerCards);
 
       if (selectedCatastrophes.length > 0) {
-        scorer.addCatastrophes(
-          selectedCatastrophes.map((name) => ({ name }))
-        );
+        const catastropheInputs: PlayerInput[] = selectedCatastrophes.map((name) => ({
+          name,
+          ...catastropheMetadata[name],
+        }));
+        scorer.addCatastrophes(catastropheInputs);
       }
 
       return scorer.scores();
@@ -26,5 +35,5 @@ export function useScorer(
       console.error('Scoring error:', e);
       return null;
     }
-  }, [players, selectedCatastrophes]);
+  }, [players, selectedCatastrophes, catastropheMetadata]);
 }
