@@ -387,7 +387,6 @@ export default function App() {
         mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}
         onHover={handleHover}
-        onStopAdding={handleStopAdding}
         selectedCatastrophes={state.selectedCatastrophes}
         onToggleCatastrophe={handleToggleCatastrophe}
         onDeselectCatastrophe={handleDeselectCatastrophe}

@@ -1005,53 +1005,20 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(100vh - 60px);
   background: white;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1500;
-  will-change: transform;
-  overscroll-behavior: contain;
-}
-
-.drawer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1499;
-}
-
-.drawer-handle {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 0 8px;
-  background: none;
-  border: none;
-  width: 100%;
-  cursor: grab;
-  touch-action: none;
-}
-
-.drawer-handle:active {
-  cursor: grabbing;
-}
-
-.drawer-handle-bar {
-  width: 40px;
-  height: 4px;
-  background: #dee2e6;
-  border-radius: 2px;
+  flex-direction: column;
+  transition: top 0.2s ease-out;
+  overscroll-behavior: contain;
 }
 
 .drawer-content {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  height: calc(100% - 36px);
   padding: 0 16px 16px;
 }
 
@@ -1063,12 +1030,27 @@
   border-radius: 6px;
 }
 
+.bottom-drawer .cards-grid--tabbed {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.bottom-drawer .catastrophe-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .bottom-drawer .pack-card--labeled {
-  width: 56px;
+  width: auto;
 }
 
 .bottom-drawer .pack-card-name {
-  max-width: 56px;
+  max-width: none;
+  white-space: normal;
+}
+
+.bottom-drawer .catastrophe-tab-content .catastrophe-card {
+  width: auto;
 }
 
 /* ======================== */
@@ -1172,26 +1154,9 @@
 
 .focused-player-hand {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
   padding: 8px 0;
   min-height: 50px;
 }
 
-.focused-player-hand::-webkit-scrollbar {
-  height: 6px;
-}
-
-.focused-player-hand::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.focused-player-hand::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
