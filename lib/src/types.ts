@@ -1,4 +1,4 @@
-const traitCardTypes = [
+export const TRAIT_CARD_TYPES = [
   'colourless',
   'purple',
   'red',
@@ -8,13 +8,13 @@ const traitCardTypes = [
 const catastropheCardTypes = ['catastrophe'] as const;
 const otherCardTypes = ['none'] as const;
 const CardTypes = [
-  ...traitCardTypes,
+  ...TRAIT_CARD_TYPES,
   ...catastropheCardTypes,
   ...otherCardTypes
 ] as const;
 export type CardType = (typeof CardTypes)[number];
 
-const PackTypes = [
+export const PACK_TYPES = [
   'Classic',
   'Special Edition',
   'multi-colour',
@@ -24,7 +24,7 @@ const PackTypes = [
   'Meaning of Life',
   'Overlush'
 ] as const;
-export type PackType = (typeof PackTypes)[number];
+export type PackType = (typeof PACK_TYPES)[number];
 
 const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
