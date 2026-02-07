@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import type { Card, CardType } from '../types';
 import { TRAIT_CARD_TYPES } from '@scorer/types';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useHeaderBottom } from '../hooks/useHeaderBottom';
 import ColorTabs, { type TabId } from './ColorTabs';
 import SearchBar from './SearchBar';
 import CardGrid from './CardGrid';
@@ -14,7 +15,6 @@ interface PackDisplayProps {
   mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
   onHover: (cardName: string | null) => void;
-  onStopAdding: () => void;
   selectedCatastrophes: string[];
   onToggleCatastrophe: (cardName: string) => void;
   onDeselectCatastrophe: (cardName: string) => void;
@@ -27,12 +27,12 @@ export default function PackDisplay({
   mobileAddingForPlayer,
   onClickCard,
   onHover,
-  onStopAdding,
   selectedCatastrophes,
   onToggleCatastrophe,
   onDeselectCatastrophe,
 }: PackDisplayProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
+  const headerBottom = useHeaderBottom();
   const [activeTab, setActiveTab] = useState<TabId>('purple');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -175,7 +175,7 @@ export default function PackDisplay({
     if (mobileAddingForPlayer === null) return null;
 
     return (
-      <BottomDrawer onClose={onStopAdding}>
+      <BottomDrawer topOffset={headerBottom}>
         {tabbedContent}
       </BottomDrawer>
     );
