@@ -119,17 +119,8 @@ const bioPlague: CatastopheCard = {
       const active = activeCards(playerCards);
       if (active.length === 0) return '';
 
-      // Check if previous selection is still valid
-      const previousName = previousDiscard[position] as string | undefined;
-      if (previousName) {
-        const prev = active.find(c => c.card.name === previousName);
-        if (prev) {
-          softDiscard(prev);
-          return prev.card.name;
-        }
-      }
-
-      // Auto-compute: find the colour with the highest count
+      // get the colour counts first to ensure removing a otehr cards in the same group
+      // are not autoselected for discard
       const colourCounts = new Map<string, number>();
       active.forEach(c => {
         c.type.forEach(t => {
@@ -149,6 +140,19 @@ const bioPlague: CatastopheCard = {
           maxColour.push(colour);
         }
       });
+
+      // Check if previous selection is still valid
+      const previousName = previousDiscard[position] as string | undefined;
+      if (previousName) {
+        const prev = active.find(c => c.card.name === previousName);
+        // if the colour of the previous selection is in the max colour list, use it,
+        // other we need a new card to discard
+        if (prev && !!maxColour.find(c => prev.type.includes(c))) {
+          softDiscard(prev);
+          return prev.card.name;
+        }
+      }
+
 
       if (maxColour.length > 0) {
         const targets = active.filter(
