@@ -44,9 +44,33 @@ export class Scorer {
         inst.card.modify?.(inst, this.allPlayerCards, playerIndex);
       });
     });
+
+    // We have a special card that ignores the next catastrophe
+    // this does not fit with the current scoring logic, so we
+    // need to handle it separately.
+    // we first find all cards that ignore the next catastrophe
+    // then map to the catastrophe position and player position
+    // when that catastrophe is processed, we filter out the player
+    // cards so they are not included in the scoring.
+    const ignoreCatastrophes = this.allPlayerCards.flatMap((playerCards, pos) =>
+      playerCards
+        .filter((card) => card.metadata.ignore_next_catastrophe)
+        .map((card) => [card.metadata.ignore_next_catastrophe, pos])
+    );
+
     // calc C (catastrophes) - runs before calcB so discards/overrides affect conditional scoring
-    this.catastopheCards.forEach((inst) => {
-      inst.card.calcC?.(inst, this.allPlayerCards);
+    this.catastopheCards.forEach((inst, catIndex) => {
+      // this is a list of player position that ignore this catastrophe
+      const applyPosFilter = ignoreCatastrophes
+        .filter(([name, _pos]) => name === catIndex.toString())
+        .map(([_, pos]) => pos);
+
+      // this is the player cards with filtered users not being applied
+      const filteredPlayerCards = this.allPlayerCards.map((playerCards, pos) =>
+        applyPosFilter.includes(pos) ? [] : playerCards
+      );
+
+      inst.card.calcC?.(inst, filteredPlayerCards);
     });
     // Zero out discarded cards
     this.allPlayerCards.forEach((playerCards) => {

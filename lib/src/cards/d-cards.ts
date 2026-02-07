@@ -48,7 +48,17 @@ const dragonHeart: PlayerCard = {
 };
 addCard(dragonHeart);
 
-// Ignore the next catastrophe. (4 points, gameplay effect only)
-addBasicCard('DENIAL', 'colourless', 'Classic', 4);
+// TODO: we need to order the catastrophe cards based on the order they are selected.
+// ignore_next_catastrophe will then ignore based off position in the order.
+const denial: PlayerCard = {
+  name: 'DENIAL',
+  type: ['colourless'],
+  pack: 'Classic',
+  calcA: function (card: CardInstance): void {
+    card.finalA = 4;
+  },
+  metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
+};
+addCard(denial);
 
 addBasicCard('DREAMER', 'purple', 'Classic', 1);

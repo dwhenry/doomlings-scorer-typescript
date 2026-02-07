@@ -105,7 +105,9 @@ export default function PackDisplay({
     }
     if (activeTab !== 'catastrophe') return [];
     return [...catastropheCards]
-      .filter(isVisible)
+      .filter(
+        (card) => selectedCatastrophes.includes(card.name) || isVisible(card)
+      )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, catastropheCards, selectedPacks, searchQuery, isSearching]);
 
@@ -228,6 +230,11 @@ function CatastropheInline({
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
+              {selectedCatastrophes.indexOf(card.name) !== -1 && (
+                <div className="card-count">
+                  {selectedCatastrophes.indexOf(card.name) + 1}
+                </div>
+              )}
               <span className="pack-card-name">{card.name}</span>
               {isSelected && (
                 <button

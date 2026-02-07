@@ -27,7 +27,12 @@ export const PACK_TYPES = [
 ] as const;
 export type PackType = (typeof PACK_TYPES)[number];
 
-const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
+const simpleMetaDataTypes = [
+  'number',
+  'trait',
+  'CardType',
+  'catastrophe'
+] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
   ...simpleMetaDataTypes,

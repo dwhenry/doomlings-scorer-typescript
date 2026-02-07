@@ -5,6 +5,7 @@ import type { PlayerCardEntry } from '../types';
 
 interface MetadataModalProps {
   cardName: string;
+  selectedCatastrophes: string[];
   fields: MetadataField[];
   internalFields: MetadataField[];
   internalValues: Record<string, string | number | string[]>;
@@ -32,6 +33,7 @@ function formatInternalValue(
 
 export default function MetadataModal({
   cardName,
+  selectedCatastrophes,
   fields,
   internalFields,
   internalValues,
@@ -56,7 +58,8 @@ export default function MetadataModal({
   const allValid = fields.every((f) => {
     const val = values[f.key];
     if (val === undefined || val === '') return false;
-    if (f.type === 'number') return typeof val === 'number' || !isNaN(Number(val));
+    if (f.type === 'number' || f.type === 'catastrophe')
+      return typeof val === 'number' || !isNaN(Number(val));
     return true;
   });
 
@@ -96,7 +99,25 @@ export default function MetadataModal({
                 {formatLabel(field.key)}
                 <span className="field-scope">{field.scope}</span>
               </label>
-              {field.type === 'number' ? (
+              {field.type === 'catastrophe' ? (
+                <select
+                  id={`meta-${field.key}`}
+                  value={(values[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                  }
+                >
+                  <option value="">Select...</option>
+                  {[0, 1, 2, 3].map((position) => (
+                    <option key={`catastrophe-${position}`} value={position}>
+                      {/* populate the catastrophe name here from the index if it
+                      has been selected */}
+                      {selectedCatastrophes[position] ||
+                        `Catastrophe ${position + 1}`}
+                    </option>
+                  ))}
+                </select>
+              ) : field.type === 'number' ? (
                 <input
                   id={`meta-${field.key}`}
                   type="number"
