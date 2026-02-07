@@ -1,10 +1,8 @@
 import { addBasicCard, addCard } from "../cardContainer";
 import { CardInstance, CardType, PlayerCard } from "../types";
 
-addBasicCard('GALACTIC DRIFT', 'colourless', 'Classic', 0);
 addBasicCard('GELATINOUS', 'red', 'Mythlings', 1);
 addBasicCard('GILLS', 'blue', 'Classic', 1);
-addBasicCard('GLACIAL DRIFT', 'blue', 'Classic', 0);
 
 const gmo: PlayerCard = {
   name: 'GMO',

@@ -4,8 +4,8 @@ import { hasEffect } from './effect_cards';
 
 addBasicCard('BAD', 'red', 'Classic', 1);
 addBasicCard('BARK', 'green', 'Classic', 2);
-addBasicCard('BEAUTY', 'green', 'Classic', 2);
-addBasicCard('BIG EARS', 'purple', 'Classic', 2);
+addBasicCard('BEAUTY', 'green', 'KSE', 2);
+addBasicCard('BIG EARS', 'purple', 'Classic', 1);
 addBasicCard('BINARY', 'colourless', 'Techlings', 0);
 
 const bionic_arm: PlayerCard = {
@@ -33,10 +33,10 @@ const bionic_arm: PlayerCard = {
 };
 addCard(bionic_arm);
 
-addBasicCard('BLOOM', ['green', 'blue'], 'Classic', 1);
+addBasicCard('BLOOM', ['green', 'blue'], 'multi-colour', 1);
 addBasicCard('BLUBBER', 'blue', 'Classic', 4);
 addBasicCard('BONE REINFORCEMENT', 'red', 'Techlings', 4);
-addBasicCard('BONES', 'colourless', 'Classic', 2);
+addBasicCard('BONES', 'colourless', 'KSE', 2);
 addBasicCard('BONY PLATES', 'green', 'Dinolings', 2);
 
 // TODO: Cards in hand is **not** played cards. This is buggy.
@@ -95,4 +95,4 @@ addCard(branches);
 
 addBasicCard('BRAVE', 'red', 'Classic', 2);
 addBasicCard('BRUTE STRENGTH', 'red', 'Classic', 4);
-addBasicCard('BULLHEADED', ['red', 'green'], 'Classic', 1);
+addBasicCard('BULLHEADED', ['red', 'green'], 'multi-colour', 1);

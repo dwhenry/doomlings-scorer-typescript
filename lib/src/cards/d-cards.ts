@@ -32,4 +32,7 @@ const dragonHeart: PlayerCard = {
 };
 addCard(dragonHeart);
 
+// Ignore the next catastrophe. (4 points, gameplay effect only)
+addBasicCard('DENIAL', 'colourless', 'Classic', 4);
+
 addBasicCard('DREAMER', 'purple', 'Classic', 1);

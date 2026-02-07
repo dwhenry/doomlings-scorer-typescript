@@ -21,9 +21,7 @@ addBasicCard('CARNOSAUR JAW', 'red', 'Dinolings', 9);
 addBasicCard('CERATOPSIAN HORNS', 'green', 'Dinolings', 4);
 addBasicCard('CHROMATOPHORES', 'blue', 'Classic', 0);
 addBasicCard('CLEVER', 'purple', 'Classic', 1);
-addBasicCard('COASTAL FORMATIONS', 'green', 'Classic', 0);
 addBasicCard('COLD BLOOD', 'blue', 'Classic', 1);
-addBasicCard('COMET SHOWERS', 'red', 'Classic', 0);
 addBasicCard('CONFUSION', 'colourless', 'Classic', -2);
 addBasicCard('COSTLY SIGNALING', 'blue', 'Classic', -2);
 const cranialCrest: PlayerCard = {

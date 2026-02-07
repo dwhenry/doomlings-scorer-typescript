@@ -2,7 +2,6 @@ import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 
 addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
-addBasicCard('ECLIPSE', 'purple', 'Classic', 0);
 addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
 const egg_clusters: PlayerCard = {
   name: 'EGG CLUSTERS',
@@ -49,4 +48,3 @@ const elven_ears: PlayerCard = {
 };
 addCard(elven_ears);
 addBasicCard('ENDURANCE', 'red', 'Classic', 1);
-addBasicCard('ENLIGHTENMENT', 'purple', 'Classic', 0);

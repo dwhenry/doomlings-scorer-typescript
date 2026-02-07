@@ -24,7 +24,6 @@ const heat_vision: PlayerCard = {
 addCard(heat_vision);
 
 addBasicCard('HEROIC', 'green', 'Classic', 7);
-addBasicCard('HIGH TIDES', 'blue', 'Classic', 0);
 addBasicCard('HOT TEMPER', 'red', 'Classic', 2);
 addBasicCard('HYPER-INTELLIGENCE', 'red', 'Classic', 4);
 const hyperMyelination: PlayerCard = {

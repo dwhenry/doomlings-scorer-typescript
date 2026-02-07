@@ -22,7 +22,8 @@ export const PACK_TYPES = [
   'Mythlings',
   'Techlings',
   'Meaning of Life',
-  'Overlush'
+  'Overlush',
+  'KSE'
 ] as const;
 export type PackType = (typeof PACK_TYPES)[number];
 

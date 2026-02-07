@@ -33,7 +33,6 @@ addBasicCard('FINE MOTOR SKILLS', 'purple', 'Classic', 2);
 addBasicCard('FIRE SKIN', 'red', 'Classic', 3);
 addBasicCard('FLATULENCE', 'colourless', 'Classic', 3);
 addBasicCard('FLIGHT', 'blue', 'Classic', 2);
-addBasicCard('FLOURISH', 'green', 'Classic', 0);
 const fortunate: PlayerCard = {
   name: 'FORTUNATE',
   type: ['green'],
@@ -85,4 +84,4 @@ const free_will: PlayerCard = {
 };
 addCard(free_will);
 addBasicCard('FRONDS', 'green', 'Dinolings', 0);
-addBasicCard('FULFILLED', 'colourless', 'Classic', 4);
+addBasicCard('FULFILLED', 'colourless', 'KSE', 4);
