@@ -34,6 +34,10 @@ export function addBasicCard(
   addCard(card);
 }
 
+export function allCards(): Map<string, Card> {
+  return cardsMap;
+}
+
 export function getCard(name: string, metadata: PlayerInput): CardInstance {
   const card = findCard(name);
 
