@@ -15,6 +15,7 @@ import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
+import { CardScore } from '@scorer/scorer';
 
 // State
 interface AppState {
@@ -58,6 +59,10 @@ type Action =
   | {
       type: 'UPDATE_CATASTROPHE_METADATA';
       metadata: Record<string, Record<string, string | number | string[]>>;
+    }
+  | {
+      type: 'UPDATE_PLAYER_CARD_METADATA';
+      metadata: { card: CardScore; playerIndex: number; cardIndex: number }[];
     }
   | { type: 'START_ADDING_FOR_PLAYER'; playerId: number }
   | { type: 'STOP_ADDING' };
@@ -236,6 +241,39 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         catastropheMetadata: action.metadata
       };
+    case 'UPDATE_PLAYER_CARD_METADATA': {
+      let currentState = state;
+      action.metadata.forEach(({ card, playerIndex, cardIndex }) => {
+        const player = state.players[playerIndex];
+
+        currentState = {
+          ...currentState,
+          players: currentState.players.map((p, i) => {
+            if (i !== playerIndex) return p;
+            return {
+              ...p,
+              cards: p.cards.map((c, i) => {
+                if (i !== cardIndex) return c;
+                let updatedCard = { ...c };
+                card.generatedMetadata;
+                if (card.generatedMetadata) {
+                  Object.keys(card.generatedMetadata).forEach((key) => {
+                    if (card.generatedMetadata![key] === '') {
+                      delete updatedCard[key];
+                    } else {
+                      updatedCard[key] = card.generatedMetadata![key];
+                    }
+                  });
+                }
+                return updatedCard;
+              })
+            };
+          })
+        };
+      });
+      return { ...currentState };
+    }
+
     case 'START_ADDING_FOR_PLAYER':
       return {
         ...state,
@@ -303,26 +341,37 @@ export default function App() {
 
   // Merge catastrophe generated metadata back into state
   const prevCatMetaRef = useRef<string>('');
+  const prevPlayerGemMetaRef = useRef<string>('');
   useEffect(() => {
     if (!gameScore) return;
     const catGenMeta = gameScore.getCatastropheGeneratedMetadata();
-    if (catGenMeta.length === 0) return;
+    const playerGemMeta = gameScore.getPlayerCardsWithGeneratedMetadata();
+    if (catGenMeta.length > 0) {
+      const newMeta: Record<
+        string,
+        Record<string, string | number | string[]>
+      > = {};
+      state.selectedCatastrophes.forEach((name, i) => {
+        if (catGenMeta[i] && Object.keys(catGenMeta[i]).length > 0) {
+          newMeta[name] = catGenMeta[i];
+        }
+      });
 
-    const newMeta: Record<
-      string,
-      Record<string, string | number | string[]>
-    > = {};
-    state.selectedCatastrophes.forEach((name, i) => {
-      if (catGenMeta[i] && Object.keys(catGenMeta[i]).length > 0) {
-        newMeta[name] = catGenMeta[i];
+      // Only dispatch if the metadata actually changed (prevent infinite loop)
+      const serialized = JSON.stringify(newMeta);
+      if (serialized !== prevCatMetaRef.current) {
+        prevCatMetaRef.current = serialized;
+        dispatch({ type: 'UPDATE_CATASTROPHE_METADATA', metadata: newMeta });
       }
-    });
+    }
 
-    // Only dispatch if the metadata actually changed (prevent infinite loop)
-    const serialized = JSON.stringify(newMeta);
-    if (serialized !== prevCatMetaRef.current) {
-      prevCatMetaRef.current = serialized;
-      dispatch({ type: 'UPDATE_CATASTROPHE_METADATA', metadata: newMeta });
+    if (playerGemMeta.length > 0) {
+      // as this is used to reset error values from the backend
+      // it is necessary to check if it has been processed in the last run
+      dispatch({
+        type: 'UPDATE_PLAYER_CARD_METADATA',
+        metadata: playerGemMeta
+      });
     }
   }, [gameScore, state.selectedCatastrophes]);
 
@@ -492,6 +541,14 @@ export default function App() {
   const hasAnyModalFields =
     modalEditableFields.length > 0 || modalInternalFields.length > 0;
 
+  let playerCardNames: string[] = [];
+  if (state.selectedPlayerId !== null) {
+    const player = state.players.find((p) => p.id === state.selectedPlayerId);
+    if (player && player.cards.length > 0) {
+      playerCardNames = player.cards.map((c) => c.name);
+    }
+  }
+
   return (
     <div className="game-container">
       <CardZoom cardName={state.hoveredCard} />
@@ -536,6 +593,7 @@ export default function App() {
       {state.modal && modalCard && hasAnyModalFields && (
         <MetadataModal
           cardName={state.modal.cardName}
+          playerCardNames={playerCardNames}
           selectedCatastrophes={state.selectedCatastrophes}
           fields={modalEditableFields}
           internalFields={modalInternalFields}

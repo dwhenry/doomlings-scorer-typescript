@@ -118,14 +118,14 @@ const theDancer: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    if (typeof inst.metadata.bonus_post_as_not_implemented !== 'number') {
+    if (typeof inst.metadata.bonus_points_as_not_implemented !== 'number') {
       throw new Error('invalid data for metadata field has_fewest_points');
     }
-    inst.finalB = inst.metadata.bonus_post_as_not_implemented;
+    inst.applyPoints('B', inst.metadata.bonus_points_as_not_implemented, inst, 'Manual Bonus Points as Not Implemented');
 
     // TODO: we want to add this as a scoring stage??
   },
-  metadataRequired: [['bonus_post_as_not_implemented', 'number', 'player']]
+  metadataRequired: [['bonus_points_as_not_implemented', 'number', 'player']]
 };
 addCard(theDancer);
 
@@ -602,7 +602,7 @@ const tinyArms: PlayerCard = {
     if (typeof inst.metadata.dinolings_in_discard !== 'number') {
       throw new Error('invalid data for metadata field dinolings_in_discard');
     }
-    inst.finalB = inst.metadata.dinolings_in_discard;
+    inst.applyPoints('B', inst.metadata.dinolings_in_discard, inst, 'Dinolings in Discard');
   },
   metadataRequired: [['dinolings_in_discard', 'number', 'global']]
 };

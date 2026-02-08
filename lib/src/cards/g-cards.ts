@@ -17,15 +17,25 @@ const gmo: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const chosenTraits = inst.metadata['attached_trait']! as CardType[];
-    const playerCardsMatchingTrait = playerCards(
-      allPlayerCards,
-      currentPlayer
-    ).filter((a) => a.card.type.find((type) => chosenTraits.includes(type)));
-    inst.finalB = playerCardsMatchingTrait.length;
+    const chosenCardName = inst.metadata['attached_card_name'] as string;
+
+    const chosenCard = playerCards(allPlayerCards, currentPlayer)
+      .find((c) => chosenCardName === c.card.name);
+
+    if (!chosenCard) {
+      inst.applyPoints('B', undefined, inst, `chosen card ${chosenCardName} not found`);
+      inst.generatedMetadata.attached_card_name = '';
+      return;
+    }
+
+    playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
+      if (!!cardInst.card.type.find((type) => chosenCard?.card.type.includes(type))) {
+        cardInst.applyPoints('B', 1, inst, `for being a same trait as ${chosenCard?.card.name}`);
+      }
+    })
   },
   // TODO: Change me to use a better mechanism !!!! - allow selection of existing card by name
-  metadataRequired: [['attached_trait', 'trait', 'card']]
+  metadataRequired: [['attached_card_name', 'player_card', 'card']]
 
   // TODO: rescore any cards that rely on attached cards
 };

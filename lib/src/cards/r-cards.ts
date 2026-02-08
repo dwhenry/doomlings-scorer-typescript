@@ -15,7 +15,7 @@ const randomFertilization: PlayerCard = {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.finalB = inst.metadata.gene_pool_size;
+    inst.applyPoints('B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 };

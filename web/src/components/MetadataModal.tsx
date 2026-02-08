@@ -6,6 +6,7 @@ import type { PlayerCardEntry } from '../types';
 interface MetadataModalProps {
   cardName: string;
   selectedCatastrophes: string[];
+  playerCardNames: string[];
   fields: MetadataField[];
   internalFields: MetadataField[];
   internalValues: Record<string, string | number | string[]>;
@@ -34,6 +35,7 @@ function formatInternalValue(
 export default function MetadataModal({
   cardName,
   selectedCatastrophes,
+  playerCardNames,
   fields,
   internalFields,
   internalValues,
@@ -99,7 +101,7 @@ export default function MetadataModal({
                 {formatLabel(field.key)}
                 <span className="field-scope">{field.scope}</span>
               </label>
-              {field.type === 'catastrophe' ? (
+              {field.type === 'catastrophe' && (
                 <select
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
@@ -117,7 +119,24 @@ export default function MetadataModal({
                     </option>
                   ))}
                 </select>
-              ) : field.type === 'number' ? (
+              )}
+              {field.type === 'player_card' && (
+                <select
+                  id={`meta-${field.key}`}
+                  value={(values[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                  }
+                >
+                  <option value="">Select...</option>
+                  {playerCardNames.map((cardName, position) => (
+                    <option key={`card-${position}`} value={cardName}>
+                      {cardName}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {field.type === 'number' && (
                 <input
                   id={`meta-${field.key}`}
                   type="number"
@@ -130,7 +149,8 @@ export default function MetadataModal({
                     }))
                   }
                 />
-              ) : (
+              )}
+              {field.type === 'trait' && (
                 <select
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}

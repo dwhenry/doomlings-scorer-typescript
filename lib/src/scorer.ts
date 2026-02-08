@@ -185,6 +185,20 @@ export class GameScore {
     return playerScore;
   }
 
+  getPlayerCardsWithGeneratedMetadata() {
+    let cardsWithGeneratedMetadata: { card: CardScore, playerIndex: number, cardIndex: number }[] = [];
+    this.playerScores.forEach(
+      (playerScore, playerIndex) => playerScore.getCardScores().forEach(
+        (cardScore, cardIndex) => {
+          if (cardScore.generatedMetadata && Object.keys(cardScore.generatedMetadata).length > 0) {
+            cardsWithGeneratedMetadata.push({ card: cardScore, playerIndex, cardIndex });
+          }
+        }
+      )
+    )
+    return cardsWithGeneratedMetadata;
+  }
+
   getCatastropheGeneratedMetadata(): Array<
     Record<string, string | number | string[]>
   > {

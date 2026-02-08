@@ -86,7 +86,6 @@ export default function PackDisplay({
         }
       }
       return Array.from(allColorCards.values())
-        .filter(isVisible)
         .filter((card) => card.name.toLowerCase().includes(query))
         .sort((a, b) => a.name.localeCompare(b.name));
     }

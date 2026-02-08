@@ -31,7 +31,8 @@ const simpleMetaDataTypes = [
   'number',
   'trait',
   'CardType',
-  'catastrophe'
+  'catastrophe',
+  'player_card'
 ] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
@@ -108,6 +109,7 @@ export class CardInstance {
   generatedMetadata: Record<string, string | number | string[]> = {};
   pointsLog: Array<{
     phase: 'A' | 'B' | 'C';
+    phaseSubtotal: number | undefined;
     points: number | undefined;
     fromCard: CardInstance;
     message: string;
@@ -135,7 +137,10 @@ export class CardInstance {
     fromCard: CardInstance,
     message: string
   ) {
-    this.pointsLog.push({ phase, points, fromCard, message });
+    let finalPoints: number | undefined = undefined;
+    let finalMessage: string = message;
+    let phaseSubtotal: number | undefined = undefined;
+
     if (phase === 'A') {
       throw new Error('Cannot modify finalA points');
     } else if (phase === 'B') {
@@ -144,13 +149,17 @@ export class CardInstance {
         if (points === undefined) {
           // this is a edge case related to other player card counts.
           this.finalB = undefined;
+          finalMessage += '; Reset B phase due to missing data';
         } else {
           this.finalB += points;
         }
+        phaseSubtotal = this.finalB
       }
     } else if (phase === 'C') {
       this.finalC += points ?? 0;
+      phaseSubtotal = this.finalC;
     }
+    this.pointsLog.push({ phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
   }
 }
 
