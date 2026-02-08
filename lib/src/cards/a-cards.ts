@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { forEachPlayerCards } from './helpers';
 
 addBasicCard('ACROBATIC', ['purple', 'green'], 'multi-colour', 2);
 addBasicCard('ADORABLE', 'purple', 'Classic', 4);
@@ -15,7 +16,7 @@ const altruistic: PlayerCard = {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.finalB = inst.metadata.gene_pool_size;
+    inst.applyPoints('B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 };
@@ -39,13 +40,13 @@ const apex_predator: PlayerCard = {
     let points: number = 4;
     const myCount: number = allPlayerCards[currentPlayer].length;
 
-    allPlayerCards.forEach((playerCards, i) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
       if (i !== currentPlayer && playerCards.length >= myCount) {
         points = 0;
       }
     });
 
-    inst.finalB = points;
+    inst.applyPoints('B', points, inst, 'has the most traits');
   }
 };
 addCard(apex_predator);

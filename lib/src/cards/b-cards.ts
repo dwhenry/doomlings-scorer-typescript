@@ -1,6 +1,7 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 import { hasEffect } from './effect_cards';
+import { filterCardByPack, filterCardsByType } from './helpers';
 
 addBasicCard('BAD', 'red', 'Classic', 1);
 addBasicCard('BARK', 'green', 'Classic', 2);
@@ -21,14 +22,11 @@ const bionic_arm: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const techlingCards = playerCards.filter(
-      (inst) => inst.card.pack === 'Techlings'
-    );
-
-    // TODO: wokr out when this is attached and set to 2 when it is
+    // TODO: work out when this is attached and set to 2 when it is
     const multiplier = 1;
-
-    inst.finalB = techlingCards.length * multiplier;
+    filterCardByPack(playerCards, 'Techlings').forEach((playerCard) => {
+      playerCard.applyPoints('B', multiplier, inst, 'Bionic Arm is attached');
+    });
   }
 };
 addCard(bionic_arm);
@@ -53,12 +51,11 @@ const boredom: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const effectCards = playerCards.filter((card) => {
-      const val = hasEffect(card.card.name);
-      return val;
+    playerCards.forEach((card) => {
+      if (hasEffect(card.card.name)) {
+        card.applyPoints('B', 1, inst, 'this card has no effect');
+      }
     });
-
-    inst.finalB = effectCards.length;
   }
 };
 addCard(boredom);
@@ -82,13 +79,13 @@ const branches: PlayerCard = {
       if (index !== currentPlayer) {
         points =
           points +
-          Math.floor(
-            playerCards.filter((inst) => inst.type.includes('green')).length / 2
-          );
+          Math.floor(filterCardsByType(playerCards, 'green').length / 2);
       }
     });
 
-    inst.finalB = points;
+    inst.applyPoints('B', points, inst, 'point for each pair of green card in opponents hands');
+
+    // TODO: we need to queue this card for post-processing as card colours can change
   }
 };
 addCard(branches);

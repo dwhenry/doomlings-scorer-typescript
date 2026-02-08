@@ -1,3 +1,4 @@
+import { filterCardsByType } from './cards/helpers';
 import {
   Card,
   PlayerCard,
@@ -38,6 +39,34 @@ export function addBasicCard(
     pack: pack,
     calcA: (inst: CardInstance): void => {
       inst.finalA = score;
+    }
+  };
+  addCard(card);
+}
+
+export function addCardThatPointsByColour(
+  name: string,
+  colours: CardType[] | CardType,
+  pack: PackType,
+  score: number,
+  colour: CardType,
+  pointsPerCard: number,
+) {
+  const card: PlayerCard = {
+    name: name,
+    type: Array.isArray(colours) ? colours : [colours],
+    pack: pack,
+    calcA: (inst: CardInstance): void => {
+      inst.finalA = score;
+    },
+    calcB: (
+      inst: CardInstance,
+      allPlayerCards: Array<Array<CardInstance>>,
+      currentPlayer: number
+    ): void => {
+      filterCardsByType(allPlayerCards[currentPlayer], colour).forEach((colourInst) => {
+        colourInst.applyPoints('B', pointsPerCard, inst, `for being a ${colour} card`);
+      })
     }
   };
   addCard(card);

@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { playerCards } from './helpers';
 
 const camouflage: PlayerCard = {
   name: 'CAMOUFLAGE',
@@ -36,8 +37,7 @@ const cranialCrest: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    const types = playerCards.map((inst) => inst.type).flat();
+    const types = playerCards(allPlayerCards, currentPlayer).map((inst) => inst.type).flat();
     // we minus one as we have at least one colourless that doesn't count
     inst.finalB = -([...new Set(types)].length - 1);
   }

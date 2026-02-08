@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { playerCards } from './helpers';
 
 // +1 for every pair of a color in your trait pile
 const packBehavior: PlayerCard = {
@@ -14,14 +15,14 @@ const packBehavior: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {};
 
-    const multiColourCount = playerCards.filter(
+    const currentPlayerCards = playerCards(allPlayerCards, currentPlayer);
+    const multiColourCount = currentPlayerCards.filter(
       (c) => c.type.length > 1
     ).length;
 
-    playerCards.forEach((c) => {
+    currentPlayerCards.forEach((c) => {
       // we have already counter the multi colour cards, so we only need to
       // count the single colour cards
       if (c.type.length === 1) {
@@ -56,8 +57,9 @@ const packBehavior: PlayerCard = {
     } else {
       pairCount = maxPairCount;
     }
+    inst.applyPoints('B', pairCount + multiColourCount, inst, 'point for each pair of colours');
 
-    inst.finalB = pairCount + multiColourCount;
+    // TODO: we need to rescore this after any colour changes
   }
 };
 addCard(packBehavior);
@@ -82,11 +84,12 @@ const pollination: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    // TODO: we actually modify the finalA value in the catastrophe processing.
-    // We need to change this so that finalA is static - Plan add finalC to these adjustments
-    const faceValueOneCount = playerCards.filter((c) => c.finalA === 1).length;
-    inst.finalB = faceValueOneCount;
+    playerCards(allPlayerCards, currentPlayer)
+      .forEach((cardInst) => {
+        if (cardInst.finalA === 1) {
+          cardInst.applyPoints('B', 1, inst, 'for having a face value of 1')
+        }
+      })
   }
 };
 addCard(pollination);

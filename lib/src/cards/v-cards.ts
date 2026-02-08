@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance, CardType } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { forEachPlayerCards } from './helpers';
 
 addBasicCard('VAMPIRISM', 'purple', 'Classic', 3);
 addBasicCard('VENOMOUS', 'purple', 'Classic', -2);
@@ -22,18 +23,18 @@ const viral: PlayerCard = {
     }
     const chosenColour = inst.metadata.colour as CardType;
 
-    // Apply -1 per trait of chosen color to each opponent
-    allPlayerCards.forEach((playerCards, playerIndex) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
       if (playerIndex !== currentPlayer) {
         playerCards.forEach((card) => {
           if (card.type.includes(chosenColour)) {
-            card.finalA -= 1;
+            card.applyPoints('B', -1, inst, 'for being a ' + chosenColour + ' trait');
           }
         });
       }
     });
 
-    inst.finalB = 0;
+    // TODO: rescore after any colour changes
+    // TODO: test that this actually works
   },
   metadataRequired: [['colour', 'CardType', 'card']]
 };
