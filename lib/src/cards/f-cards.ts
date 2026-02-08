@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { filterCardsByType, playerCards } from './helpers';
 
 const faith: PlayerCard = {
   name: 'FAITH',
@@ -13,12 +14,14 @@ const faith: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    playerCards.forEach((card) => {
-      if (card.type.includes(inst.metadata.fromColour!)) {
-        card.setOverride('type', [inst.metadata.toColour!]);
-      }
+    filterCardsByType(
+      allPlayerCards[currentPlayer],
+      inst.metadata.fromColour!
+    ).forEach((card) => {
+      card.setOverride('type', [inst.metadata.toColour!]);
     });
+
+    // TODO: so this need to re-score any cards that rely on card colour
   },
   metadataRequired: [
     ['fromColour', 'CardType', 'card'],
@@ -46,10 +49,9 @@ const fortunate: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
     let greenSize = 0;
     let colours: { [key: string]: number } = {};
-    playerCards.forEach((inst) => {
+    playerCards(allPlayerCards, currentPlayer).forEach((inst) => {
       inst.type.forEach((type) => {
         if (type == 'green') {
           greenSize += 1;
@@ -61,7 +63,11 @@ const fortunate: PlayerCard = {
     });
     let maxSize = Math.max(...Object.values(colours));
     // only when more green than others
-    inst.finalB = maxSize < greenSize ? 2 : 0;
+    if (maxSize < greenSize) {
+      inst.applyPoints('B', 2, inst, 'more green than other colours');
+    } else {
+      inst.applyPoints('B', 0, inst, 'less green than other colours');
+    }
   }
 };
 addCard(fortunate);
@@ -78,6 +84,8 @@ const free_will: PlayerCard = {
     currentPlayer: number
   ): void => {
     inst.setOverride('type', [inst.metadata.colour!]);
+
+    // TODO: so this need to re-score any cards that rely on card colour
   },
   metadataRequired: [['colour', 'CardType', 'card']]
 };

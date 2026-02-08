@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { playerCards } from './helpers';
 
 const camouflage: PlayerCard = {
   name: 'CAMOUFLAGE',
@@ -12,7 +13,7 @@ const camouflage: PlayerCard = {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
       throw new Error('invalid data for metadata field cards_in_hand');
     }
-    inst.finalB = inst.metadata.cards_in_hand;
+    inst.applyPoints('B', inst.metadata.cards_in_hand, inst, 'point for each card in hand');
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
 };
@@ -36,10 +37,10 @@ const cranialCrest: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    const types = playerCards.map((inst) => inst.type).flat();
+    const types = playerCards(allPlayerCards, currentPlayer)
+      .flatMap((inst) => inst.type)
     // we minus one as we have at least one colourless that doesn't count
-    inst.finalB = -([...new Set(types)].length - 1);
+    inst.applyPoints('B', -([...new Set(types)].length - 1), inst, 'point for each colour trait that we have');
   }
 };
 addCard(cranialCrest);

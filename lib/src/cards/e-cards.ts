@@ -1,26 +1,14 @@
 import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import {
+  addCard,
+  addBasicCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
+import { filterCardByPack, playerCards } from './helpers';
 
 addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
 addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
-const egg_clusters: PlayerCard = {
-  name: 'EGG CLUSTERS',
-  type: ['blue'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
-  },
-  calcB: (
-    inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
-  ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    const blueCards = playerCards.filter((inst) => inst.type.includes('blue'));
-    inst.finalB = blueCards.length;
-  }
-};
-addCard(egg_clusters);
+addCardThatPointsByColour('EGG CLUSTERS', 'blue', 'Classic', -1, 'blue', 1);
 addBasicCard('EGG PREDATION', 'purple', 'Dinolings', 1);
 addBasicCard('ELECTROMAGNETIC', 'purple', 'Techlings', 1);
 addBasicCard('ELONGATED NECK', 'blue', 'Dinolings', 1);
@@ -37,11 +25,14 @@ const elven_ears: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     _currentPlayer: number
   ): void => {
-    const allCards = allPlayerCards.flat();
-    const mythlingCards = allCards.filter(
-      (card) => card.card.pack === 'Mythlings'
+    const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings');
+
+    inst.applyPoints(
+      'B',
+      mythlingCards.length,
+      inst,
+      'for mythling cards for all players'
     );
-    inst.finalB = mythlingCards.length;
   }
 };
 addCard(elven_ears);

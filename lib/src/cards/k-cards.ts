@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard } from '../cardContainer';
+import { playerCards } from './helpers';
 
 // Value is equal to the number of Kidneys in your trait pile (including this one)
 function createKidney(name: string): PlayerCard {
@@ -15,11 +16,11 @@ function createKidney(name: string): PlayerCard {
       allPlayerCards: Array<Array<CardInstance>>,
       currentPlayer: number
     ): void => {
-      const playerCards = allPlayerCards[currentPlayer];
-      const kidneyCount = playerCards.filter((c) =>
-        c.card.name.startsWith('KIDNEY')
-      ).length;
-      inst.finalB = kidneyCount;
+      playerCards(allPlayerCards, currentPlayer).filter((c) => {
+        if (c.card.name.startsWith('KIDNEY')) {
+          c.applyPoints('B', 1, inst, 'for being a kidney card');
+        }
+      });
     }
   };
 }

@@ -1,6 +1,11 @@
 import { PlayerCard, CardInstance, CardType } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import {
+  addCard,
+  addBasicCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
 import { isDominant } from './effect_cards';
+import { filterCardsByType, playerCards } from './helpers';
 
 addBasicCard('SALIVA', 'blue', 'Classic', 1);
 addBasicCard('SAUDADE', 'colourless', 'Classic', 2);
@@ -27,11 +32,16 @@ const sentience: PlayerCard = {
       throw new Error('invalid data for metadata field colour');
     }
     const chosenColour = inst.metadata.colour as CardType;
-    const playerCards = allPlayerCards[currentPlayer];
-    const matchingCount = playerCards.filter((c) =>
-      c.type.includes(chosenColour)
-    ).length;
-    inst.finalB = matchingCount;
+    filterCardsByType(allPlayerCards[currentPlayer], chosenColour).forEach(
+      (cardInst) => {
+        cardInst.applyPoints(
+          'B',
+          1,
+          inst,
+          `for being a chosen colour (${chosenColour}) card`
+        );
+      }
+    );
   },
   metadataRequired: [['colour', 'CardType', 'card']]
 };
@@ -50,40 +60,25 @@ const serratedTeeth: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    const dominantCount = playerCards.filter((c) =>
-      isDominant(c.card.name)
-    ).length;
-    inst.finalB = -(dominantCount * 2);
+    playerCards(allPlayerCards, currentPlayer).filter((cardInst) => {
+      if (isDominant(cardInst.card.name)) {
+        cardInst.applyPoints('B', -2, inst, 'for being a dominant trait');
+      }
+    });
   }
 };
 addCard(serratedTeeth);
 
 addBasicCard('SNEAKY', 'purple', 'Classic', 2);
 addBasicCard('SPINY', 'blue', 'Classic', 1);
-
-// +1 for each purple trait in your trait pile (including this one)
-const stickySecretions: PlayerCard = {
-  name: 'STICKY SECRETIONS',
-  type: ['purple'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
-  },
-  calcB: (
-    inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
-  ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    const purpleCount = playerCards.filter((c) =>
-      c.type.includes('purple')
-    ).length;
-    inst.finalB = purpleCount;
-  }
-};
-addCard(stickySecretions);
-
+addCardThatPointsByColour(
+  'STICKY SECRETIONS',
+  'purple',
+  'Classic',
+  -1,
+  'purple',
+  1
+);
 addBasicCard('STONE SKIN', 'red', 'Classic', 2);
 addBasicCard('SUBDERMAL PLATING', 'purple', 'Techlings', -1);
 addBasicCard('SUPER SPREADER', 'purple', 'Classic', 2);
@@ -102,10 +97,15 @@ function createSwarm(name: string): PlayerCard {
       allPlayerCards: Array<Array<CardInstance>>
     ): void => {
       const allCards = allPlayerCards.flat();
-      const swarmCount = allCards.filter((c) =>
-        c.card.name.startsWith('SWARM')
+      const swarmCount = allCards.filter(
+        (c) => !c.discarded && c.card.name.startsWith('SWARM')
       ).length;
-      inst.finalB = swarmCount;
+      inst.applyPoints(
+        'B',
+        swarmCount,
+        inst,
+        'for each swarm trait in all trait piles'
+      );
     }
   };
 }
@@ -148,12 +148,29 @@ const symbiosis: PlayerCard = {
 
     const colours = Object.keys(colourCounts);
     if (colours.length < 2) {
-      inst.finalB = 0;
+      inst.applyPoints('B', 0, inst, 'for not having 2+ colours');
       return;
     }
 
     const lowestCount = Math.min(...Object.values(colourCounts));
-    inst.finalB = lowestCount * 2;
+
+    const lowestColours = Object.keys(colourCounts)
+      .filter((colour) => colourCounts[colour] == lowestCount)
+      .map((colour) => colour as CardType);
+    const lowestColour = lowestColours.sort((a, b) => a.localeCompare(b))[0];
+
+    filterCardsByType(allPlayerCards[currentPlayer], lowestColour).forEach(
+      (cardInst) => {
+        cardInst.applyPoints(
+          'B',
+          2,
+          inst,
+          `for being in the smalled trait pile (${lowestColour})`
+        );
+      }
+    );
+
+    // TODO: we need to rescore this after any colour changes
   }
 };
 addCard(symbiosis);

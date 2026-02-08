@@ -1,5 +1,6 @@
 import { CatastopheCard, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
+import { forEachPlayerCards } from './helpers';
 
 // --- Helpers ---
 
@@ -103,8 +104,7 @@ const aiTakeover: CatastopheCard = {
     );
 
     colourlessCards.forEach((c: CardInstance) => {
-      c.finalA = 2;
-      c.finalB = 0;
+      c.applyPoints('C', 2 - c.finalA, inst, 'set points to 2');
       c.skipCalcB = true;
     });
   }
@@ -200,9 +200,16 @@ const deusExMachina: CatastopheCard = {
       }
       const active = activeCards(playerCards);
       if (active.length > 0) {
-        active[0].finalA += faceValue as number;
+        active[0].applyPoints(
+          'C',
+          faceValue as number,
+          inst,
+          'for drawing a trait with face value of ' + faceValue
+        );
       }
     });
+
+    // TODO: would be nice if this allow selection by card name
   },
   metadataRequired: [['drawn_face_values', 'card_per_person', 'global']]
 };
@@ -268,14 +275,20 @@ const greyGoo: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const maxTraits = Math.max(
-      ...allPlayerCards.map((pc) => activeCards(pc).length)
-    );
-    allPlayerCards.forEach((playerCards) => {
-      const active = activeCards(playerCards);
-      if (active.length === maxTraits && active.length > 0) {
-        active[0].finalA -= 5;
+    let maxTraits = 0;
+    let selectedCards: CardInstance[] = [];
+
+    forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
+      if (playerCards.length > maxTraits) {
+        maxTraits = playerCards.length;
+        selectedCards = [playerCards[0]];
+      } else if (playerCards.length === maxTraits) {
+        selectedCards.push(playerCards[0]);
       }
+    });
+
+    selectedCards.forEach((card) => {
+      card.applyPoints('C', -5, inst, 'for having the most traits');
     });
   }
 };
@@ -287,10 +300,10 @@ const iceAge: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
-      activeCards(playerCards).forEach((card) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
+      playerCards.forEach((card) => {
         if (card.type.includes('red')) {
-          card.finalA -= 1;
+          card.applyPoints('C', -1, inst, 'for being a red trait');
         }
       });
     });
@@ -304,12 +317,17 @@ const impactEvent: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Dinolings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
-      const active = activeCards(playerCards);
-      const highValueCount = active.filter((c) => c.finalA >= 3).length;
-      if (active.length > 0) {
-        active[0].finalA -= highValueCount;
-      }
+    forEachPlayerCards(allPlayerCards, (playerCards) => {
+      playerCards.forEach((c) => {
+        if (c.finalA >= 3) {
+          c.applyPoints(
+            'C',
+            -1,
+            inst,
+            'for being a trait with face value of 3 or more'
+          );
+        }
+      });
     });
   }
 };
@@ -357,14 +375,20 @@ const overpopulation: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const minTraits = Math.min(
-      ...allPlayerCards.map((pc) => activeCards(pc).length)
-    );
-    allPlayerCards.forEach((playerCards) => {
-      const active = activeCards(playerCards);
-      if (active.length === minTraits && active.length > 0) {
-        active[0].finalA += 4;
+    let minTraits = 0;
+    let selectedCards: CardInstance[] = [];
+
+    forEachPlayerCards(allPlayerCards, (playerCards) => {
+      if (playerCards.length < minTraits) {
+        minTraits = playerCards.length;
+        selectedCards = [playerCards[0]];
+      } else if (playerCards.length === minTraits) {
+        selectedCards.push(playerCards[0]);
       }
+    });
+
+    selectedCards.forEach((card) => {
+      card.applyPoints('C', 4, inst, 'for having the fewest traits');
     });
   }
 };
@@ -391,7 +415,7 @@ const retrovirus: CatastopheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('green')) {
-          card.finalA -= 1;
+          card.applyPoints('C', -1, inst, 'for being a green trait');
         }
       });
     });
@@ -408,7 +432,7 @@ const solarFlare: CatastopheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('purple')) {
-          card.finalA -= 1;
+          card.applyPoints('C', -1, inst, 'for being a purple trait');
         }
       });
     });
@@ -425,7 +449,7 @@ const superVolcano: CatastopheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('blue')) {
-          card.finalA -= 1;
+          card.applyPoints('C', -1, inst, 'for being a blue trait');
         }
       });
     });
@@ -445,7 +469,12 @@ const theBigOne: CatastopheCard = {
         .sort((a, b) => a.finalA - b.finalA)
         .splice(7, active.length - 7)
         .forEach((card) => {
-          card.finalA -= 2;
+          card.applyPoints(
+            'C',
+            -2,
+            inst,
+            'for having more than 7 traits in your pile'
+          );
         });
     });
   }

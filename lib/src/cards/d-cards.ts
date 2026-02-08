@@ -1,5 +1,6 @@
 import { addBasicCard, addCard } from '../cardContainer';
 import { CardInstance, CardType, PlayerCard } from '../types';
+import { playerCards } from './helpers';
 
 addBasicCard('DEEP ROOTS', 'green', 'Classic', 2);
 addBasicCard('DELICIOUS', 'colourless', 'Classic', 4);
@@ -22,7 +23,7 @@ const dragonHeart: PlayerCard = {
     allPlayerCards,
     currentPlayer: number
   ): void {
-    const currentPlayerCards = allPlayerCards[currentPlayer];
+    const currentPlayerCards = playerCards(allPlayerCards, currentPlayer);
 
     const validColours: readonly CardType[] = [
       'purple',
@@ -35,14 +36,13 @@ const dragonHeart: PlayerCard = {
         .filter((c) =>
           validColours.find((colour) => c.card.type.includes(colour))
         )
-        .map((c) => c.card.type)
-        .flat()
+        .flatMap((c) => c.card.type)
     );
 
     if (uniqueMatchingColours.size === validColours.length) {
-      card.finalB = 4;
+      card.applyPoints('B', 4, card, 'all 4 colours are present');
     } else {
-      card.finalB = 0;
+      card.applyPoints('B', 0, card, 'not all 4 colours are present');
     }
   }
 };

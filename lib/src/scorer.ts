@@ -72,15 +72,6 @@ export class Scorer {
 
       inst.card.calcC?.(inst, filteredPlayerCards);
     });
-    // Zero out discarded cards
-    this.allPlayerCards.forEach((playerCards) => {
-      playerCards.forEach((inst) => {
-        if (inst.discarded) {
-          inst.finalA = 0;
-          inst.finalB = 0;
-        }
-      });
-    });
     // calc B (modifiers based on traits) - skips discarded and catastrophe-overridden cards
     this.allPlayerCards.forEach((playerCards, i) => {
       playerCards.forEach((inst) => {
@@ -94,18 +85,29 @@ export class Scorer {
         }
       });
     });
+    // Zero out discarded cards
+    this.allPlayerCards.forEach((playerCards) => {
+      playerCards.forEach((inst) => {
+        if (inst.discarded) {
+          inst.applyPoints(
+            'C',
+            -(inst.finalA + (inst.finalB ?? 0)),
+            inst,
+            'Discarded'
+          );
+        }
+      });
+    });
 
     const playerScores: PlayerScore[] = this.allPlayerCards.map(
       (playerCards) => {
         const playerCardsScores: CardScore[] = playerCards.map((c) => {
           const finalA = c.finalA;
           const finalB = c.finalB;
+          const finalC = c.finalC;
           const discarded = c.discarded;
-          const total = discarded
-            ? 0
-            : finalB !== undefined
-              ? finalA + finalB
-              : undefined;
+          const total =
+            finalB !== undefined ? finalA + finalB + finalC : undefined;
           const generatedMetadata =
             Object.keys(c.generatedMetadata).length > 0
               ? { ...c.generatedMetadata }
@@ -181,6 +183,20 @@ export class GameScore {
       throw new Error(`Player of index ${playerIndex} not found`);
     }
     return playerScore;
+  }
+
+  getPlayerCardsWithGeneratedMetadata() {
+    let cardsWithGeneratedMetadata: { card: CardScore, playerIndex: number, cardIndex: number }[] = [];
+    this.playerScores.forEach(
+      (playerScore, playerIndex) => playerScore.getCardScores().forEach(
+        (cardScore, cardIndex) => {
+          if (cardScore.generatedMetadata && Object.keys(cardScore.generatedMetadata).length > 0) {
+            cardsWithGeneratedMetadata.push({ card: cardScore, playerIndex, cardIndex });
+          }
+        }
+      )
+    )
+    return cardsWithGeneratedMetadata;
   }
 
   getCatastropheGeneratedMetadata(): Array<

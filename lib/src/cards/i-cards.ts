@@ -1,5 +1,6 @@
 import { addBasicCard, addCard } from '../cardContainer';
 import { CardInstance, PlayerCard } from '../types';
+import { playerCards } from './helpers';
 
 addBasicCard('ICY', 'blue', 'Mythlings', 3);
 
@@ -15,12 +16,16 @@ const immunity: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const currentPlayerCards = allPlayerCards[currentPlayer];
-    // TODO: Fix me - this only works if the instance is put back.
-    const negativeFaceValueTraitsCount = currentPlayerCards.filter(
-      (c) => c.finalA < 0
-    ).length;
-    inst.finalB = negativeFaceValueTraitsCount * 2;
+    playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
+      if (cardInst.finalA < 0) {
+        cardInst.applyPoints(
+          'B',
+          2,
+          inst,
+          'for being a negative face value trait'
+        );
+      }
+    });
   }
 };
 addCard(immunity);

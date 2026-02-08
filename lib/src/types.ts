@@ -31,7 +31,8 @@ const simpleMetaDataTypes = [
   'number',
   'trait',
   'CardType',
-  'catastrophe'
+  'catastrophe',
+  'player_card'
 ] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
@@ -100,11 +101,19 @@ export class CardInstance {
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
   finalB: number | undefined = 0;
+  finalC: number = 0;
   metadataComplete: boolean = true;
   metadata: Metadata;
   discarded: boolean = false;
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
+  pointsLog: Array<{
+    phase: 'A' | 'B' | 'C';
+    phaseSubtotal: number | undefined;
+    points: number | undefined;
+    fromCard: CardInstance;
+    message: string;
+  }> = [];
 
   constructor(card: Card, metadata: Metadata) {
     this.card = card;
@@ -120,6 +129,37 @@ export class CardInstance {
 
   setOverride(key: string, value: string[] | string | number) {
     this.overrides[key] = value;
+  }
+
+  applyPoints(
+    phase: 'A' | 'B' | 'C',
+    points: number | undefined,
+    fromCard: CardInstance,
+    message: string
+  ) {
+    let finalPoints: number | undefined = undefined;
+    let finalMessage: string = message;
+    let phaseSubtotal: number | undefined = undefined;
+
+    if (phase === 'A') {
+      throw new Error('Cannot modify finalA points');
+    } else if (phase === 'B') {
+      // undefined is due to metadata not being set, this will update once the metadata is set
+      if (this.finalB !== undefined) {
+        if (points === undefined) {
+          // this is a edge case related to other player card counts.
+          this.finalB = undefined;
+          finalMessage += '; Reset B phase due to missing data';
+        } else {
+          this.finalB += points;
+        }
+        phaseSubtotal = this.finalB
+      }
+    } else if (phase === 'C') {
+      this.finalC += points ?? 0;
+      phaseSubtotal = this.finalC;
+    }
+    this.pointsLog.push({ phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
   }
 }
 
