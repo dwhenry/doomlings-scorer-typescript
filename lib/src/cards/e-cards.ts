@@ -1,5 +1,9 @@
 import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard, addCardThatPointsByColour } from '../cardContainer';
+import {
+  addCard,
+  addBasicCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
 import { filterCardByPack, playerCards } from './helpers';
 
 addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
@@ -21,9 +25,14 @@ const elven_ears: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     _currentPlayer: number
   ): void => {
-    const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings')
+    const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings');
 
-    inst.applyPoints('B', mythlingCards.length, inst, 'for mythling cards for all players');
+    inst.applyPoints(
+      'B',
+      mythlingCards.length,
+      inst,
+      'for mythling cards for all players'
+    );
   }
 };
 addCard(elven_ears);

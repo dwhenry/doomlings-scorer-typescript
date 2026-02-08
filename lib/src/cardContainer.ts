@@ -50,7 +50,7 @@ export function addCardThatPointsByColour(
   pack: PackType,
   score: number,
   colour: CardType,
-  pointsPerCard: number,
+  pointsPerCard: number
 ) {
   const card: PlayerCard = {
     name: name,
@@ -64,9 +64,16 @@ export function addCardThatPointsByColour(
       allPlayerCards: Array<Array<CardInstance>>,
       currentPlayer: number
     ): void => {
-      filterCardsByType(allPlayerCards[currentPlayer], colour).forEach((colourInst) => {
-        colourInst.applyPoints('B', pointsPerCard, inst, `for being a ${colour} card`);
-      })
+      filterCardsByType(allPlayerCards[currentPlayer], colour).forEach(
+        (colourInst) => {
+          colourInst.applyPoints(
+            'B',
+            pointsPerCard,
+            inst,
+            `for being a ${colour} card`
+          );
+        }
+      );
     }
   };
   addCard(card);

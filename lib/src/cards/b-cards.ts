@@ -83,7 +83,12 @@ const branches: PlayerCard = {
       }
     });
 
-    inst.applyPoints('B', points, inst, 'point for each pair of green card in opponents hands');
+    inst.applyPoints(
+      'B',
+      points,
+      inst,
+      'point for each pair of green card in opponents hands'
+    );
 
     // TODO: we need to queue this card for post-processing as card colours can change
   }

@@ -14,10 +14,12 @@ const faith: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    filterCardsByType(allPlayerCards[currentPlayer], inst.metadata.fromColour!)
-      .forEach((card) => {
-        card.setOverride('type', [inst.metadata.toColour!]);
-      });
+    filterCardsByType(
+      allPlayerCards[currentPlayer],
+      inst.metadata.fromColour!
+    ).forEach((card) => {
+      card.setOverride('type', [inst.metadata.toColour!]);
+    });
 
     // TODO: so this need to re-score any cards that rely on card colour
   },

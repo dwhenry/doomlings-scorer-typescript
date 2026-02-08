@@ -27,7 +27,12 @@ const viral: PlayerCard = {
       if (playerIndex !== currentPlayer) {
         playerCards.forEach((card) => {
           if (card.type.includes(chosenColour)) {
-            card.applyPoints('B', -1, inst, 'for being a ' + chosenColour + ' trait');
+            card.applyPoints(
+              'B',
+              -1,
+              inst,
+              'for being a ' + chosenColour + ' trait'
+            );
           }
         });
       }

@@ -89,7 +89,12 @@ export class Scorer {
     this.allPlayerCards.forEach((playerCards) => {
       playerCards.forEach((inst) => {
         if (inst.discarded) {
-          inst.applyPoints('C', -(inst.finalA + (inst.finalB ?? 0)), inst, 'Discarded');
+          inst.applyPoints(
+            'C',
+            -(inst.finalA + (inst.finalB ?? 0)),
+            inst,
+            'Discarded'
+          );
         }
       });
     });
@@ -101,9 +106,8 @@ export class Scorer {
           const finalB = c.finalB;
           const finalC = c.finalC;
           const discarded = c.discarded;
-          const total = finalB !== undefined
-            ? finalA + finalB + finalC
-            : undefined;
+          const total =
+            finalB !== undefined ? finalA + finalB + finalC : undefined;
           const generatedMetadata =
             Object.keys(c.generatedMetadata).length > 0
               ? { ...c.generatedMetadata }

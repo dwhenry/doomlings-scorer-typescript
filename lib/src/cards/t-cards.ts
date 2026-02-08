@@ -1,5 +1,9 @@
 import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard, addCardThatPointsByColour } from '../cardContainer';
+import {
+  addCard,
+  addBasicCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
 import { isEffectless, hasAction, isDominant } from './effect_cards';
 import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
@@ -9,7 +13,14 @@ addBasicCard('TELEKINETIC', 'purple', 'Classic', 1);
 addBasicCard('TENTACLES', 'blue', 'Classic', 1);
 addBasicCard('TERRITORIAL', 'red', 'Classic', 1);
 addBasicCard('TERROR BEAK', 'blue', 'Dinolings', 3);
-addCardThatPointsByColour('TETRACHROMATIC', 'purple', 'multi-colour', 4, 'colourless', -1);
+addCardThatPointsByColour(
+  'TETRACHROMATIC',
+  'purple',
+  'multi-colour',
+  4,
+  'colourless',
+  -1
+);
 addBasicCard('THAGOMIZER', 'green', 'Dinolings', 1);
 
 // --- Sign Cards (Meaning of Life) ---
@@ -27,8 +38,8 @@ const theBilbies: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const dominantCount = playerCards(allPlayerCards, currentPlayer).filter((c: CardInstance) =>
-      isDominant(c.card.name)
+    const dominantCount = playerCards(allPlayerCards, currentPlayer).filter(
+      (c: CardInstance) => isDominant(c.card.name)
     ).length;
     if (dominantCount === 0) {
       inst.applyPoints('B', 8, inst, 'for having no dominant traits');
@@ -53,7 +64,10 @@ const theCabochon: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const redCount = filterCardsByType(allPlayerCards[currentPlayer], 'red').length;
+    const redCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'red'
+    ).length;
     if (redCount === 0) {
       inst.applyPoints('B', 6, inst, 'for having no red traits');
     } else if (redCount <= 2) {
@@ -107,7 +121,7 @@ const theDancer: PlayerCard = {
     if (typeof inst.metadata.bonus_post_as_not_implemented !== 'number') {
       throw new Error('invalid data for metadata field has_fewest_points');
     }
-    inst.finalB = inst.metadata.bonus_post_as_not_implemented
+    inst.finalB = inst.metadata.bonus_post_as_not_implemented;
 
     // TODO: we want to add this as a scoring stage??
   },
@@ -128,7 +142,10 @@ const theFellmonger: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const blueCount = filterCardsByType(allPlayerCards[currentPlayer], 'blue').length;
+    const blueCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'blue'
+    ).length;
     if (blueCount === 0) {
       inst.applyPoints('B', 6, inst, 'for having no blue traits');
     } else if (blueCount <= 2) {
@@ -153,7 +170,10 @@ const theJellyfish: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const blueCount = filterCardsByType(allPlayerCards[currentPlayer], 'blue').length;
+    const blueCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'blue'
+    ).length;
     if (blueCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ blue traits');
     } else if (blueCount >= 3) {
@@ -178,15 +198,20 @@ const theLogician: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const effectlessCount = playerCards(allPlayerCards, currentPlayer).filter((c) =>
-      isEffectless(c.card.name)
+    const effectlessCount = playerCards(allPlayerCards, currentPlayer).filter(
+      (c) => isEffectless(c.card.name)
     ).length;
     if (effectlessCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ effectless traits');
     } else if (effectlessCount >= 3) {
       inst.applyPoints('B', 3, inst, 'for having 3-5 effectless traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 effectless traits');
+      inst.applyPoints(
+        'B',
+        0,
+        inst,
+        'for having less than 3 effectless traits'
+      );
     }
   }
 };
@@ -205,7 +230,10 @@ const theLumberjack: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const greenCount = filterCardsByType(allPlayerCards[currentPlayer], 'green').length;
+    const greenCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'green'
+    ).length;
     if (greenCount === 0) {
       inst.applyPoints('B', 6, inst, 'for having no green traits');
     } else if (greenCount <= 2) {
@@ -230,7 +258,10 @@ const theMagician: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const colourlessCount = filterCardsByType(allPlayerCards[currentPlayer], 'colourless').length;
+    const colourlessCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'colourless'
+    ).length;
     if (colourlessCount === 0) {
       inst.applyPoints('B', 6, inst, 'for having no colourless traits');
     } else if (colourlessCount <= 2) {
@@ -280,7 +311,10 @@ const theSoothsayer: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const purpleCount = filterCardsByType(allPlayerCards[currentPlayer], 'purple').length;
+    const purpleCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'purple'
+    ).length;
     if (purpleCount === 0) {
       inst.applyPoints('B', 6, inst, 'for having no purple traits');
     } else if (purpleCount <= 2) {
@@ -305,13 +339,21 @@ const theSpiritGardener: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const colourlessCount = filterCardsByType(allPlayerCards[currentPlayer], 'colourless').length;
+    const colourlessCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'colourless'
+    ).length;
     if (colourlessCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ colourless traits');
     } else if (colourlessCount >= 3) {
       inst.applyPoints('B', 3, inst, 'for having 3-5 colourless traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 colourless traits');
+      inst.applyPoints(
+        'B',
+        0,
+        inst,
+        'for having less than 3 colourless traits'
+      );
     }
   }
 };
@@ -372,13 +414,28 @@ const theVagrant: PlayerCard = {
     });
 
     if (minOther === undefined) {
-      inst.applyPoints('B', undefined, inst, 'Error: not card count for other players');
+      inst.applyPoints(
+        'B',
+        undefined,
+        inst,
+        'Error: not card count for other players'
+      );
     } else if (myCount < minOther) {
-      inst.applyPoints('B', 7, inst, 'for having fewer traits than all opponents');
+      inst.applyPoints(
+        'B',
+        7,
+        inst,
+        'for having fewer traits than all opponents'
+      );
     } else if (myCount === minOther) {
       inst.applyPoints('B', 2, inst, 'for having tied for fewest traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having more traits than all opponents');
+      inst.applyPoints(
+        'B',
+        0,
+        inst,
+        'for having more traits than all opponents'
+      );
     }
   }
 };
@@ -397,7 +454,10 @@ const theVixen: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const purpleCount = filterCardsByType(allPlayerCards[currentPlayer], 'purple').length;
+    const purpleCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'purple'
+    ).length;
     if (purpleCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ purple traits');
     } else if (purpleCount >= 3) {
@@ -422,7 +482,10 @@ const theWarbler: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const greenCount = filterCardsByType(allPlayerCards[currentPlayer], 'green').length;
+    const greenCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'green'
+    ).length;
     if (greenCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ green traits');
     } else if (greenCount >= 3) {
@@ -447,7 +510,10 @@ const theWarrior: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const redCount = filterCardsByType(allPlayerCards[currentPlayer], 'red').length;
+    const redCount = filterCardsByType(
+      allPlayerCards[currentPlayer],
+      'red'
+    ).length;
     if (redCount >= 6) {
       inst.applyPoints('B', 6, inst, 'for having 6+ red traits');
     } else if (redCount >= 3) {
@@ -488,7 +554,12 @@ const theWeaver: PlayerCard = {
     });
     // Number of complete sets = minimum count across all 4 colours
     const completeSets = Math.min(...Object.values(colourCounts));
-    inst.applyPoints('B', completeSets * 3, inst, 'for having ' + completeSets + ' complete sets of all 4 colours');
+    inst.applyPoints(
+      'B',
+      completeSets * 3,
+      inst,
+      'for having ' + completeSets + ' complete sets of all 4 colours'
+    );
 
     // TODO: should we be counting multi-colour cards in a different way
   }
@@ -509,7 +580,12 @@ const tiny: PlayerCard = {
     currentPlayer: number
   ): void => {
     const traitCount = playerCards(allPlayerCards, currentPlayer).length;
-    inst.applyPoints('B', -traitCount, inst, 'for having ' + traitCount + ' traits');
+    inst.applyPoints(
+      'B',
+      -traitCount,
+      inst,
+      'for having ' + traitCount + ' traits'
+    );
   }
 };
 addCard(tiny);

@@ -13,7 +13,12 @@ const nano: PlayerCard = {
     if (typeof inst.metadata.host_face_value !== 'number') {
       throw new Error('invalid data for metadata field host_face_value');
     }
-    inst.applyPoints('B', inst.metadata.host_face_value, inst, 'for being a host trait');
+    inst.applyPoints(
+      'B',
+      inst.metadata.host_face_value,
+      inst,
+      'for being a host trait'
+    );
 
     // TODO: add selection of existing card by name
   },

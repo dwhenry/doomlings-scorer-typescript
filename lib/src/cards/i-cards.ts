@@ -16,13 +16,16 @@ const immunity: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    playerCards(allPlayerCards, currentPlayer).forEach(
-      (cardInst) => {
-        if (cardInst.finalA < 0) {
-          cardInst.applyPoints('B', 2, inst, 'for being a negative face value trait');
-        }
+    playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
+      if (cardInst.finalA < 0) {
+        cardInst.applyPoints(
+          'B',
+          2,
+          inst,
+          'for being a negative face value trait'
+        );
       }
-    )
+    });
   }
 };
 addCard(immunity);

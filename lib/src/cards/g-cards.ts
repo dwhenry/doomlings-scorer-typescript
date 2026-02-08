@@ -18,9 +18,10 @@ const gmo: PlayerCard = {
     currentPlayer: number
   ): void => {
     const chosenTraits = inst.metadata['attached_trait']! as CardType[];
-    const playerCardsMatchingTrait = playerCards(allPlayerCards, currentPlayer).filter((a) =>
-      a.card.type.find((type) => chosenTraits.includes(type))
-    );
+    const playerCardsMatchingTrait = playerCards(
+      allPlayerCards,
+      currentPlayer
+    ).filter((a) => a.card.type.find((type) => chosenTraits.includes(type)));
     inst.finalB = playerCardsMatchingTrait.length;
   },
   // TODO: Change me to use a better mechanism !!!! - allow selection of existing card by name
@@ -47,7 +48,12 @@ const gratitude: PlayerCard = {
         .flatMap((a) => a.card.type)
         .filter((c) => c !== 'colourless' && c !== 'catastrophe')
     );
-    inst.applyPoints('B', uniquePlayerTraits.size, inst, 'number of unique player traits');
+    inst.applyPoints(
+      'B',
+      uniquePlayerTraits.size,
+      inst,
+      'number of unique player traits'
+    );
   }
 };
 addCard(gratitude);

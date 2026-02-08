@@ -1,4 +1,8 @@
-import { addBasicCard, addCard, addCardThatPointsByColour } from '../cardContainer';
+import {
+  addBasicCard,
+  addCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
 import { CardInstance, PlayerCard } from '../types';
 
 addBasicCard('HAND-WING', ['red', 'purple'], 'multi-colour', 1);
@@ -17,7 +21,12 @@ const hyperMyelination: PlayerCard = {
     if (typeof inst.metadata.biggest_gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.applyPoints('B', inst.metadata.biggest_gene_pool_size, inst, 'biggest gene pool size');
+    inst.applyPoints(
+      'B',
+      inst.metadata.biggest_gene_pool_size,
+      inst,
+      'biggest gene pool size'
+    );
   },
   metadataRequired: [['biggest_gene_pool_size', 'number', 'global']]
 };

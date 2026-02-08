@@ -200,7 +200,12 @@ const deusExMachina: CatastopheCard = {
       }
       const active = activeCards(playerCards);
       if (active.length > 0) {
-        active[0].applyPoints('C', faceValue as number, inst, 'for drawing a trait with face value of ' + faceValue);
+        active[0].applyPoints(
+          'C',
+          faceValue as number,
+          inst,
+          'for drawing a trait with face value of ' + faceValue
+        );
       }
     });
 
@@ -271,7 +276,7 @@ const greyGoo: CatastopheCard = {
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let maxTraits = 0;
-    let selectedCards: CardInstance[] = []
+    let selectedCards: CardInstance[] = [];
 
     forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
       if (playerCards.length > maxTraits) {
@@ -315,10 +320,14 @@ const impactEvent: CatastopheCard = {
     forEachPlayerCards(allPlayerCards, (playerCards) => {
       playerCards.forEach((c) => {
         if (c.finalA >= 3) {
-          c.applyPoints('C', -1, inst, 'for being a trait with face value of 3 or more');
-
+          c.applyPoints(
+            'C',
+            -1,
+            inst,
+            'for being a trait with face value of 3 or more'
+          );
         }
-      })
+      });
     });
   }
 };
@@ -367,7 +376,7 @@ const overpopulation: CatastopheCard = {
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let minTraits = 0;
-    let selectedCards: CardInstance[] = []
+    let selectedCards: CardInstance[] = [];
 
     forEachPlayerCards(allPlayerCards, (playerCards) => {
       if (playerCards.length < minTraits) {
@@ -460,7 +469,12 @@ const theBigOne: CatastopheCard = {
         .sort((a, b) => a.finalA - b.finalA)
         .splice(7, active.length - 7)
         .forEach((card) => {
-          card.applyPoints('C', -2, inst, 'for having more than 7 traits in your pile');
+          card.applyPoints(
+            'C',
+            -2,
+            inst,
+            'for having more than 7 traits in your pile'
+          );
         });
     });
   }

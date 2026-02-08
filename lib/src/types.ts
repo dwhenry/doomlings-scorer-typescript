@@ -106,7 +106,12 @@ export class CardInstance {
   discarded: boolean = false;
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
-  pointsLog: Array<{ phase: 'A' | 'B' | 'C', points: number | undefined, fromCard: CardInstance, message: string }> = [];
+  pointsLog: Array<{
+    phase: 'A' | 'B' | 'C';
+    points: number | undefined;
+    fromCard: CardInstance;
+    message: string;
+  }> = [];
 
   constructor(card: Card, metadata: Metadata) {
     this.card = card;
@@ -124,7 +129,12 @@ export class CardInstance {
     this.overrides[key] = value;
   }
 
-  applyPoints(phase: 'A' | 'B' | 'C', points: number | undefined, fromCard: CardInstance, message: string) {
+  applyPoints(
+    phase: 'A' | 'B' | 'C',
+    points: number | undefined,
+    fromCard: CardInstance,
+    message: string
+  ) {
     this.pointsLog.push({ phase, points, fromCard, message });
     if (phase === 'A') {
       throw new Error('Cannot modify finalA points');

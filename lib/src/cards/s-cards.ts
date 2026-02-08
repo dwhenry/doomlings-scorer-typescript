@@ -1,5 +1,9 @@
 import { PlayerCard, CardInstance, CardType } from '../types';
-import { addCard, addBasicCard, addCardThatPointsByColour } from '../cardContainer';
+import {
+  addCard,
+  addBasicCard,
+  addCardThatPointsByColour
+} from '../cardContainer';
 import { isDominant } from './effect_cards';
 import { filterCardsByType, playerCards } from './helpers';
 
@@ -28,9 +32,16 @@ const sentience: PlayerCard = {
       throw new Error('invalid data for metadata field colour');
     }
     const chosenColour = inst.metadata.colour as CardType;
-    filterCardsByType(allPlayerCards[currentPlayer], chosenColour).forEach((cardInst) => {
-      cardInst.applyPoints('B', 1, inst, `for being a chosen colour (${chosenColour}) card`);
-    })
+    filterCardsByType(allPlayerCards[currentPlayer], chosenColour).forEach(
+      (cardInst) => {
+        cardInst.applyPoints(
+          'B',
+          1,
+          inst,
+          `for being a chosen colour (${chosenColour}) card`
+        );
+      }
+    );
   },
   metadataRequired: [['colour', 'CardType', 'card']]
 };
@@ -53,14 +64,21 @@ const serratedTeeth: PlayerCard = {
       if (isDominant(cardInst.card.name)) {
         cardInst.applyPoints('B', -2, inst, 'for being a dominant trait');
       }
-    })
+    });
   }
 };
 addCard(serratedTeeth);
 
 addBasicCard('SNEAKY', 'purple', 'Classic', 2);
 addBasicCard('SPINY', 'blue', 'Classic', 1);
-addCardThatPointsByColour('STICKY SECRETIONS', 'purple', 'Classic', -1, 'purple', 1);
+addCardThatPointsByColour(
+  'STICKY SECRETIONS',
+  'purple',
+  'Classic',
+  -1,
+  'purple',
+  1
+);
 addBasicCard('STONE SKIN', 'red', 'Classic', 2);
 addBasicCard('SUBDERMAL PLATING', 'purple', 'Techlings', -1);
 addBasicCard('SUPER SPREADER', 'purple', 'Classic', 2);
@@ -79,10 +97,15 @@ function createSwarm(name: string): PlayerCard {
       allPlayerCards: Array<Array<CardInstance>>
     ): void => {
       const allCards = allPlayerCards.flat();
-      const swarmCount = allCards.filter((c) =>
-        !c.discarded && c.card.name.startsWith('SWARM')
+      const swarmCount = allCards.filter(
+        (c) => !c.discarded && c.card.name.startsWith('SWARM')
       ).length;
-      inst.applyPoints('B', swarmCount, inst, 'for each swarm trait in all trait piles');
+      inst.applyPoints(
+        'B',
+        swarmCount,
+        inst,
+        'for each swarm trait in all trait piles'
+      );
     }
   };
 }
@@ -131,12 +154,21 @@ const symbiosis: PlayerCard = {
 
     const lowestCount = Math.min(...Object.values(colourCounts));
 
-    const lowestColours = Object.keys(colourCounts).filter((colour) => colourCounts[colour] == lowestCount).map((colour) => colour as CardType);
+    const lowestColours = Object.keys(colourCounts)
+      .filter((colour) => colourCounts[colour] == lowestCount)
+      .map((colour) => colour as CardType);
     const lowestColour = lowestColours.sort((a, b) => a.localeCompare(b))[0];
 
-    filterCardsByType(allPlayerCards[currentPlayer], lowestColour).forEach((cardInst) => {
-      cardInst.applyPoints('B', 2, inst, `for being in the smalled trait pile (${lowestColour})`)
-    })
+    filterCardsByType(allPlayerCards[currentPlayer], lowestColour).forEach(
+      (cardInst) => {
+        cardInst.applyPoints(
+          'B',
+          2,
+          inst,
+          `for being in the smalled trait pile (${lowestColour})`
+        );
+      }
+    );
 
     // TODO: we need to rescore this after any colour changes
   }

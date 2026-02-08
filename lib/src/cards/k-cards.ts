@@ -20,7 +20,7 @@ function createKidney(name: string): PlayerCard {
         if (c.card.name.startsWith('KIDNEY')) {
           c.applyPoints('B', 1, inst, 'for being a kidney card');
         }
-      })
+      });
     }
   };
 }

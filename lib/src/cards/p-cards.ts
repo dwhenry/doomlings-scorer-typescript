@@ -57,7 +57,12 @@ const packBehavior: PlayerCard = {
     } else {
       pairCount = maxPairCount;
     }
-    inst.applyPoints('B', pairCount + multiColourCount, inst, 'point for each pair of colours');
+    inst.applyPoints(
+      'B',
+      pairCount + multiColourCount,
+      inst,
+      'point for each pair of colours'
+    );
 
     // TODO: we need to rescore this after any colour changes
   }
@@ -84,12 +89,11 @@ const pollination: PlayerCard = {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    playerCards(allPlayerCards, currentPlayer)
-      .forEach((cardInst) => {
-        if (cardInst.finalA === 1) {
-          cardInst.applyPoints('B', 1, inst, 'for having a face value of 1')
-        }
-      })
+    playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
+      if (cardInst.finalA === 1) {
+        cardInst.applyPoints('B', 1, inst, 'for having a face value of 1');
+      }
+    });
   }
 };
 addCard(pollination);
