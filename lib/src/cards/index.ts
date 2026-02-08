@@ -3,7 +3,7 @@ import './ages';
 import './b-cards';
 import './c-cards';
 import './d-cards';
-import './catastophe';
+import './catastrophe';
 import './e-cards';
 import './f-cards';
 import './g-cards';

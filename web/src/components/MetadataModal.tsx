@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import { TRAIT_CARD_TYPES } from '@scorer/types';
+import { Card, TRAIT_CARD_TYPES } from '@scorer/types';
 import type { MetadataField } from '../utils/cardMetadata';
-import type { PlayerCardEntry } from '../types';
+import type { CardEntry } from '../types';
 
 interface MetadataModalProps {
   cardName: string;
-  selectedCatastrophes: string[];
+  selectedCatastrophes: CardEntry[];
   playerCardNames: string[];
+  playerCount: number;
   fields: MetadataField[];
   internalFields: MetadataField[];
   internalValues: Record<string, string | number | string[]>;
-  currentValues: PlayerCardEntry;
-  onSave: (values: Record<string, string | number>) => void;
+  currentValues: CardEntry;
+  onSave: (values: Record<string, string | number | string[]>) => void;
   onClose: () => void;
 }
 
@@ -36,6 +37,7 @@ export default function MetadataModal({
   cardName,
   selectedCatastrophes,
   playerCardNames,
+  playerCount,
   fields,
   internalFields,
   internalValues,
@@ -44,25 +46,50 @@ export default function MetadataModal({
   onClose
 }: MetadataModalProps) {
   const [values, setValues] = useState<Record<string, string | number>>({});
+  const [arrayValues, setArrayValues] = useState<Record<string, string[]>>({});
+
   const hasEditableFields = fields.length > 0;
 
   useEffect(() => {
     const initial: Record<string, string | number> = {};
+    const initialArray: Record<string, string[]> = {};
     fields.forEach((f) => {
-      const existing = currentValues[f.key];
-      if (existing !== undefined && existing !== '') {
-        initial[f.key] = existing as string | number;
+      if (f.type === 'card_per_person') {
+        const existing = currentValues[f.key];
+        if (existing !== undefined && existing !== '') {
+          initialArray[f.key] = existing as string[];
+        } else {
+          initialArray[f.key] = Array.from(
+            { length: playerCount },
+            (_, pos) => pos
+          ).map(() => '');
+        }
+      } else {
+        const existing = currentValues[f.key];
+        if (existing !== undefined && existing !== '') {
+          initial[f.key] = existing as string | number;
+        }
       }
     });
     setValues(initial);
+    setArrayValues(initialArray);
   }, [fields, currentValues]);
 
   const allValid = fields.every((f) => {
     const val = values[f.key];
-    if (val === undefined || val === '') return false;
-    if (f.type === 'number' || f.type === 'catastrophe')
-      return typeof val === 'number' || !isNaN(Number(val));
-    return true;
+    if (val) {
+      if (val === '') return false;
+      if (f.type === 'number' || f.type === 'catastrophe')
+        return typeof val === 'number' || !isNaN(Number(val));
+      return true;
+    }
+    const arrayVal = arrayValues[f.key];
+    if (arrayVal) {
+      if (arrayVal.length === 0) return false;
+      if (arrayVal.some((v) => v === '')) return false;
+      return true;
+    }
+    return false;
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -72,10 +99,16 @@ export default function MetadataModal({
       return;
     }
     if (!allValid) return;
-    const coerced: Record<string, string | number> = {};
+    const coerced: Record<string, string | number | string[]> = {};
     fields.forEach((f) => {
       const val = values[f.key];
-      coerced[f.key] = f.type === 'number' ? Number(val) : val;
+      if (val) {
+        coerced[f.key] = f.type === 'number' ? Number(val) : val;
+      }
+      const arrayVal = arrayValues[f.key];
+      if (arrayVal) {
+        coerced[f.key] = arrayVal;
+      }
     });
     onSave(coerced);
   }
@@ -114,8 +147,9 @@ export default function MetadataModal({
                     <option key={`catastrophe-${position}`} value={position}>
                       {/* populate the catastrophe name here from the index if it
                       has been selected */}
-                      {selectedCatastrophes[position] ||
-                        `Catastrophe ${position + 1}`}
+                      {selectedCatastrophes[position]
+                        ? selectedCatastrophes[position].name
+                        : `Catastrophe ${position + 1}`}
                     </option>
                   ))}
                 </select>
@@ -166,6 +200,32 @@ export default function MetadataModal({
                   ))}
                 </select>
               )}
+              {field.type === 'card_per_person' &&
+                Array.from({ length: playerCount }, (_, pos) => pos).map(
+                  (pos) => {
+                    if (!arrayValues[field.key]) arrayValues[field.key] = [];
+                    return (
+                      <label>
+                        Player {pos + 1}:
+                        <input
+                          id={`meta-${field.key}-${pos}`}
+                          type="number"
+                          value={arrayValues[field.key][pos] ?? ''}
+                          onChange={(e) =>
+                            setArrayValues((v) => {
+                              const newValues = [...v[field.key]];
+                              newValues[pos] = e.target.value;
+                              return {
+                                ...v,
+                                [field.key]: newValues
+                              };
+                            })
+                          }
+                        />
+                      </label>
+                    );
+                  }
+                )}
             </div>
           ))}
 
