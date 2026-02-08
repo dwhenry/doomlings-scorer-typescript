@@ -16,7 +16,7 @@ export default function Header({
   onPacksChange,
   playerCount,
   onPlayerCountChange,
-  children,
+  children
 }: HeaderProps) {
   const [showControls, setShowControls] = useState(false);
 

@@ -1,6 +1,10 @@
 import type { PlayerState, CardGroup, Card } from '../types';
 import type { GameScore } from '@scorer/scorer';
-import { getCardMetadataFields, isMetadataComplete, hasCardScopedMetadata } from '../utils/cardMetadata';
+import {
+  getCardMetadataFields,
+  isMetadataComplete,
+  hasCardScopedMetadata
+} from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import PlayerCard from './PlayerCard';
 
@@ -33,36 +37,51 @@ function buildCardGroups(
     const metadataMissing = hasMetadata && !isMetadataComplete(card, fields);
     const isCardScoped = hasCardScopedMetadata(fields);
 
-    let cardScore: { finalA: number; finalB: number | undefined; total: number | undefined } = { finalA: 0, finalB: 0, total: 0 };
+    let cardScore: {
+      finalA: number;
+      finalB: number | undefined;
+      total: number | undefined;
+      discarded?: boolean;
+    } = { finalA: 0, finalB: 0, total: 0 };
     if (gameScore) {
       try {
         const ps = gameScore.getPlayerScore(playerIndex);
         const cs = ps.getCardScoreByIndex(cardIndex);
-        cardScore = { finalA: cs.finalA, finalB: cs.finalB, total: cs.total };
+        cardScore = {
+          finalA: cs.finalA,
+          finalB: cs.finalB,
+          total: cs.total,
+          discarded: cs.discarded
+        };
       } catch {
         // card may not have a score yet
       }
     }
+    const isDiscarded = cardScore.discarded === true;
 
     // Card-scoped metadata cards are never grouped
     if (isCardScoped) {
       individualCards.push({
         name: card.name,
         count: 1,
-        totalScore: gameScore && cardScore.total !== undefined ? cardScore.total : null,
+        totalScore:
+          gameScore && cardScore.total !== undefined ? cardScore.total : null,
         perCardScores: [cardScore],
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
+        discardedIndices: isDiscarded ? [cardIndex] : []
       });
       return;
     }
 
-    const existing = groups.get(card.name);
+    const key = `${card.name}-${isDiscarded ? 'discarded' : ''}`;
+    const existing = groups.get(key);
     if (existing) {
       existing.count++;
       existing.perCardScores.push(cardScore);
       existing.cardIndices.push(cardIndex);
+      if (isDiscarded) existing.discardedIndices.push(cardIndex);
       if (cardScore.total !== undefined && existing.totalScore !== null) {
         existing.totalScore = existing.totalScore + cardScore.total;
       } else {
@@ -71,14 +90,16 @@ function buildCardGroups(
       // If any instance is missing metadata, mark the group
       if (metadataMissing) existing.metadataMissing = true;
     } else {
-      groups.set(card.name, {
+      groups.set(key, {
         name: card.name,
         count: 1,
-        totalScore: gameScore && cardScore.total !== undefined ? cardScore.total : null,
+        totalScore:
+          gameScore && cardScore.total !== undefined ? cardScore.total : null,
         perCardScores: [cardScore],
         hasMetadata,
         metadataMissing,
         cardIndices: [cardIndex],
+        discardedIndices: isDiscarded ? [cardIndex] : []
       });
     }
   });
@@ -98,17 +119,21 @@ export default function PlayerSection({
   onHover,
   onDropCard,
   gameScore,
-  cardsMap,
+  cardsMap
 }: PlayerSectionProps) {
   const isMobile = !useMediaQuery('(min-width: 768px)');
 
   // Mobile focused view: only show the player we're adding cards for
   if (isMobile && mobileAddingForPlayer !== null) {
-    const playerIndex = players.findIndex((p) => p.id === mobileAddingForPlayer);
+    const playerIndex = players.findIndex(
+      (p) => p.id === mobileAddingForPlayer
+    );
     const player = players[playerIndex];
     if (!player) return null;
     const cardGroups = buildCardGroups(player, gameScore, playerIndex);
-    const totalScore = gameScore ? gameScore.getPlayerScore(playerIndex).total : 0;
+    const totalScore = gameScore
+      ? gameScore.getPlayerScore(playerIndex).total
+      : 0;
 
     return (
       <section className="players-section players-section--focused">
@@ -120,41 +145,50 @@ export default function PlayerSection({
           <span className="focused-player-score">{totalScore} pts</span>
         </div>
         <div className="focused-player-hand">
-          {cardGroups.map((group) => (
-            <div
-              key={`${group.name}-${group.cardIndices[0]}`}
-              className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}`}
-              onMouseEnter={() => onHover(group.name)}
-              onMouseLeave={() => onHover(null)}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (group.hasMetadata) {
-                  onOpenModal(player.id, group.cardIndices[0], group.name);
-                }
-              }}
-            >
-              <img
-                src={`/cards/${encodeURIComponent(group.name)}.png`}
-                alt={group.name}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-              {group.count > 1 && <div className="card-count">{group.count}</div>}
-              {group.totalScore !== null ? (
-                <div className="card-score">{group.totalScore} pts</div>
-              ) : group.metadataMissing ? (
-                <div className="card-score card-score--missing">-</div>
-              ) : null}
-              <button
-                className="remove-card remove-card--visible"
+          {cardGroups.map((group) => {
+            const allDiscarded = group.discardedIndices.length === group.count;
+            return (
+              <div
+                key={`${group.name}-${group.cardIndices[0]}`}
+                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+                onMouseEnter={() => onHover(group.name)}
+                onMouseLeave={() => onHover(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRemoveCard(player.id, group.cardIndices[0]);
+                  if (group.hasMetadata) {
+                    onOpenModal(player.id, group.cardIndices[0], group.name);
+                  }
                 }}
               >
-                &times;
-              </button>
-            </div>
-          ))}
+                <img
+                  src={`/cards/${encodeURIComponent(group.name)}.png`}
+                  alt={group.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+                {group.count > 1 && (
+                  <div className="card-count">{group.count}</div>
+                )}
+                {allDiscarded ? (
+                  <div className="card-score card-score--discarded">0 pts</div>
+                ) : group.totalScore !== null ? (
+                  <div className="card-score">{group.totalScore} pts</div>
+                ) : group.metadataMissing ? (
+                  <div className="card-score card-score--missing">-</div>
+                ) : null}
+                <button
+                  className="remove-card remove-card--visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveCard(player.id, group.cardIndices[0]);
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
     );

@@ -5,7 +5,9 @@ export function useHeaderBottom(): number {
 
   useEffect(() => {
     function measure() {
-      const header = document.querySelector('.game-header') as HTMLElement | null;
+      const header = document.querySelector(
+        '.game-header'
+      ) as HTMLElement | null;
       if (header) {
         setHeaderBottom(header.getBoundingClientRect().bottom);
       }

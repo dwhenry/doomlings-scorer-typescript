@@ -29,7 +29,7 @@ export default function PackDisplay({
   onHover,
   selectedCatastrophes,
   onToggleCatastrophe,
-  onDeselectCatastrophe,
+  onDeselectCatastrophe
 }: PackDisplayProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const headerBottom = useHeaderBottom();
@@ -92,9 +92,7 @@ export default function PackDisplay({
     }
 
     const group = colorGroups.get(activeTab as CardType) || [];
-    return group
-      .filter(isVisible)
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return group.filter(isVisible).sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, colorGroups, selectedPacks, searchQuery, isSearching]);
 
   const filteredCatastrophes = useMemo(() => {
@@ -107,7 +105,9 @@ export default function PackDisplay({
     }
     if (activeTab !== 'catastrophe') return [];
     return [...catastropheCards]
-      .filter(isVisible)
+      .filter(
+        (card) => selectedCatastrophes.includes(card.name) || isVisible(card)
+      )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, catastropheCards, selectedPacks, searchQuery, isSearching]);
 
@@ -175,9 +175,7 @@ export default function PackDisplay({
     if (mobileAddingForPlayer === null) return null;
 
     return (
-      <BottomDrawer topOffset={headerBottom}>
-        {tabbedContent}
-      </BottomDrawer>
+      <BottomDrawer topOffset={headerBottom}>{tabbedContent}</BottomDrawer>
     );
   }
 
@@ -204,7 +202,7 @@ function CatastropheInline({
   selectedCatastrophes,
   onToggle,
   onDeselect,
-  onHover,
+  onHover
 }: {
   catastropheCards: Card[];
   selectedCatastrophes: string[];
@@ -232,6 +230,11 @@ function CatastropheInline({
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
+              {selectedCatastrophes.indexOf(card.name) !== -1 && (
+                <div className="card-count">
+                  {selectedCatastrophes.indexOf(card.name) + 1}
+                </div>
+              )}
               <span className="pack-card-name">{card.name}</span>
               {isSelected && (
                 <button

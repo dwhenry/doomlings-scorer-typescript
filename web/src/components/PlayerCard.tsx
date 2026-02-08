@@ -25,7 +25,7 @@ export default function PlayerCard({
   totalScore,
   onDrop,
   showAddButton,
-  onStartAdding,
+  onStartAdding
 }: PlayerCardProps) {
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -70,43 +70,54 @@ export default function PlayerCard({
         onDrop={handleDrop}
       >
         {cardGroups.length === 0 ? (
-          <div className="drop-zone">Drop cards here or click to select player</div>
+          <div className="drop-zone">
+            Drop cards here or click to select player
+          </div>
         ) : (
-          cardGroups.map((group) => (
-            <div
-              key={`${group.name}-${group.cardIndices[0]}`}
-              className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}`}
-              onMouseEnter={() => onHover(group.name)}
-              onMouseLeave={() => onHover(null)}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (group.hasMetadata) {
-                  onOpenModal(player.id, group.cardIndices[0], group.name);
-                }
-              }}
-            >
-              <img
-                src={`/cards/${encodeURIComponent(group.name)}.png`}
-                alt={group.name}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-              {group.count > 1 && <div className="card-count">{group.count}</div>}
-              {group.totalScore !== null ? (
-                <div className="card-score">{group.totalScore} pts</div>
-              ) : group.metadataMissing ? (
-                <div className="card-score card-score--missing">-</div>
-              ) : null}
-              <button
-                className="remove-card remove-card--visible"
+          cardGroups.map((group) => {
+            const allDiscarded = group.discardedIndices.length === group.count;
+            return (
+              <div
+                key={`${group.name}-${group.cardIndices[0]}`}
+                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+                onMouseEnter={() => onHover(group.name)}
+                onMouseLeave={() => onHover(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRemoveCard(player.id, group.cardIndices[0]);
+                  if (group.hasMetadata) {
+                    onOpenModal(player.id, group.cardIndices[0], group.name);
+                  }
                 }}
               >
-                &times;
-              </button>
-            </div>
-          ))
+                <img
+                  src={`/cards/${encodeURIComponent(group.name)}.png`}
+                  alt={group.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+                {group.count > 1 && (
+                  <div className="card-count">{group.count}</div>
+                )}
+                {allDiscarded ? (
+                  <div className="card-score card-score--discarded">0 pts</div>
+                ) : group.totalScore !== null ? (
+                  <div className="card-score">{group.totalScore} pts</div>
+                ) : group.metadataMissing ? (
+                  <div className="card-score card-score--missing">-</div>
+                ) : null}
+                <button
+                  className="remove-card remove-card--visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveCard(player.id, group.cardIndices[0]);
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            );
+          })
         )}
       </div>
       {showAddButton && onStartAdding && (

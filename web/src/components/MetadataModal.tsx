@@ -5,7 +5,10 @@ import type { PlayerCardEntry } from '../types';
 
 interface MetadataModalProps {
   cardName: string;
+  selectedCatastrophes: string[];
   fields: MetadataField[];
+  internalFields: MetadataField[];
+  internalValues: Record<string, string | number | string[]>;
   currentValues: PlayerCardEntry;
   onSave: (values: Record<string, string | number>) => void;
   onClose: () => void;
@@ -13,23 +16,33 @@ interface MetadataModalProps {
 
 const COLOR_OPTIONS = TRAIT_CARD_TYPES.map((c) => ({
   value: c,
-  label: c.charAt(0).toUpperCase() + c.slice(1),
+  label: c.charAt(0).toUpperCase() + c.slice(1)
 }));
 
 function formatLabel(key: string): string {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatInternalValue(
+  value: string | number | string[] | undefined
+): string {
+  if (value === undefined) return '-';
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ') || '-';
+  return String(value);
 }
 
 export default function MetadataModal({
   cardName,
+  selectedCatastrophes,
   fields,
+  internalFields,
+  internalValues,
   currentValues,
   onSave,
-  onClose,
+  onClose
 }: MetadataModalProps) {
   const [values, setValues] = useState<Record<string, string | number>>({});
+  const hasEditableFields = fields.length > 0;
 
   useEffect(() => {
     const initial: Record<string, string | number> = {};
@@ -45,12 +58,17 @@ export default function MetadataModal({
   const allValid = fields.every((f) => {
     const val = values[f.key];
     if (val === undefined || val === '') return false;
-    if (f.type === 'number') return typeof val === 'number' || !isNaN(Number(val));
+    if (f.type === 'number' || f.type === 'catastrophe')
+      return typeof val === 'number' || !isNaN(Number(val));
     return true;
   });
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!hasEditableFields) {
+      onClose();
+      return;
+    }
     if (!allValid) return;
     const coerced: Record<string, string | number> = {};
     fields.forEach((f) => {
@@ -68,7 +86,9 @@ export default function MetadataModal({
             src={`/cards/${encodeURIComponent(cardName)}.small.png`}
             alt={cardName}
             className="modal-card-image"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
           />
           <h3>{cardName}</h3>
         </div>
@@ -79,7 +99,25 @@ export default function MetadataModal({
                 {formatLabel(field.key)}
                 <span className="field-scope">{field.scope}</span>
               </label>
-              {field.type === 'number' ? (
+              {field.type === 'catastrophe' ? (
+                <select
+                  id={`meta-${field.key}`}
+                  value={(values[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                  }
+                >
+                  <option value="">Select...</option>
+                  {[0, 1, 2, 3].map((position) => (
+                    <option key={`catastrophe-${position}`} value={position}>
+                      {/* populate the catastrophe name here from the index if it
+                      has been selected */}
+                      {selectedCatastrophes[position] ||
+                        `Catastrophe ${position + 1}`}
+                    </option>
+                  ))}
+                </select>
+              ) : field.type === 'number' ? (
                 <input
                   id={`meta-${field.key}`}
                   type="number"
@@ -87,7 +125,8 @@ export default function MetadataModal({
                   onChange={(e) =>
                     setValues((v) => ({
                       ...v,
-                      [field.key]: e.target.value === '' ? '' : Number(e.target.value),
+                      [field.key]:
+                        e.target.value === '' ? '' : Number(e.target.value)
                     }))
                   }
                 />
@@ -109,13 +148,38 @@ export default function MetadataModal({
               )}
             </div>
           ))}
+
+          {internalFields.length > 0 && (
+            <div className="modal-internal-section">
+              <div className="modal-internal-header">Engine Generated</div>
+              {internalFields.map((field) => (
+                <div
+                  key={field.key}
+                  className="modal-field modal-field--internal"
+                >
+                  <label>
+                    {formatLabel(field.key)}
+                    <span className="field-scope field-scope--internal">
+                      internal
+                    </span>
+                  </label>
+                  <div className="modal-internal-value">
+                    {formatInternalValue(internalValues[field.key])}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="modal-actions">
             <button type="button" className="modal-cancel" onClick={onClose}>
-              Cancel
+              {hasEditableFields ? 'Cancel' : 'Close'}
             </button>
-            <button type="submit" className="modal-save" disabled={!allValid}>
-              Save
-            </button>
+            {hasEditableFields && (
+              <button type="submit" className="modal-save" disabled={!allValid}>
+                Save
+              </button>
+            )}
           </div>
         </form>
       </div>

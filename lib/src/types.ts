@@ -22,11 +22,17 @@ export const PACK_TYPES = [
   'Mythlings',
   'Techlings',
   'Meaning of Life',
-  'Overlush'
+  'Overlush',
+  'KSE'
 ] as const;
 export type PackType = (typeof PACK_TYPES)[number];
 
-const simpleMetaDataTypes = ['number', 'trait', 'CardType'] as const;
+const simpleMetaDataTypes = [
+  'number',
+  'trait',
+  'CardType',
+  'catastrophe'
+] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
   ...simpleMetaDataTypes,
@@ -34,7 +40,12 @@ const MetaDataTypes = [
 ] as const;
 export type MetaDataType = (typeof MetaDataTypes)[number];
 
-export const META_DATA_SCOPES = ['card', 'player', 'global'] as const;
+export const META_DATA_SCOPES = [
+  'card',
+  'player',
+  'global',
+  'internal'
+] as const;
 export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 
 type MetaData = [string, MetaDataType, MetaDataScope];
@@ -76,10 +87,10 @@ export interface PlayerCard extends Card {
 }
 
 type Metadata = {
-  [key: string]: string | number | string[] | undefined,
-  fromColour?: CardType,
-  toColour?: CardType,
-  colour?: CardType
+  [key: string]: string | number | string[] | undefined;
+  fromColour?: CardType;
+  toColour?: CardType;
+  colour?: CardType;
 };
 
 export class CardInstance {
@@ -90,22 +101,25 @@ export class CardInstance {
   finalA: number = 0;
   finalB: number | undefined = 0;
   metadataComplete: boolean = true;
-  metadata: Metadata
+  metadata: Metadata;
+  discarded: boolean = false;
+  skipCalcB: boolean = false;
+  generatedMetadata: Record<string, string | number | string[]> = {};
 
   constructor(card: Card, metadata: Metadata) {
     this.card = card;
-    this.metadata = metadata
+    this.metadata = metadata;
   }
 
   get type(): string[] {
-    if(Array.isArray(this.overrides['type'])) {
-      return this.overrides['type']
+    if (Array.isArray(this.overrides['type'])) {
+      return this.overrides['type'];
     }
-    return this.card.type
+    return this.card.type;
   }
 
-  setOverride(key: string, value: string[] | string | number ) {
-    this.overrides[key] = value
+  setOverride(key: string, value: string[] | string | number) {
+    this.overrides[key] = value;
   }
 }
 

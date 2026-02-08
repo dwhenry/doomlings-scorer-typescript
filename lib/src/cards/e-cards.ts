@@ -2,7 +2,6 @@ import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 
 addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
-addBasicCard('ECLIPSE', 'purple', 'Classic', 0);
 addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
 const egg_clusters: PlayerCard = {
   name: 'EGG CLUSTERS',
@@ -17,10 +16,8 @@ const egg_clusters: PlayerCard = {
     currentPlayer: number
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
-    const blueCards = playerCards.filter(
-      (inst) => inst.type.includes('blue')
-    );
-    inst.finalB = blueCards.length
+    const blueCards = playerCards.filter((inst) => inst.type.includes('blue'));
+    inst.finalB = blueCards.length;
   }
 };
 addCard(egg_clusters);
@@ -44,9 +41,8 @@ const elven_ears: PlayerCard = {
     const mythlingCards = allCards.filter(
       (card) => card.card.pack === 'Mythlings'
     );
-    inst.finalB = mythlingCards.length
+    inst.finalB = mythlingCards.length;
   }
 };
 addCard(elven_ears);
 addBasicCard('ENDURANCE', 'red', 'Classic', 1);
-addBasicCard('ENLIGHTENMENT', 'purple', 'Classic', 0);

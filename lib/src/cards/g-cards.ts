@@ -1,10 +1,8 @@
-import { addBasicCard, addCard } from "../cardContainer";
-import { CardInstance, CardType, PlayerCard } from "../types";
+import { addBasicCard, addCard } from '../cardContainer';
+import { CardInstance, CardType, PlayerCard } from '../types';
 
-addBasicCard('GALACTIC DRIFT', 'colourless', 'Classic', 0);
 addBasicCard('GELATINOUS', 'red', 'Mythlings', 1);
 addBasicCard('GILLS', 'blue', 'Classic', 1);
-addBasicCard('GLACIAL DRIFT', 'blue', 'Classic', 0);
 
 const gmo: PlayerCard = {
   name: 'GMO',
@@ -19,14 +17,15 @@ const gmo: PlayerCard = {
     currentPlayer: number
   ): void => {
     const chosenTraits = inst.metadata['attached_trait']! as CardType[];
-    const playerCardsMatchingTrait = allPlayerCards[currentPlayer].filter(a => a.card.type.find(type => chosenTraits.includes(type)))
-    inst.finalB = playerCardsMatchingTrait.length
+    const playerCardsMatchingTrait = allPlayerCards[currentPlayer].filter((a) =>
+      a.card.type.find((type) => chosenTraits.includes(type))
+    );
+    inst.finalB = playerCardsMatchingTrait.length;
   },
   // TODO: Change me to use a better mechanism
   metadataRequired: [['attached_trait', 'trait', 'card']]
 };
 addCard(gmo);
-
 
 const gratitude: PlayerCard = {
   name: 'GRATITUDE',
@@ -41,8 +40,13 @@ const gratitude: PlayerCard = {
     currentPlayer: number
   ): void => {
     const currentPlayerCards = allPlayerCards[currentPlayer];
-    const uniquePlayerTraits = new Set(currentPlayerCards.map(a => a.card.type).flat().filter(c => c !== 'colourless' && c !== 'catastrophe'))
-    inst.finalB = uniquePlayerTraits.size
+    const uniquePlayerTraits = new Set(
+      currentPlayerCards
+        .map((a) => a.card.type)
+        .flat()
+        .filter((c) => c !== 'colourless' && c !== 'catastrophe')
+    );
+    inst.finalB = uniquePlayerTraits.size;
   }
 };
 addCard(gratitude);

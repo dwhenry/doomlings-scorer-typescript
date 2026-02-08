@@ -5,12 +5,13 @@ interface BottomDrawerProps {
   topOffset: number;
 }
 
-export default function BottomDrawer({ children, topOffset }: BottomDrawerProps) {
+export default function BottomDrawer({
+  children,
+  topOffset
+}: BottomDrawerProps) {
   return (
     <div className="bottom-drawer" style={{ top: `${topOffset}px` }}>
-      <div className="drawer-content">
-        {children}
-      </div>
+      <div className="drawer-content">{children}</div>
     </div>
   );
 }

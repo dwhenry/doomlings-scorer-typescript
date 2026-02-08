@@ -1,5 +1,5 @@
-import { addBasicCard, addCard } from "../cardContainer";
-import { CardInstance, CardType, PlayerCard } from "../types";
+import { addBasicCard, addCard } from '../cardContainer';
+import { CardInstance, CardType, PlayerCard } from '../types';
 
 addBasicCard('DEEP ROOTS', 'green', 'Classic', 2);
 addBasicCard('DELICIOUS', 'colourless', 'Classic', 4);
@@ -16,12 +16,28 @@ const dragonHeart: PlayerCard = {
   pack: 'Mythlings',
   calcA: function (card: CardInstance): void {
     card.finalA = 1;
-  }, 
-  calcB: function (card: CardInstance, allPlayerCards, currentPlayer: number) : void {
-     const currentPlayerCards = allPlayerCards[currentPlayer];
-    
-    const validColours: readonly CardType[] = ['purple', 'green', 'red', 'blue'] as const;
-    const uniqueMatchingColours: Set<CardType> = new Set(currentPlayerCards.filter(c => validColours.find(colour => c.card.type.includes(colour))).map(c => c.card.type).flat());
+  },
+  calcB: function (
+    card: CardInstance,
+    allPlayerCards,
+    currentPlayer: number
+  ): void {
+    const currentPlayerCards = allPlayerCards[currentPlayer];
+
+    const validColours: readonly CardType[] = [
+      'purple',
+      'green',
+      'red',
+      'blue'
+    ] as const;
+    const uniqueMatchingColours: Set<CardType> = new Set(
+      currentPlayerCards
+        .filter((c) =>
+          validColours.find((colour) => c.card.type.includes(colour))
+        )
+        .map((c) => c.card.type)
+        .flat()
+    );
 
     if (uniqueMatchingColours.size === validColours.length) {
       card.finalB = 4;
@@ -31,5 +47,18 @@ const dragonHeart: PlayerCard = {
   }
 };
 addCard(dragonHeart);
+
+// TODO: we need to order the catastrophe cards based on the order they are selected.
+// ignore_next_catastrophe will then ignore based off position in the order.
+const denial: PlayerCard = {
+  name: 'DENIAL',
+  type: ['colourless'],
+  pack: 'Classic',
+  calcA: function (card: CardInstance): void {
+    card.finalA = 4;
+  },
+  metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
+};
+addCard(denial);
 
 addBasicCard('DREAMER', 'purple', 'Classic', 1);

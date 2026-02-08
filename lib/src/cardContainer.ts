@@ -1,4 +1,11 @@
-import { Card, PlayerCard, CardInstance, CardType, PackType, PlayerInput } from './types';
+import {
+  Card,
+  PlayerCard,
+  CardInstance,
+  CardType,
+  PackType,
+  PlayerInput
+} from './types';
 
 const cardsMap: Map<string, Card> = new Map();
 
@@ -12,7 +19,9 @@ function findCard(name: string): Card {
 
 export function addCard(card: Card) {
   if (cardsMap.has(card.name)) {
-    throw new Error(`Duplicate card name ${card.name} was attempted to be added`);
+    throw new Error(
+      `Duplicate card name ${card.name} was attempted to be added`
+    );
   }
   cardsMap.set(card.name, card);
 }
@@ -45,7 +54,12 @@ export function getCard(name: string, metadata: PlayerInput): CardInstance {
   if (card.metadataRequired === undefined) {
     return inst;
   }
-  const allMetadataPresent = card.metadataRequired.every(([key]) => metadata[key] !== undefined);
+  const userMetadata = card.metadataRequired.filter(
+    ([, , scope]) => scope !== 'internal'
+  );
+  const allMetadataPresent = userMetadata.every(
+    ([key]) => metadata[key] !== undefined
+  );
   if (!allMetadataPresent) {
     inst.metadataComplete = false;
   }

@@ -2,7 +2,12 @@
   "name": "doomlings-scorer",
   "private": true,
   "workspaces": ["lib", "web"],
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
+    "build": "npm run build --workspace=lib && npm run build --workspace=web",
+    "start": "node lib/dist/server.js",
     "test": "npm test --workspace=lib",
     "dev": "npm run dev --workspace=web",
     "format": "prettier --config .prettierrc '{lib,web}/**/*.ts' '{lib,web}/**/*.tsx' --write"

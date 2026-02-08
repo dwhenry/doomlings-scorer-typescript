@@ -1,7 +1,8 @@
-import type { JestConfigWithTsJest } from 'ts-jest'
+import type { JestConfigWithTsJest } from 'ts-jest';
 
 const jestConfig: JestConfigWithTsJest = {
   preset: 'ts-jest',
-}
+  testMatch: ['**/tests/**/*.test.ts']
+};
 
-export default jestConfig
+export default jestConfig;

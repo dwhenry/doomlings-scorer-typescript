@@ -14,7 +14,7 @@ const TABS: TabDef[] = [
   { id: 'green', label: 'Green', color: '#28a745' },
   { id: 'blue', label: 'Blue', color: '#007bff' },
   { id: 'colourless', label: 'Colourless', color: '#6c757d' },
-  { id: 'catastrophe', label: 'Catastrophe', color: '#ffc107' },
+  { id: 'catastrophe', label: 'Catastrophe', color: '#ffc107' }
 ];
 
 interface ColorTabsProps {
@@ -31,7 +31,15 @@ export default function ColorTabs({ activeTab, onTabChange }: ColorTabsProps) {
           role="tab"
           aria-selected={activeTab === tab.id}
           className={`color-tab${activeTab === tab.id ? ' color-tab--active' : ''}`}
-          style={activeTab === tab.id ? { borderColor: tab.color, backgroundColor: tab.color, color: 'white' } : undefined}
+          style={
+            activeTab === tab.id
+              ? {
+                  borderColor: tab.color,
+                  backgroundColor: tab.color,
+                  color: 'white'
+                }
+              : undefined
+          }
           onClick={() => onTabChange(tab.id)}
         >
           <span

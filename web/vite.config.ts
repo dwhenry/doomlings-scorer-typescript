@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@scorer': path.resolve(__dirname, '../lib/src'),
-    },
-  },
+      '@scorer': path.resolve(__dirname, '../lib/src')
+    }
+  }
 });

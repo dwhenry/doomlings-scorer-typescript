@@ -1,5 +1,5 @@
-import { addBasicCard, addCard } from "../cardContainer";
-import { CardInstance, PlayerCard } from "../types";
+import { addBasicCard, addCard } from '../cardContainer';
+import { CardInstance, PlayerCard } from '../types';
 
 addBasicCard('ICY', 'blue', 'Mythlings', 3);
 
@@ -10,12 +10,16 @@ const immunity: PlayerCard = {
   calcA: (inst: CardInstance): void => {
     inst.finalA = 4;
   },
-  calcB: (inst: CardInstance, 
+  calcB: (
+    inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number): void => {
+    currentPlayer: number
+  ): void => {
     const currentPlayerCards = allPlayerCards[currentPlayer];
     // TODO: Fix me - this only works if the instance is put back.
-    const negativeFaceValueTraitsCount = currentPlayerCards.filter(c => c.finalA < 0).length;
+    const negativeFaceValueTraitsCount = currentPlayerCards.filter(
+      (c) => c.finalA < 0
+    ).length;
     inst.finalB = negativeFaceValueTraitsCount * 2;
   }
 };

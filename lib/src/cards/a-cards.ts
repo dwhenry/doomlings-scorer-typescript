@@ -1,7 +1,7 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 
-addBasicCard('ACROBATIC', ['purple', 'green'], 'Classic', 2);
+addBasicCard('ACROBATIC', ['purple', 'green'], 'multi-colour', 2);
 addBasicCard('ADORABLE', 'purple', 'Classic', 4);
 
 const altruistic: PlayerCard = {
