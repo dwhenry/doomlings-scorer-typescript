@@ -1,6 +1,6 @@
 import { CatastopheCard, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
-import { forEachPlayerCards } from './helpers';
+import { filterCardsByType, forEachPlayerCards } from './helpers';
 
 // --- Helpers ---
 
@@ -42,9 +42,7 @@ function selectCardByColour(
   colour: CardType,
   previousName?: string
 ): CardInstance | undefined {
-  const candidates = activeCards(playerCards).filter((c) =>
-    c.type.includes(colour)
-  );
+  const candidates = filterCardsByType(playerCards, colour)
   if (candidates.length === 0) return undefined;
 
   // Reuse previous selection if still valid
@@ -104,7 +102,7 @@ const aiTakeover: CatastopheCard = {
     );
 
     colourlessCards.forEach((c: CardInstance) => {
-      c.applyPoints('C', 2 - c.finalA, inst, 'set points to 2');
+      c.applyPoints('C', 2 - c.finalA, inst, 'set card face value to 2');
       c.skipCalcB = true;
     });
   }
@@ -163,7 +161,7 @@ const bioPlague: CatastopheCard = {
 
         if (maxColour.length > 0) {
           const targets = active.filter(
-            (card) => !!maxColour.find((colour) => card.type.includes(colour))
+            (card) => !!maxColour.find((colour) => card.type.includes(colour) || !card.metadata.cannot_discard)
           );
           if (targets.length > 0) {
             const target = deterministicPick(targets);

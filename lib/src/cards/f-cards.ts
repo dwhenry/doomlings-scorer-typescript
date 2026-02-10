@@ -9,7 +9,7 @@ const faith: PlayerCard = {
   calcA: (inst: CardInstance): void => {
     inst.applyPoints('A', 4, inst, 'face card value')
   },
-  modify: (
+  calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -78,16 +78,15 @@ const free_will: PlayerCard = {
   calcA: (inst: CardInstance): void => {
     inst.applyPoints('A', 2, inst, 'face card value')
   },
-  modify: (
+  calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    inst.setOverride('type', [inst.metadata.colour!]);
+    inst.setOverride('type', [inst.metadata.chosen_colour!]);
 
-    // TODO: so this need to re-score any cards that rely on card colour
   },
-  metadataRequired: [['colour', 'CardType', 'card']]
+  metadataRequired: [['chosen_colour', 'CardType', 'card']]
 };
 addCard(free_will);
 addBasicCard('FRONDS', 'green', 'Dinolings', 0);

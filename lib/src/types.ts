@@ -1,3 +1,17 @@
+export const SCORING_PHASES = {
+  CALC_A: 'calcA',
+  CALC_B: 'calcB',
+  CALC_C: 'calcC',
+  CATASTROPHE: 'catastrophe',
+} as const;
+
+export const CALC_B_PHASES = {
+  PRE_CATASTROPHE: 'pre_catastrophe',
+  POST_CATASTROPHE: 'post_catastrophe',
+  PRE_MEANING_OF_LIFE: 'pre_meaning_of_life',
+  MEANING_OF_LIFE: 'meaning_of_life',
+} as const
+
 export const TRAIT_CARD_TYPES = [
   'colourless',
   'purple',
@@ -62,11 +76,6 @@ export interface Card {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
-  modify?(
-    card: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
-  ): void;
   calcB?(
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -81,6 +90,8 @@ export interface CatastopheCard extends Card {
 }
 
 export interface PlayerCard extends Card {
+  calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];
+  blocksDiscarding: boolean;
   calcA(
     card: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

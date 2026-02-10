@@ -1,4 +1,4 @@
-import { PlayerCard, CardInstance, CardType } from '../types';
+import { PlayerCard, CardInstance, CardType, CALC_B_PHASES } from '../types';
 import {
   addCard,
   addBasicCard,
@@ -82,9 +82,11 @@ addCardThatPointsByColour(
 addBasicCard('STONE SKIN', 'red', 'Classic', 2);
 addBasicCard('SUBDERMAL PLATING', 'purple', 'Techlings', -1);
 const subdermalPlating: PlayerCard = {
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   name: 'SUBDERMAL PLATING',
   type: ['purple'],
   pack: 'Techlings',
+  blockDiscarding: true,
   calcA: (inst: CardInstance): void => {
     inst.applyPoints('A', 1, inst, 'face card value')
   },
@@ -104,13 +106,17 @@ const subdermalPlating: PlayerCard = {
         }
 
         attachedTo.attachedCards.push(inst);
+        attachedTo.blockDiscarding = true;
         attachedTo.applyPoints('B', 0, inst, 'attached and block discarding');
+
 
         // TODO: so this needs to be able to block or reverse discarding
       }
     })
   },
-  metadataRequired: [['attached_to', 'any_player_card', 'card']]
+  metadataRequired: [
+    ['attached_to', 'any_player_card', 'card'],
+  ]
 };
 addCard(subdermalPlating);
 addBasicCard('SUPER SPREADER', 'purple', 'Classic', 2);

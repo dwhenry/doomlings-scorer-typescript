@@ -1,4 +1,4 @@
-import { CardInstance, PlayerInput } from './types';
+import { CALC_B_PHASES, CardInstance, PlayerInput, SCORING_PHASES } from './types';
 import { getCard } from './cardContainer';
 import './cards';
 
@@ -35,16 +35,48 @@ export class Scorer {
     return this;
   }
 
-  // Functions
-  scores(): GameScore {
-    // calc A (base score) and apply any modifiers
+  calcA() {
     this.allPlayerCards.forEach((playerCards, playerIndex) => {
       playerCards.forEach((inst) => {
         inst.card.calcA?.(inst, this.allPlayerCards, playerIndex);
-        inst.card.modify?.(inst, this.allPlayerCards, playerIndex);
+      });
+    });
+  }
+
+  calcB(calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES]) {
+    this.allPlayerCards.forEach((playerCards, i) => {
+      playerCards.forEach((inst) => {
+        if (calcBRunPhase === inst.card.calcBRunPhase) {
+          if (inst.discarded || inst.skipCalcB) {
+            return;
+          }
+          if (!inst.metadataComplete) {
+            inst.finalB = undefined;
+          } else {
+            inst.card.calcB?.(inst, this.allPlayerCards, i);
+          }
+        }
       });
     });
 
+  }
+
+  calcC() {
+    this.allPlayerCards.forEach((playerCards) => {
+      playerCards.forEach((inst) => {
+        if (inst.discarded) {
+          inst.applyPoints(
+            'C',
+            -(inst.finalA + (inst.finalB ?? 0)),
+            inst,
+            'Discarded'
+          );
+        }
+      });
+    });
+  }
+
+  catastrophe() {
     // We have a special card that ignores the next catastrophe
     // this does not fit with the current scoring logic, so we
     // need to handle it separately.
@@ -72,33 +104,27 @@ export class Scorer {
 
       inst.card.calcC?.(inst, filteredPlayerCards);
     });
-    // calc B (modifiers based on traits) - skips discarded and catastrophe-overridden cards
-    this.allPlayerCards.forEach((playerCards, i) => {
-      playerCards.forEach((inst) => {
-        if (inst.discarded || inst.skipCalcB) {
-          return;
-        }
-        if (!inst.metadataComplete) {
-          inst.finalB = undefined;
-        } else {
-          inst.card.calcB?.(inst, this.allPlayerCards, i);
-        }
-      });
-    });
-    // is this still required?
-    // Zero out discarded cards
-    this.allPlayerCards.forEach((playerCards) => {
-      playerCards.forEach((inst) => {
-        if (inst.discarded) {
-          inst.applyPoints(
-            'C',
-            -(inst.finalA + (inst.finalB ?? 0)),
-            inst,
-            'Discarded'
-          );
-        }
-      });
-    });
+  }
+
+  // Functions
+  scores(): GameScore {
+    type PHASES_TYPE = (
+      [typeof SCORING_PHASES[keyof typeof SCORING_PHASES], typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES]] |
+      [typeof SCORING_PHASES[keyof typeof SCORING_PHASES]]
+    )[]
+    const phases: PHASES_TYPE = [
+      [SCORING_PHASES.CALC_A],
+      [SCORING_PHASES.CALC_B, CALC_B_PHASES.PRE_CATASTROPHE],
+      [SCORING_PHASES.CATASTROPHE],
+      [SCORING_PHASES.CALC_B, CALC_B_PHASES.POST_CATASTROPHE],
+      [SCORING_PHASES.CALC_B, CALC_B_PHASES.PRE_MEANING_OF_LIFE],
+      [SCORING_PHASES.CALC_B, CALC_B_PHASES.MEANING_OF_LIFE],
+      [SCORING_PHASES.CALC_C]
+    ]
+    phases.forEach((phase) => {
+      const [phaseType, ...args] = phase;
+      (this[phaseType] as (...args: unknown[]) => void)(...args);
+    })
 
     const playerScores: PlayerScore[] = this.allPlayerCards.map(
       (playerCards) => {

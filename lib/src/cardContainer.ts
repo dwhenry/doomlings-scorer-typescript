@@ -5,7 +5,8 @@ import {
   CardInstance,
   CardType,
   PackType,
-  PlayerInput
+  PlayerInput,
+  CALC_B_PHASES
 } from './types';
 
 const cardsMap: Map<string, Card> = new Map();
@@ -31,9 +32,11 @@ export function addBasicCard(
   name: string,
   colours: CardType[] | CardType,
   pack: PackType,
-  score: number
+  score: number,
+  calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES] = CALC_B_PHASES.PRE_CATASTROPHE
 ) {
   const card: PlayerCard = {
+    calcBRunPhase,
     name: name,
     type: Array.isArray(colours) ? colours : [colours],
     pack: pack,
@@ -50,9 +53,11 @@ export function addCardThatPointsByColour(
   pack: PackType,
   score: number,
   colour: CardType,
-  pointsPerCard: number
+  pointsPerCard: number,
+  calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES] = CALC_B_PHASES.PRE_CATASTROPHE
 ) {
   const card: PlayerCard = {
+    calcBRunPhase,
     name: name,
     type: Array.isArray(colours) ? colours : [colours],
     pack: pack,
