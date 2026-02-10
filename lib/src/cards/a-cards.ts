@@ -10,7 +10,7 @@ const altruistic: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
@@ -30,7 +30,7 @@ const apex_predator: PlayerCard = {
   type: ['red'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 4;
+    inst.applyPoints('A', 4, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

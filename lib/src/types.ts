@@ -142,7 +142,8 @@ export class CardInstance {
     let phaseSubtotal: number | undefined = undefined;
 
     if (phase === 'A') {
-      throw new Error('Cannot modify finalA points');
+      this.finalA = points ?? 0;
+      finalPoints = this.finalA;
     } else if (phase === 'B') {
       // undefined is due to metadata not being set, this will update once the metadata is set
       if (this.finalB !== undefined) {

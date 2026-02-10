@@ -9,7 +9,7 @@ const randomFertilization: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {

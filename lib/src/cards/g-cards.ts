@@ -10,7 +10,7 @@ const gmo: PlayerCard = {
   type: ['colourless'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -46,7 +46,7 @@ const gratitude: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

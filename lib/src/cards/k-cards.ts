@@ -9,7 +9,7 @@ function createKidney(name: string): PlayerCard {
     type: ['red'],
     pack: 'Classic',
     calcA: (inst: CardInstance): void => {
-      inst.finalA = 0;
+      inst.applyPoints('A', 0, inst, 'face card value')
     },
     calcB: (
       inst: CardInstance,

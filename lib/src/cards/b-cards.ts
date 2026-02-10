@@ -14,7 +14,7 @@ const bionic_arm: PlayerCard = {
   type: ['red'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -43,7 +43,7 @@ const boredom: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -65,7 +65,7 @@ const branches: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

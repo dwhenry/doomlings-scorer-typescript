@@ -7,7 +7,7 @@ const nano: PlayerCard = {
   type: ['green'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.host_face_value !== 'number') {

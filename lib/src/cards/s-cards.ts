@@ -21,7 +21,7 @@ const sentience: PlayerCard = {
   type: ['red'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 2;
+    inst.applyPoints('A', 2, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -53,7 +53,7 @@ const serratedTeeth: PlayerCard = {
   type: ['red'],
   pack: 'Dinolings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 5;
+    inst.applyPoints('A', 5, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -90,7 +90,7 @@ function createSwarm(name: string): PlayerCard {
     type: ['green'],
     pack: 'Classic',
     calcA: (inst: CardInstance): void => {
-      inst.finalA = 0;
+      inst.applyPoints('A', 0, inst, 'face card value')
     },
     calcB: (
       inst: CardInstance,
@@ -125,7 +125,7 @@ const symbiosis: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 3;
+    inst.applyPoints('A', 3, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

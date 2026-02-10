@@ -18,7 +18,7 @@ const elven_ears: PlayerCard = {
   type: ['green'],
   pack: 'Mythlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

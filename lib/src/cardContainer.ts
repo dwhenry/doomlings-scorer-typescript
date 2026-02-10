@@ -38,7 +38,7 @@ export function addBasicCard(
     type: Array.isArray(colours) ? colours : [colours],
     pack: pack,
     calcA: (inst: CardInstance): void => {
-      inst.finalA = score;
+      inst.applyPoints('A', score, inst, 'face card value')
     }
   };
   addCard(card);
@@ -57,7 +57,7 @@ export function addCardThatPointsByColour(
     type: Array.isArray(colours) ? colours : [colours],
     pack: pack,
     calcA: (inst: CardInstance): void => {
-      inst.finalA = score;
+      inst.applyPoints('A', score, inst, 'face card value')
     },
     calcB: (
       inst: CardInstance,

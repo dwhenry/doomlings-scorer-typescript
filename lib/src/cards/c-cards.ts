@@ -7,7 +7,7 @@ const camouflage: PlayerCard = {
   type: ['red'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 2;
+    inst.applyPoints('A', 2, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
@@ -30,7 +30,7 @@ const cranialCrest: PlayerCard = {
   type: ['colourless'],
   pack: 'Dinolings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 4;
+    inst.applyPoints('A', 4, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
