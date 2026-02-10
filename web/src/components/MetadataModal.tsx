@@ -7,6 +7,7 @@ interface MetadataModalProps {
   cardName: string;
   selectedCatastrophes: CardEntry[];
   playerCardNames: string[];
+  allPlayerCardNames: [playerIndex: string, cardName: string][];
   playerCount: number;
   fields: MetadataField[];
   internalFields: MetadataField[];
@@ -37,6 +38,7 @@ export default function MetadataModal({
   cardName,
   selectedCatastrophes,
   playerCardNames,
+  allPlayerCardNames,
   playerCount,
   fields,
   internalFields,
@@ -168,6 +170,27 @@ export default function MetadataModal({
                       {cardName}
                     </option>
                   ))}
+                </select>
+              )}
+              {field.type === 'any_player_card' && (
+                <select
+                  id={`meta-${field.key}`}
+                  value={(values[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                  }
+                >
+                  <option value="">Select...</option>
+                  {allPlayerCardNames.map(
+                    ([playerIndex, cardName], position) => (
+                      <option
+                        key={`card-${position}`}
+                        value={[playerIndex, cardName]}
+                      >
+                        Player {Number(playerIndex) + 1}: {cardName}
+                      </option>
+                    )
+                  )}
                 </select>
               )}
               {field.type === 'number' && (

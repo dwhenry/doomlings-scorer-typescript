@@ -85,6 +85,7 @@ export class Scorer {
         }
       });
     });
+    // is this still required?
     // Zero out discarded cards
     this.allPlayerCards.forEach((playerCards) => {
       playerCards.forEach((inst) => {

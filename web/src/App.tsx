@@ -614,21 +614,26 @@ export default function App() {
           : 'card'
       : 'card';
 
-  const catModalScope = 'card';
-
   // Show modal if there are any fields (editable or internal)
   const hasAnyModalFields =
     modalEditableFields.length > 0 || modalInternalFields.length > 0;
 
   const hasAnyCatModalFields =
     catModalEditableFields.length > 0 || catModalInternalFields.length > 0;
-  let playerCardNames: string[] = [];
+  let playerCardNames: Set<string> = new Set();
   if (state.selectedPlayerId !== null) {
-    const player = state.players.find((p) => p.id === state.selectedPlayerId);
+    const player = state.players.find((p) => p.id === state.modal?.playerId);
     if (player && player.cards.length > 0) {
-      playerCardNames = player.cards.map((c) => c.name);
+      player.cards.forEach((c) => playerCardNames.add(c.name));
     }
   }
+
+  const allPlayerCardNames: Set<[string, string]> = new Set();
+  state.players.forEach((player, playerIndex) => {
+    player.cards.forEach((card) => {
+      allPlayerCardNames.add([playerIndex.toString(), card.name]);
+    });
+  });
 
   return (
     <div className="game-container">
@@ -674,7 +679,12 @@ export default function App() {
       {state.modal && modalCard && hasAnyModalFields && (
         <MetadataModal
           cardName={state.modal.cardName}
-          playerCardNames={playerCardNames}
+          playerCardNames={[...playerCardNames].sort((a, b) =>
+            a.localeCompare(b)
+          )}
+          allPlayerCardNames={[...allPlayerCardNames].sort(
+            (a, b) => a[0].localeCompare(b[0]) * 2 + a[1].localeCompare(b[1])
+          )}
           playerCount={state.playerCount}
           selectedCatastrophes={state.selectedCatastrophes}
           fields={modalEditableFields}
@@ -699,6 +709,7 @@ export default function App() {
         <MetadataModal
           cardName={state.catastropheModal.cardName}
           playerCardNames={[]}
+          allPlayerCardNames={[]}
           playerCount={state.playerCount}
           selectedCatastrophes={[]}
           fields={catModalEditableFields}

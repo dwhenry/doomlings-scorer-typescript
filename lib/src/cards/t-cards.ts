@@ -609,6 +609,31 @@ const tinyArms: PlayerCard = {
 addCard(tinyArms);
 
 addBasicCard('TINY LITTLE MELONS', 'green', 'Classic', 1);
-addBasicCard('TRANSGENIC MODIFICATION', 'green', 'Techlings', 1);
+const transgenicModification: PlayerCard = {
+  name: 'TRANSGENIC MODIFICATION',
+  type: ['green'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 1, inst, 'face card value')
+  },
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
+      .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
+
+    if (!attachedTo) {
+      inst.generatedMetadata.attached_to = '';
+      return
+    }
+
+    attachedTo.attachedCards.push(inst);
+    attachedTo.setOverride('type', ['green']);
+    attachedTo.applyPoints('B', 0, inst, 'attached and set colour to green');
+  },
+  metadataRequired: [['attached_to', 'player_card', 'card']]
+};
+addCard(transgenicModification);
 addBasicCard('TRUNK', 'green', 'Classic', 1);
 addBasicCard('TUBE FEET', 'blue', 'KSE', 2);

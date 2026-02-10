@@ -45,4 +45,29 @@ const cranialCrest: PlayerCard = {
 };
 addCard(cranialCrest);
 addBasicCard('CURIOSITY', ['blue', 'red'], 'multi-colour', 1);
-addBasicCard('CYBERNETIC', 'blue', 'Techlings', 1);
+const cybernetic: PlayerCard = {
+  name: 'CYBERNETIC',
+  type: ['blue'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 1, inst, 'face card value')
+  },
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
+      .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
+    if (!attachedTo) {
+      inst.generatedMetadata.attached_to = '';
+      return
+    }
+
+    attachedTo.attachedCards.push(inst);
+    attachedTo.setOverride('type', ['blue']);
+    attachedTo.applyPoints('B', 0, inst, 'attached and colour set to blue');
+  },
+  metadataRequired: [['attached_to', 'player_card', 'card']]
+};
+addCard(cybernetic);
