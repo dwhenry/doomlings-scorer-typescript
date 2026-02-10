@@ -189,29 +189,30 @@ const deusExMachina: CatastopheCard = {
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, position) => {
-      if (!(inst.metadata.drawn_face_values instanceof Array)) {
-        throw new Error('invalid data for metadata field drawn_face_values');
-      }
-      const faceValue = inst.metadata.drawn_face_values![position];
-      if (typeof faceValue !== 'number') {
-        throw new Error(
-          `no drawn face value specified for Player ${position + 1}`
-        );
-      }
       const active = activeCards(playerCards);
-      if (active.length > 0) {
-        active[0].applyPoints(
-          'C',
-          faceValue as number,
-          inst,
-          'for drawing a trait with face value of ' + faceValue
-        );
+      if ((inst.metadata.drawn_face_values instanceof Array)) {
+        const faceValue = inst.metadata.drawn_face_values![position];
+        // TODO: add number[] as a valid type - we currently only support number or string[]
+        const parsedValue = parseInt(faceValue);
+        if (typeof parsedValue !== 'number') {
+          throw new Error(
+            `no drawn face value specified for Player ${position + 1}`
+          );
+        }
+        if (active.length > 0) {
+          active[0].applyPoints(
+            'C',
+            parsedValue as number,
+            inst,
+            'for drawing a trait with face value of ' + faceValue
+          );
+        }
       }
     });
 
     // TODO: would be nice if this allow selection by card name
   },
-  metadataRequired: [['drawn_face_values', 'card_per_person', 'global']]
+  metadataRequired: [['drawn_face_values', 'card_per_person', 'card']]
 };
 addCard(deusExMachina);
 

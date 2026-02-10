@@ -1,6 +1,6 @@
 import { allCards } from '@scorer/cardContainer';
 import type { MetaDataType, MetaDataScope } from '@scorer/types';
-import type { PlayerCardEntry } from '../types';
+import type { CardEntry } from '../types';
 
 export interface MetadataField {
   key: string;
@@ -29,9 +29,17 @@ export function getInternalMetadataFields(cardName: string): MetadataField[] {
   return getCardMetadataFields(cardName).filter((f) => f.scope === 'internal');
 }
 
+export function getCatastropheMetadataFields(metadata: Record<string, string | number | string[]> | undefined): MetadataField[] {
+  if (metadata === undefined) return []
+  return Object.keys(metadata).map((key) => ({
+    key,
+    type: metadata[key] as unknown as MetaDataType,
+    scope: 'internal'
+  } as MetadataField));
+}
 /** Checks if user-required metadata is complete (ignores internal fields) */
 export function isMetadataComplete(
-  card: PlayerCardEntry,
+  card: CardEntry,
   fields: MetadataField[]
 ): boolean {
   const editableFields = fields.filter((f) => f.scope !== 'internal');

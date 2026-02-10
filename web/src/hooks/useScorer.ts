@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Scorer, GameScore } from '@scorer/scorer';
-import type { PlayerState } from '../types';
+import type { CardEntry, PlayerState } from '../types';
 import type { PlayerInput } from '@scorer/types';
 
 export interface CatastropheState {
@@ -10,7 +10,7 @@ export interface CatastropheState {
 
 export function useScorer(
   players: PlayerState[],
-  selectedCatastrophes: string[],
+  selectedCatastrophes: CardEntry[],
   catastropheMetadata: Record<
     string,
     Record<string, string | number | string[]>
@@ -27,9 +27,9 @@ export function useScorer(
 
       if (selectedCatastrophes.length > 0) {
         const catastropheInputs: PlayerInput[] = selectedCatastrophes.map(
-          (name) => ({
-            name,
-            ...catastropheMetadata[name]
+          (catastrophe) => ({
+            ...catastrophe,
+            ...catastropheMetadata[catastrophe.name]
           })
         );
         scorer.addCatastrophes(catastropheInputs);

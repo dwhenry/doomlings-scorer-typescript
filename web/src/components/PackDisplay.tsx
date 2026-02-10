@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { Card, CardType } from '../types';
+import type { Card, CardEntry, CardType } from '../types';
 import { TRAIT_CARD_TYPES } from '@scorer/types';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useHeaderBottom } from '../hooks/useHeaderBottom';
@@ -7,6 +7,7 @@ import ColorTabs, { type TabId } from './ColorTabs';
 import SearchBar from './SearchBar';
 import CardGrid from './CardGrid';
 import BottomDrawer from './BottomDrawer';
+import { getCatastropheMetadataFields } from 'src/utils/cardMetadata';
 
 interface PackDisplayProps {
   cards: Map<string, Card>;
@@ -15,8 +16,8 @@ interface PackDisplayProps {
   mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
   onHover: (cardName: string | null) => void;
-  selectedCatastrophes: string[];
-  onToggleCatastrophe: (cardName: string) => void;
+  selectedCatastrophes: CardEntry[];
+  onClickCatastrophe: (cardName: string) => void;
   onDeselectCatastrophe: (cardName: string) => void;
 }
 
@@ -28,7 +29,7 @@ export default function PackDisplay({
   onClickCard,
   onHover,
   selectedCatastrophes,
-  onToggleCatastrophe,
+  onClickCatastrophe,
   onDeselectCatastrophe
 }: PackDisplayProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -105,7 +106,9 @@ export default function PackDisplay({
     if (activeTab !== 'catastrophe') return [];
     return [...catastropheCards]
       .filter(
-        (card) => selectedCatastrophes.includes(card.name) || isVisible(card)
+        (card) =>
+          selectedCatastrophes.find((c) => c.name === card.name) ||
+          isVisible(card)
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, catastropheCards, selectedPacks, searchQuery, isSearching]);
@@ -143,7 +146,7 @@ export default function PackDisplay({
             <CatastropheInline
               catastropheCards={filteredCatastrophes}
               selectedCatastrophes={selectedCatastrophes}
-              onToggle={onToggleCatastrophe}
+              clickCard={onClickCatastrophe}
               onDeselect={onDeselectCatastrophe}
               onHover={onHover}
             />
@@ -153,7 +156,7 @@ export default function PackDisplay({
         <CatastropheInline
           catastropheCards={filteredCatastrophes}
           selectedCatastrophes={selectedCatastrophes}
-          onToggle={onToggleCatastrophe}
+          clickCard={onClickCatastrophe}
           onDeselect={onDeselectCatastrophe}
           onHover={onHover}
         />
@@ -199,13 +202,15 @@ export default function PackDisplay({
 function CatastropheInline({
   catastropheCards,
   selectedCatastrophes,
-  onToggle,
+  playerCount,
+  clickCard,
   onDeselect,
   onHover
 }: {
   catastropheCards: Card[];
-  selectedCatastrophes: string[];
-  onToggle: (name: string) => void;
+  selectedCatastrophes: CardEntry[];
+  playerCount: number;
+  clickCard: (name: string) => void;
   onDeselect: (name: string) => void;
   onHover: (name: string | null) => void;
 }) {
@@ -213,12 +218,42 @@ function CatastropheInline({
     <div className="catastrophe-tab-content">
       <div className="catastrophe-cards">
         {catastropheCards.map((card) => {
-          const isSelected = selectedCatastrophes.includes(card.name);
+          const isSelected = selectedCatastrophes.find(
+            (c) => c.name === card.name
+          );
+          const requiredMetadata =
+            isSelected &&
+            card.metadataRequired &&
+            card.metadataRequired.filter(
+              ([_, __, scope]) => scope !== 'internal'
+            );
+
+          const missingMetadata =
+            isSelected &&
+            requiredMetadata &&
+            requiredMetadata.some(([key, type]) => {
+              const value = isSelected[key] as
+                | string
+                | number
+                | string[]
+                | undefined;
+              if (value === undefined) return true;
+              if (type === 'number' || type === 'catastrophe')
+                return isNaN(Number(value));
+              if (type === 'card_per_person') {
+                return (
+                  (value as string[]).length !== playerCount &&
+                  (value as string[]).some((v) => v === '')
+                );
+              }
+              return value === '';
+            });
+
           return (
             <div
               key={card.name}
-              className={`card catastrophe-card${isSelected ? ' selected' : ''}`}
-              onClick={() => onToggle(card.name)}
+              className={`card catastrophe-card${isSelected ? ' selected' : ''}${missingMetadata ? ' metadata-missing' : ''}`}
+              onClick={() => clickCard(card.name)}
               onMouseEnter={() => onHover(card.name)}
               onMouseLeave={() => onHover(null)}
             >
@@ -229,9 +264,11 @@ function CatastropheInline({
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
-              {selectedCatastrophes.indexOf(card.name) !== -1 && (
+              {selectedCatastrophes.find((c) => c.name === card.name) && (
                 <div className="card-count">
-                  {selectedCatastrophes.indexOf(card.name) + 1}
+                  {selectedCatastrophes.indexOf(
+                    selectedCatastrophes.find((c) => c.name === card.name)!
+                  ) + 1}
                 </div>
               )}
               <span className="pack-card-name">{card.name}</span>
