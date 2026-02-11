@@ -7,7 +7,7 @@ const faith: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 4;
+    inst.applyPoints('A', 4, inst, 'face card value')
   },
   modify: (
     inst: CardInstance,
@@ -42,7 +42,7 @@ const fortunate: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 1;
+    inst.applyPoints('A', 1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -76,7 +76,7 @@ const free_will: PlayerCard = {
   type: ['colourless'],
   pack: 'multi-colour',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 2;
+    inst.applyPoints('A', 2, inst, 'face card value')
   },
   modify: (
     inst: CardInstance,

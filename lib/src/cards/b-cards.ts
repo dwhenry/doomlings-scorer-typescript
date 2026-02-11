@@ -1,7 +1,7 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
 import { hasEffect } from './effect_cards';
-import { filterCardByPack, filterCardsByType } from './helpers';
+import { filterCardByPack, filterCardsByType, playerCards } from './helpers';
 
 addBasicCard('BAD', 'red', 'Classic', 1);
 addBasicCard('BARK', 'green', 'Classic', 2);
@@ -14,7 +14,7 @@ const bionic_arm: PlayerCard = {
   type: ['red'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -23,7 +23,7 @@ const bionic_arm: PlayerCard = {
   ): void => {
     const playerCards = allPlayerCards[currentPlayer];
     // TODO: work out when this is attached and set to 2 when it is
-    const multiplier = 1;
+    const multiplier = inst.attachedCards.length > 0 ? 2 : 1;
     filterCardByPack(playerCards, 'Techlings').forEach((playerCard) => {
       playerCard.applyPoints('B', multiplier, inst, 'Bionic Arm is attached');
     });
@@ -33,7 +33,33 @@ addCard(bionic_arm);
 
 addBasicCard('BLOOM', ['green', 'blue'], 'multi-colour', 1);
 addBasicCard('BLUBBER', 'blue', 'Classic', 4);
-addBasicCard('BONE REINFORCEMENT', 'red', 'Techlings', 4);
+
+const boneReinforcement: PlayerCard = {
+  name: 'BONE REINFORCEMENT',
+  type: ['red'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 4, inst, 'face card value')
+  },
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
+      .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
+
+    if (!attachedTo) {
+      inst.generatedMetadata.attached_to = '';
+      return
+    }
+
+    attachedTo.attachedCards.push(inst);
+    attachedTo.applyPoints('B', 0, inst, 'attached');
+  },
+  metadataRequired: [['attached_to', 'any_player_card', 'card']]
+};
+addCard(boneReinforcement);
 addBasicCard('BONES', 'colourless', 'KSE', 2);
 addBasicCard('BONY PLATES', 'green', 'Dinolings', 2);
 
@@ -43,7 +69,7 @@ const boredom: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -65,7 +91,7 @@ const branches: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

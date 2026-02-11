@@ -8,7 +8,7 @@ const packBehavior: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 3;
+    inst.applyPoints('A', 3, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -82,7 +82,7 @@ const pollination: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 1;
+    inst.applyPoints('A', 1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

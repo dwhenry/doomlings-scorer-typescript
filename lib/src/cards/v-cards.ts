@@ -11,7 +11,7 @@ const viral: PlayerCard = {
   type: ['purple'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 2;
+    inst.applyPoints('A', 2, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

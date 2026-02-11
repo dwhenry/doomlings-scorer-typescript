@@ -31,7 +31,7 @@ const theBilbies: PlayerCard = {
   type: ['colourless'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -57,7 +57,7 @@ const theCabochon: PlayerCard = {
   type: ['red'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -85,7 +85,7 @@ const theCosmicJinx: PlayerCard = {
   type: ['purple'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
@@ -111,7 +111,7 @@ const theDancer: PlayerCard = {
   type: ['colourless'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -135,7 +135,7 @@ const theFellmonger: PlayerCard = {
   type: ['red'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -163,7 +163,7 @@ const theJellyfish: PlayerCard = {
   type: ['purple'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -191,7 +191,7 @@ const theLogician: PlayerCard = {
   type: ['colourless'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -223,7 +223,7 @@ const theLumberjack: PlayerCard = {
   type: ['green'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -251,7 +251,7 @@ const theMagician: PlayerCard = {
   type: ['colourless'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -279,7 +279,7 @@ const theMaven: PlayerCard = {
   type: ['blue'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -304,7 +304,7 @@ const theSoothsayer: PlayerCard = {
   type: ['blue'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -332,7 +332,7 @@ const theSpiritGardener: PlayerCard = {
   type: ['green'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -367,7 +367,7 @@ const theTigris: PlayerCard = {
   type: ['red'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -394,7 +394,7 @@ const theVagrant: PlayerCard = {
   type: ['red'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -447,7 +447,7 @@ const theVixen: PlayerCard = {
   type: ['blue'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -475,7 +475,7 @@ const theWarbler: PlayerCard = {
   type: ['green'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -503,7 +503,7 @@ const theWarrior: PlayerCard = {
   type: ['red'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -531,7 +531,7 @@ const theWeaver: PlayerCard = {
   type: ['purple'],
   pack: 'Meaning of Life',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -572,7 +572,7 @@ const tiny: PlayerCard = {
   type: ['blue'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 17;
+    inst.applyPoints('A', 17, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -596,7 +596,7 @@ const tinyArms: PlayerCard = {
   type: ['red'],
   pack: 'Dinolings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.dinolings_in_discard !== 'number') {
@@ -609,6 +609,31 @@ const tinyArms: PlayerCard = {
 addCard(tinyArms);
 
 addBasicCard('TINY LITTLE MELONS', 'green', 'Classic', 1);
-addBasicCard('TRANSGENIC MODIFICATION', 'green', 'Techlings', 1);
+const transgenicModification: PlayerCard = {
+  name: 'TRANSGENIC MODIFICATION',
+  type: ['green'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 1, inst, 'face card value')
+  },
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
+      .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
+
+    if (!attachedTo) {
+      inst.generatedMetadata.attached_to = '';
+      return
+    }
+
+    attachedTo.attachedCards.push(inst);
+    attachedTo.setOverride('type', ['green']);
+    attachedTo.applyPoints('B', 0, inst, 'attached and set colour to green');
+  },
+  metadataRequired: [['attached_to', 'player_card', 'card']]
+};
+addCard(transgenicModification);
 addBasicCard('TRUNK', 'green', 'Classic', 1);
 addBasicCard('TUBE FEET', 'blue', 'KSE', 2);

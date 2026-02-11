@@ -32,7 +32,8 @@ const simpleMetaDataTypes = [
   'trait',
   'CardType',
   'catastrophe',
-  'player_card'
+  'player_card',
+  'any_player_card'
 ] as const;
 const catastropheMetaDataTypes = ['card_per_person'] as const;
 const MetaDataTypes = [
@@ -105,6 +106,7 @@ export class CardInstance {
   metadataComplete: boolean = true;
   metadata: Metadata;
   discarded: boolean = false;
+  attachedCards: CardInstance[] = [];
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
   pointsLog: Array<{
@@ -142,7 +144,8 @@ export class CardInstance {
     let phaseSubtotal: number | undefined = undefined;
 
     if (phase === 'A') {
-      throw new Error('Cannot modify finalA points');
+      this.finalA = points ?? 0;
+      finalPoints = this.finalA;
     } else if (phase === 'B') {
       // undefined is due to metadata not being set, this will update once the metadata is set
       if (this.finalB !== undefined) {

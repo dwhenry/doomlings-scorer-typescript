@@ -16,7 +16,7 @@ const dragonHeart: PlayerCard = {
   type: ['red'],
   pack: 'Mythlings',
   calcA: function (card: CardInstance): void {
-    card.finalA = 1;
+    card.applyPoints('A', 1, card, 'face card value')
   },
   calcB: function (
     card: CardInstance,
@@ -55,7 +55,7 @@ const denial: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: function (card: CardInstance): void {
-    card.finalA = 4;
+    card.applyPoints('A', 4, card, 'face card value')
   },
   metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
 };

@@ -9,7 +9,7 @@ const immunity: PlayerCard = {
   type: ['blue'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 4;
+    inst.applyPoints('A', 4, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

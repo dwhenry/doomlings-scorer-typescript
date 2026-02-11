@@ -10,32 +10,35 @@ const gmo: PlayerCard = {
   type: ['colourless'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const chosenCardName = inst.metadata['attached_card_name'] as string;
+    const chosenCardName = inst.metadata['attached'] as string;
 
-    const chosenCard = playerCards(allPlayerCards, currentPlayer)
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
       .find((c) => chosenCardName === c.card.name);
 
-    if (!chosenCard) {
+    if (!attachedTo) {
       inst.applyPoints('B', undefined, inst, `chosen card ${chosenCardName} not found`);
       inst.generatedMetadata.attached_card_name = '';
       return;
     }
 
+    attachedTo.attachedCards.push(inst);
+    attachedTo.applyPoints('B', 0, inst, 'attached');
+
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
-      if (!!cardInst.card.type.find((type) => chosenCard?.card.type.includes(type))) {
-        cardInst.applyPoints('B', 1, inst, `for being a same trait as ${chosenCard?.card.name}`);
+      if (!!cardInst.card.type.find((type) => attachedTo?.card.type.includes(type))) {
+        cardInst.applyPoints('B', 1, inst, `for being a same trait as ${attachedTo?.card.name}`);
       }
     })
   },
   // TODO: Change me to use a better mechanism !!!! - allow selection of existing card by name
-  metadataRequired: [['attached_card_name', 'player_card', 'card']]
+  metadataRequired: [['attached', 'player_card', 'card']]
 
   // TODO: rescore any cards that rely on attached cards
 };
@@ -46,7 +49,7 @@ const gratitude: PlayerCard = {
   type: ['colourless'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

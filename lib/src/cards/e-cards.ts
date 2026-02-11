@@ -4,13 +4,42 @@ import {
   addBasicCard,
   addCardThatPointsByColour
 } from '../cardContainer';
-import { filterCardByPack, playerCards } from './helpers';
+import { filterCardByPack, forEachPlayerCards, playerCards } from './helpers';
 
 addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
 addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
 addCardThatPointsByColour('EGG CLUSTERS', 'blue', 'Classic', -1, 'blue', 1);
 addBasicCard('EGG PREDATION', 'purple', 'Dinolings', 1);
-addBasicCard('ELECTROMAGNETIC', 'purple', 'Techlings', 1);
+const electromagnetic: PlayerCard = {
+  name: 'ELECTROMAGNETIC',
+  type: ['green'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 1, inst, 'face card value')
+  },
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+
+    const [playerIndex, cardName] = inst.metadata.attached_to as [string, string];
+
+    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
+      if (i.toString() === playerIndex) {
+        const attachedTo = playerCards.find((cardInst) => cardInst.card.name === cardName);
+        if (!attachedTo) {
+          inst.generatedMetadata.attached_to = [];
+          return
+        }
+
+        attachedTo.attachedCards.push(inst);
+        attachedTo.applyPoints('B', 0, inst, 'attached');
+      }
+    })
+  },
+  metadataRequired: [['attached_to', 'any_player_card', 'card']]
+};
+addCard(electromagnetic);
 addBasicCard('ELONGATED NECK', 'blue', 'Dinolings', 1);
 addBasicCard('ELOQUENCE', 'colourless', 'Classic', 1);
 const elven_ears: PlayerCard = {
@@ -18,7 +47,7 @@ const elven_ears: PlayerCard = {
   type: ['green'],
   pack: 'Mythlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = -1;
+    inst.applyPoints('A', -1, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,

@@ -1,5 +1,6 @@
 import { PlayerCard, CardInstance } from '../types';
 import { addCard, addBasicCard } from '../cardContainer';
+import { forEachPlayerCards } from './helpers';
 
 // Attach to a trait in any trait pile. Value is equal to the face value of the host trait.
 const nano: PlayerCard = {
@@ -7,25 +8,37 @@ const nano: PlayerCard = {
   type: ['green'],
   pack: 'Techlings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 0;
+    inst.applyPoints('A', 0, inst, 'face card value')
   },
-  calcB: (inst: CardInstance): void => {
-    if (typeof inst.metadata.host_face_value !== 'number') {
-      throw new Error('invalid data for metadata field host_face_value');
-    }
-    inst.applyPoints(
-      'B',
-      inst.metadata.host_face_value,
-      inst,
-      'for being a host trait'
-    );
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const [playerIndex, cardName] = inst.metadata.attached_to as [string, string];
 
-    // TODO: add selection of existing card by name
+    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
+      if (i.toString() === playerIndex) {
+        const attachedTo = playerCards.find((cardInst) => cardInst.card.name === cardName);
+        if (!attachedTo) {
+          inst.generatedMetadata.attached_to = [];
+          return
+        }
+
+        attachedTo.attachedCards.push(inst);
+        attachedTo.applyPoints('B', 0, inst, 'attached');
+
+        inst.applyPoints(
+          'B',
+          attachedTo.finalA,
+          inst,
+          'for being a host trait'
+        );
+      }
+    })
   },
-  metadataRequired: [['host_face_value', 'number', 'card']]
+  metadataRequired: [['attached_to', 'any_player_card', 'card']]
 };
 addCard(nano);
-
 addBasicCard('NECROMANTIC', 'purple', 'Mythlings', 1);
 addBasicCard('NEURAL LINK', 'blue', 'Techlings', 2);
 addBasicCard('NOCTURNAL', 'purple', 'Classic', 3);

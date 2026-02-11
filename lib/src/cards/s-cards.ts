@@ -5,7 +5,7 @@ import {
   addCardThatPointsByColour
 } from '../cardContainer';
 import { isDominant } from './effect_cards';
-import { filterCardsByType, playerCards } from './helpers';
+import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
 addBasicCard('SALIVA', 'blue', 'Classic', 1);
 addBasicCard('SAUDADE', 'colourless', 'Classic', 2);
@@ -21,7 +21,7 @@ const sentience: PlayerCard = {
   type: ['red'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 2;
+    inst.applyPoints('A', 2, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -53,7 +53,7 @@ const serratedTeeth: PlayerCard = {
   type: ['red'],
   pack: 'Dinolings',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 5;
+    inst.applyPoints('A', 5, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
@@ -81,6 +81,38 @@ addCardThatPointsByColour(
 );
 addBasicCard('STONE SKIN', 'red', 'Classic', 2);
 addBasicCard('SUBDERMAL PLATING', 'purple', 'Techlings', -1);
+const subdermalPlating: PlayerCard = {
+  name: 'SUBDERMAL PLATING',
+  type: ['purple'],
+  pack: 'Techlings',
+  calcA: (inst: CardInstance): void => {
+    inst.applyPoints('A', 1, inst, 'face card value')
+  },
+  calcB: (inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+
+    const [playerIndex, cardName] = inst.metadata.attached_to as [string, string];
+
+    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
+      if (i.toString() === playerIndex) {
+        const attachedTo = playerCards.find((cardInst) => cardInst.card.name === cardName);
+        if (!attachedTo) {
+          inst.generatedMetadata.attached_to = [];
+          return
+        }
+
+        attachedTo.attachedCards.push(inst);
+        attachedTo.applyPoints('B', 0, inst, 'attached and block discarding');
+
+        // TODO: so this needs to be able to block or reverse discarding
+      }
+    })
+  },
+  metadataRequired: [['attached_to', 'any_player_card', 'card']]
+};
+addCard(subdermalPlating);
 addBasicCard('SUPER SPREADER', 'purple', 'Classic', 2);
 
 // Value is equal to the number of Swarm traits in all trait piles (including this one)
@@ -90,7 +122,7 @@ function createSwarm(name: string): PlayerCard {
     type: ['green'],
     pack: 'Classic',
     calcA: (inst: CardInstance): void => {
-      inst.finalA = 0;
+      inst.applyPoints('A', 0, inst, 'face card value')
     },
     calcB: (
       inst: CardInstance,
@@ -125,7 +157,7 @@ const symbiosis: PlayerCard = {
   type: ['green'],
   pack: 'Classic',
   calcA: (inst: CardInstance): void => {
-    inst.finalA = 3;
+    inst.applyPoints('A', 3, inst, 'face card value')
   },
   calcB: (
     inst: CardInstance,
