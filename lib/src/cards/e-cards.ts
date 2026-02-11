@@ -1,22 +1,18 @@
-import { PlayerCard, CardInstance } from '../types';
+import { CardInstance } from '../types';
 import {
-  addCard,
   addBasicCard,
-  addCardThatPointsByColour
+  addCardThatPointsByColour,
 } from '../cardContainer';
-import { filterCardByPack, forEachPlayerCards, playerCards } from './helpers';
+import { filterCardByPack, forEachPlayerCards } from './helpers';
 
-addBasicCard('ECHOLOCATION', 'blue', 'Classic', 4);
-addBasicCard('EFFIGIAL', 'colourless', 'Mythlings', -3);
-addCardThatPointsByColour('EGG CLUSTERS', 'blue', 'Classic', -1, 'blue', 1);
-addBasicCard('EGG PREDATION', 'purple', 'Dinolings', 1);
-const electromagnetic: PlayerCard = {
-  name: 'ELECTROMAGNETIC',
-  type: ['green'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 1, inst, 'face card value')
-  },
+addBasicCard({ score: 4 }, { name: 'ECHOLOCATION', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: -3 }, { name: 'EFFIGIAL', type: ['colourless'], pack: 'Mythlings' });
+addCardThatPointsByColour(
+  { score: -1, colour: 'blue', pointsPerCard: 1 },
+  { name: 'EGG CLUSTERS', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'EGG PREDATION', type: ['purple'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, {
+  name: 'ELECTROMAGNETIC', type: ['green'], pack: 'Techlings',
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -38,17 +34,11 @@ const electromagnetic: PlayerCard = {
     })
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
-};
-addCard(electromagnetic);
-addBasicCard('ELONGATED NECK', 'blue', 'Dinolings', 1);
-addBasicCard('ELOQUENCE', 'colourless', 'Classic', 1);
-const elven_ears: PlayerCard = {
-  name: 'ELVEN EARS',
-  type: ['green'],
-  pack: 'Mythlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', -1, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 1 }, { name: 'ELONGATED NECK', type: ['blue'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, { name: 'ELOQUENCE', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: -1 }, {
+  name: 'ELVEN EARS', type: ['green'], pack: 'Mythlings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -63,6 +53,5 @@ const elven_ears: PlayerCard = {
       'for mythling cards for all players'
     );
   }
-};
-addCard(elven_ears);
-addBasicCard('ENDURANCE', 'red', 'Classic', 1);
+});
+addBasicCard({ score: 1 }, { name: 'ENDURANCE', type: ['red'], pack: 'Classic' });

@@ -1,14 +1,9 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { filterCardsByType, playerCards } from './helpers';
 
-const faith: PlayerCard = {
-  name: 'FAITH',
-  type: ['colourless'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 4, inst, 'face card value')
-  },
+addBasicCard({ score: 4 }, {
+  name: 'FAITH', type: ['colourless'], pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -27,23 +22,17 @@ const faith: PlayerCard = {
     ['fromColour', 'CardType', 'card'],
     ['toColour', 'CardType', 'card']
   ]
-};
-addCard(faith);
-addBasicCard('FANGS', 'red', 'Classic', 1);
-addBasicCard('FEAR', 'colourless', 'Classic', 1);
-addBasicCard('FECUNDITY', 'green', 'Classic', 1);
-addBasicCard('FEY', 'green', 'Mythlings', 1);
-addBasicCard('FINE MOTOR SKILLS', 'purple', 'Classic', 2);
-addBasicCard('FIRE SKIN', 'red', 'Classic', 3);
-addBasicCard('FLATULENCE', 'colourless', 'Classic', 3);
-addBasicCard('FLIGHT', 'blue', 'Classic', 2);
-const fortunate: PlayerCard = {
-  name: 'FORTUNATE',
-  type: ['green'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 1, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 1 }, { name: 'FANGS', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'FEAR', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'FECUNDITY', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'FEY', type: ['green'], pack: 'Mythlings' });
+addBasicCard({ score: 2 }, { name: 'FINE MOTOR SKILLS', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 3 }, { name: 'FIRE SKIN', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 3 }, { name: 'FLATULENCE', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'FLIGHT', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, {
+  name: 'FORTUNATE', type: ['green'], pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -69,25 +58,18 @@ const fortunate: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'less green than other colours');
     }
   }
-};
-addCard(fortunate);
-const free_will: PlayerCard = {
-  name: 'FREE WILL',
-  type: ['colourless'],
-  pack: 'multi-colour',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 2, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 2 }, {
+  name: 'FREE WILL', type: ['colourless'], pack: 'multi-colour',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    inst.setOverride('type', [inst.metadata.chosen_colour!]);
+    inst.setOverride('type', [inst.metadata.chosen_colour!] as string[]);
 
   },
   metadataRequired: [['chosen_colour', 'CardType', 'card']]
-};
-addCard(free_will);
-addBasicCard('FRONDS', 'green', 'Dinolings', 0);
-addBasicCard('FULFILLED', 'colourless', 'KSE', 4);
+});
+addBasicCard({ score: 0 }, { name: 'FRONDS', type: ['green'], pack: 'Dinolings' });
+addBasicCard({ score: 4 }, { name: 'FULFILLED', type: ['colourless'], pack: 'KSE' });

@@ -1,16 +1,11 @@
-import { addBasicCard, addCard } from '../cardContainer';
-import { CardInstance, PlayerCard } from '../types';
+import { addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
 import { playerCards } from './helpers';
 
-addBasicCard('ICY', 'blue', 'Mythlings', 3);
+addBasicCard({ score: 3 }, { name: 'ICY', type: ['blue'], pack: 'Mythlings' });
 
-const immunity: PlayerCard = {
-  name: 'IMMUNITY',
-  type: ['blue'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 4, inst, 'face card value')
-  },
+addBasicCard({ score: 4 }, {
+  name: 'IMMUNITY', type: ['blue'], pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -27,10 +22,9 @@ const immunity: PlayerCard = {
       }
     });
   }
-};
-addCard(immunity);
+});
 
-addBasicCard('IMPATIENCE', 'purple', 'Classic', 1);
-addBasicCard('INTROSPECTIVE', 'colourless', 'Classic', 1);
-addBasicCard('INVENTIVE', 'purple', 'Classic', 1);
-addBasicCard('IRIDESCENT SCALES', 'blue', 'Classic', 1);
+addBasicCard({ score: 1 }, { name: 'IMPATIENCE', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'INTROSPECTIVE', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'INVENTIVE', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'IRIDESCENT SCALES', type: ['blue'], pack: 'Classic' });

@@ -1,5 +1,5 @@
 import { addBasicCard } from '../cardContainer';
 
-addBasicCard('WARM BLOOD', 'red', 'Classic', -1);
-addBasicCard('WITCHY', 'purple', 'Mythlings', 2);
-addBasicCard('WOODY STEMS', 'green', 'Classic', 1);
+addBasicCard({ score: -1 }, { name: 'WARM BLOOD', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'WITCHY', type: ['purple'], pack: 'Mythlings' });
+addBasicCard({ score: 1 }, { name: 'WOODY STEMS', type: ['green'], pack: 'Classic' });

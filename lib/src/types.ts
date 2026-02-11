@@ -6,6 +6,7 @@ export const SCORING_PHASES = {
 } as const;
 
 export const CALC_B_PHASES = {
+  DO_ME_FIRST: 'pre_start',
   PRE_CATASTROPHE: 'pre_catastrophe',
   POST_CATASTROPHE: 'post_catastrophe',
   PRE_MEANING_OF_LIFE: 'pre_meaning_of_life',
@@ -99,6 +100,9 @@ export interface PlayerCard extends Card {
   ): void;
 }
 
+export type PlayerCardWithOptionalInputs<T extends keyof PlayerCard> =
+  Omit<PlayerCard, T> & Partial<Pick<PlayerCard, T>>;
+
 type Metadata = {
   [key: string]: string | number | string[] | undefined;
   fromColour?: CardType;
@@ -107,7 +111,7 @@ type Metadata = {
 };
 
 export class CardInstance {
-  card: Card;
+  card: PlayerCard | CatastopheCard;
   // TODO AF: See if we can delete traitPoints?
   traitPoints: number = 0;
   overrides: { [key: string]: string[] | string | number } = {};
@@ -120,6 +124,7 @@ export class CardInstance {
   attachedCards: CardInstance[] = [];
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
+  blocksDiscardingOnInst: boolean = false;
   pointsLog: Array<{
     phase: 'A' | 'B' | 'C';
     phaseSubtotal: number | undefined;
@@ -128,7 +133,7 @@ export class CardInstance {
     message: string;
   }> = [];
 
-  constructor(card: Card, metadata: Metadata) {
+  constructor(card: PlayerCard | CatastopheCard, metadata: Metadata) {
     this.card = card;
     this.metadata = metadata;
   }
@@ -138,6 +143,10 @@ export class CardInstance {
       return this.overrides['type'];
     }
     return this.card.type;
+  }
+
+  get blocksDiscarding(): boolean {
+    return this.blocksDiscardingOnInst || (this.card as PlayerCard).blocksDiscarding;
   }
 
   setOverride(key: string, value: string[] | string | number) {

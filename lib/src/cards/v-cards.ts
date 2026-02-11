@@ -1,18 +1,15 @@
-import { PlayerCard, CardInstance, CardType } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance, CardType } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { forEachPlayerCards } from './helpers';
 
-addBasicCard('VAMPIRISM', 'purple', 'Classic', 3);
-addBasicCard('VENOMOUS', 'purple', 'Classic', -2);
+addBasicCard({ score: 3 }, { name: 'VAMPIRISM', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: -2 }, { name: 'VENOMOUS', type: ['purple'], pack: 'Classic' });
 
 // At World's End: Choose a color. Opponents receive -1 for each trait of that color in their trait pile.
-const viral: PlayerCard = {
+addBasicCard({ score: 2 }, {
   name: 'VIRAL',
   type: ['purple'],
   pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 2, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -42,7 +39,6 @@ const viral: PlayerCard = {
     // TODO: test that this actually works
   },
   metadataRequired: [['colour', 'CardType', 'card']]
-};
-addCard(viral);
+});
 
-addBasicCard('VORACIOUS', 'red', 'Classic', 2);
+addBasicCard({ score: 2 }, { name: 'VORACIOUS', type: ['red'], pack: 'Classic' });

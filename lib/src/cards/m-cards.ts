@@ -1,15 +1,12 @@
-import { addBasicCard, addCard, addCardThatPointsByColour } from '../cardContainer';
-import { CardInstance, PlayerCard } from '../types';
+import { addBasicCard, addCardThatPointsByColour } from '../cardContainer';
+import { CardInstance } from '../types';
 import { isEffectless } from './effect_cards';
 import { playerCards } from './helpers';
 
-const mecha: PlayerCard = {
+addBasicCard({ score: 2 }, {
   name: 'MECHA',
   type: ['blue'],
   pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 2, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -33,20 +30,15 @@ const mecha: PlayerCard = {
     });
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
-};
-addCard(mecha);
-addBasicCard('MEMORY', 'purple', 'Classic', 2);
-addBasicCard('MIGHTY', 'red', 'Mythlings', 2);
-addBasicCard('MIGRATORY', 'blue', 'Classic', 2);
+});
+addBasicCard({ score: 2 }, { name: 'MEMORY', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'MIGHTY', type: ['red'], pack: 'Mythlings' });
+addBasicCard({ score: 2 }, { name: 'MIGRATORY', type: ['blue'], pack: 'Classic' });
 addCardThatPointsByColour(
-  'MINDFUL',
-  'colourless',
-  'Classic',
-  0,
-  'colourless',
-  1
+  { score: 0, colour: 'colourless', pointsPerCard: 1 },
+  { name: 'MINDFUL', type: ['colourless'], pack: 'Classic' }
 );
-addBasicCard('MITOCHONDRION', 'colourless', 'Classic', 1);
-addBasicCard('MITOSIS', ['blue', 'purple'], 'multi-colour', 1);
-addBasicCard('MORALITY', 'colourless', 'Classic', 5);
-addBasicCard('MOTLEY', ['blue', 'green', 'purple', 'red'], 'multi-colour', 4);
+addBasicCard({ score: 1 }, { name: 'MITOCHONDRION', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'MITOSIS', type: ['blue', 'purple'], pack: 'multi-colour' });
+addBasicCard({ score: 5 }, { name: 'MORALITY', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 4 }, { name: 'MOTLEY', type: ['blue', 'green', 'purple', 'red'], pack: 'multi-colour' });

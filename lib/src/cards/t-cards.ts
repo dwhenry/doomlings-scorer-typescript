@@ -1,38 +1,31 @@
-import { PlayerCard, CardInstance } from '../types';
+import { CardInstance, CALC_B_PHASES } from '../types';
 import {
-  addCard,
   addBasicCard,
-  addCardThatPointsByColour
+  addCardThatPointsByColour,
 } from '../cardContainer';
 import { isEffectless, hasAction, isDominant } from './effect_cards';
 import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
-addBasicCard('TALONS', 'purple', 'Dinolings', 2);
-addBasicCard('TEETH', 'purple', 'Classic', 1);
-addBasicCard('TELEKINETIC', 'purple', 'Classic', 1);
-addBasicCard('TENTACLES', 'blue', 'Classic', 1);
-addBasicCard('TERRITORIAL', 'red', 'Classic', 1);
-addBasicCard('TERROR BEAK', 'blue', 'Dinolings', 3);
+addBasicCard({ score: 2 }, { name: 'TALONS', type: ['purple'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, { name: 'TEETH', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'TELEKINETIC', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'TENTACLES', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'TERRITORIAL', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 3 }, { name: 'TERROR BEAK', type: ['blue'], pack: 'Dinolings' });
 addCardThatPointsByColour(
-  'TETRACHROMATIC',
-  'purple',
-  'multi-colour',
-  4,
-  'colourless',
-  -1
+  { score: 4, colour: 'purple', pointsPerCard: -1 },
+  { name: 'TETRACHROMATIC', type: ['purple'], pack: 'multi-colour' }
 );
-addBasicCard('THAGOMIZER', 'green', 'Dinolings', 1);
+addBasicCard({ score: 1 }, { name: 'THAGOMIZER', type: ['green'], pack: 'Dinolings' });
 
 // --- Sign Cards (Meaning of Life) ---
 
 // +4 if you have only 1 dominant trait. +8 if you have none.
-const theBilbies: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE BILBIES',
   type: ['colourless'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -49,16 +42,13 @@ const theBilbies: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 2+ dominant traits');
     }
   }
-};
-addCard(theBilbies);
+});
 
-const theCabochon: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE CABOCHON',
   type: ['red'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -76,17 +66,14 @@ const theCabochon: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 3+ red traits');
     }
   }
-};
-addCard(theCabochon);
+});
 
 // +3 if your Gene Pool is 3. +7 if your Gene Pool is 1 or 2.
-const theCosmicJinx: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE COSMIC JINX',
   type: ['purple'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
@@ -101,42 +88,42 @@ const theCosmicJinx: PlayerCard = {
     }
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
-};
-addCard(theCosmicJinx);
+});
 
 // +12 if you have the fewest points before Meaning of Life bonuses
-// TODO: fix this card as
-const theDancer: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE DANCER',
   type: ['colourless'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.PRE_MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    if (typeof inst.metadata.bonus_points_as_not_implemented !== 'number') {
-      throw new Error('invalid data for metadata field has_fewest_points');
-    }
-    inst.applyPoints('B', inst.metadata.bonus_points_as_not_implemented, inst, 'Manual Bonus Points as Not Implemented');
+    const scores: number[] = []
+    forEachPlayerCards(allPlayerCards, (playerCards) => {
+      const currentScore = playerCards.reduce(
+        (acc, card) => acc + card.finalA + (card.finalB || 0) + (card.finalC || 0),
+        0
+      );
+      scores.push(currentScore);
+    })
 
-    // TODO: we want to add this as a scoring stage??
-  },
-  metadataRequired: [['bonus_points_as_not_implemented', 'number', 'player']]
-};
-addCard(theDancer);
+    if (scores[currentPlayer] === Math.min(...scores)) {
+      inst.applyPoints('B', 12, inst, 'for having the fewest points before Meaning of Life bonuses');
+    } else {
+      inst.applyPoints('B', 0, inst, 'for not having the fewest points before Meaning of Life bonuses');
+    }
+  }
+});
 
 // +3 if you have only 1 or 2 blue traits. +6 if you have none.
-const theFellmonger: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE FELLMONGER',
   type: ['red'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -154,17 +141,14 @@ const theFellmonger: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 3+ blue traits');
     }
   }
-};
-addCard(theFellmonger);
+});
 
 // +3 if you have 3-5 blue traits. +6 if you have 6 or more.
-const theJellyfish: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE JELLYFISH',
   type: ['purple'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -182,17 +166,14 @@ const theJellyfish: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 3 blue traits');
     }
   }
-};
-addCard(theJellyfish);
+});
 
 // +3 if you have 3-5 effectless traits. +6 if you have 6 or more.
-const theLogician: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE LOGICIAN',
   type: ['colourless'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -214,17 +195,14 @@ const theLogician: PlayerCard = {
       );
     }
   }
-};
-addCard(theLogician);
+});
 
 // +3 if you have only 1 or 2 green traits. +6 if you have none.
-const theLumberjack: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE LUMBERJACK',
   type: ['green'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -242,17 +220,14 @@ const theLumberjack: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 3+ green traits');
     }
   }
-};
-addCard(theLumberjack);
+});
 
 // +3 if you have only 1 or 2 colorless traits. +6 if you have none.
-const theMagician: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE MAGICIAN',
   type: ['colourless'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -270,17 +245,14 @@ const theMagician: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 3+ colourless traits');
     }
   }
-};
-addCard(theMagician);
+});
 
 // +3 if you have 10-14 traits. +7 if you have 15 or more.
-const theMaven: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE MAVEN',
   type: ['blue'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -295,17 +267,14 @@ const theMaven: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 10 traits');
     }
   }
-};
-addCard(theMaven);
+});
 
 // +3 if you have only 1 or 2 purple traits. +6 if you have none.
-const theSoothsayer: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE SOOTHSAYER',
   type: ['blue'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -323,17 +292,14 @@ const theSoothsayer: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having 3+ purple traits');
     }
   }
-};
-addCard(theSoothsayer);
+});
 
 // +3 if you have 3-5 colorless traits. +6 if you have 6 or more.
-const theSpiritGardener: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE SPIRIT GARDENER',
   type: ['green'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -356,19 +322,20 @@ const theSpiritGardener: PlayerCard = {
       );
     }
   }
-};
-addCard(theSpiritGardener);
+});
 
-addBasicCard('THE THIRD EYE', 'colourless', 'Classic', 0);
+addBasicCard({ score: 0 }, {
+  name: 'THE THIRD EYE',
+  type: ['colourless'],
+  pack: 'Classic',
+});
 
 // +3 if you have 3-5 traits with actions. +6 if you have 6 or more.
-const theTigris: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE TIGRIS',
   type: ['red'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -385,17 +352,14 @@ const theTigris: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 3 action traits');
     }
   }
-};
-addCard(theTigris);
+});
 
 // +7 if you have fewer traits than all opponents. +2 if tied for fewest.
-const theVagrant: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE VAGRANT',
   type: ['red'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -438,17 +402,14 @@ const theVagrant: PlayerCard = {
       );
     }
   }
-};
-addCard(theVagrant);
+});
 
 // +3 if you have 3-5 purple traits. +6 if you have 6 or more.
-const theVixen: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE VIXEN',
   type: ['blue'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -466,17 +427,14 @@ const theVixen: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 3 purple traits');
     }
   }
-};
-addCard(theVixen);
+});
 
 // +3 if you have 3-5 green traits. +6 if you have 6 or more.
-const theWarbler: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE WARBLER',
   type: ['green'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -494,17 +452,14 @@ const theWarbler: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 3 green traits');
     }
   }
-};
-addCard(theWarbler);
+});
 
 // +3 if you have 3-5 red traits. +6 if you have 6 or more.
-const theWarrior: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE WARRIOR',
   type: ['red'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -522,17 +477,14 @@ const theWarrior: PlayerCard = {
       inst.applyPoints('B', 0, inst, 'for having less than 3 red traits');
     }
   }
-};
-addCard(theWarrior);
+});
 
 // +3 for each set of all 4 colors (red, green, blue, purple) in your trait pile
-const theWeaver: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'THE WEAVER',
   type: ['purple'],
   pack: 'Meaning of Life',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+  calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -563,17 +515,13 @@ const theWeaver: PlayerCard = {
 
     // TODO: should we be counting multi-colour cards in a different way
   }
-};
-addCard(theWeaver);
+});
 
 // -1 for each trait in your trait pile (including this one)
-const tiny: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'TINY',
   type: ['blue'],
   pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 17, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -587,17 +535,13 @@ const tiny: PlayerCard = {
       'for having ' + traitCount + ' traits'
     );
   }
-};
-addCard(tiny);
+});
 
 // +1 for each Dinoling in the discard pile
-const tinyArms: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'TINY ARMS',
   type: ['red'],
   pack: 'Dinolings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', -1, inst, 'face card value')
-  },
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.dinolings_in_discard !== 'number') {
       throw new Error('invalid data for metadata field dinolings_in_discard');
@@ -605,17 +549,13 @@ const tinyArms: PlayerCard = {
     inst.applyPoints('B', inst.metadata.dinolings_in_discard, inst, 'Dinolings in Discard');
   },
   metadataRequired: [['dinolings_in_discard', 'number', 'global']]
-};
-addCard(tinyArms);
+});
 
-addBasicCard('TINY LITTLE MELONS', 'green', 'Classic', 1);
-const transgenicModification: PlayerCard = {
+addBasicCard({ score: 1 }, { name: 'TINY LITTLE MELONS', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 0 }, {
   name: 'TRANSGENIC MODIFICATION',
   type: ['green'],
   pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 1, inst, 'face card value')
-  },
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -633,7 +573,14 @@ const transgenicModification: PlayerCard = {
     attachedTo.applyPoints('B', 0, inst, 'attached and set colour to green');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
-};
-addCard(transgenicModification);
-addBasicCard('TRUNK', 'green', 'Classic', 1);
-addBasicCard('TUBE FEET', 'blue', 'KSE', 2);
+});
+addBasicCard({ score: 0 }, {
+  name: 'TRUNK',
+  type: ['green'],
+  pack: 'Classic',
+});
+addBasicCard({ score: 0 }, {
+  name: 'TUBE FEET',
+  type: ['blue'],
+  pack: 'KSE',
+});

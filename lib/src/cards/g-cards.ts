@@ -1,23 +1,18 @@
-import { addBasicCard, addCard } from '../cardContainer';
-import { CardInstance, CardType, PlayerCard } from '../types';
+import { addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
 import { playerCards } from './helpers';
 
-addBasicCard('GELATINOUS', 'red', 'Mythlings', 1);
-addBasicCard('GILLS', 'blue', 'Classic', 1);
+addBasicCard({ score: 1 }, { name: 'GELATINOUS', type: ['red'], pack: 'Mythlings' });
+addBasicCard({ score: 1 }, { name: 'GILLS', type: ['blue'], pack: 'Classic' });
 
-const gmo: PlayerCard = {
-  name: 'GMO',
-  type: ['colourless'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', -1, inst, 'face card value')
-  },
+addBasicCard({ score: -1 }, {
+  name: 'GMO', type: ['colourless'], pack: 'Techlings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const chosenCardName = inst.metadata['attached'] as string;
+    const chosenCardName = inst.metadata['attached_to'] as string;
 
     const attachedTo = playerCards(allPlayerCards, currentPlayer)
       .find((c) => chosenCardName === c.card.name);
@@ -38,19 +33,13 @@ const gmo: PlayerCard = {
     })
   },
   // TODO: Change me to use a better mechanism !!!! - allow selection of existing card by name
-  metadataRequired: [['attached', 'player_card', 'card']]
+  metadataRequired: [['attached_to', 'player_card', 'card']]
 
   // TODO: rescore any cards that rely on attached cards
-};
-addCard(gmo);
+});
 
-const gratitude: PlayerCard = {
-  name: 'GRATITUDE',
-  type: ['colourless'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+addBasicCard({ score: 0 }, {
+  name: 'GRATITUDE', type: ['colourless'], pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -68,7 +57,6 @@ const gratitude: PlayerCard = {
       'number of unique player traits'
     );
   }
-};
-addCard(gratitude);
+});
 
-addBasicCard('GREY HAT', 'colourless', 'Techlings', -1);
+addBasicCard({ score: -1 }, { name: 'GREY HAT', type: ['colourless'], pack: 'Techlings' });

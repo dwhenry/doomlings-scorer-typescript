@@ -1,15 +1,12 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
 // +1 for every pair of a color in your trait pile
-const packBehavior: PlayerCard = {
+addBasicCard({ score: 3 }, {
   name: 'PACK BEHAVIOR',
   type: ['green'],
   pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 3, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -66,24 +63,20 @@ const packBehavior: PlayerCard = {
 
     // TODO: we need to rescore this after any colour changes
   }
-};
-addCard(packBehavior);
+});
 
-addBasicCard('PAINTED SHELL', 'blue', 'Classic', 1);
-addBasicCard('PARASITIC', 'purple', 'Classic', -2);
-addBasicCard('PERSUASIVE', 'purple', 'Classic', 1);
-addBasicCard('PHOTOSYNTHESIS', 'green', 'Classic', 1);
-addBasicCard('PHREAKISH EYES', 'red', 'Techlings', 2);
-addBasicCard('POISONOUS', 'purple', 'Classic', 2);
+addBasicCard({ score: 1 }, { name: 'PAINTED SHELL', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: -2 }, { name: 'PARASITIC', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'PERSUASIVE', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'PHOTOSYNTHESIS', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'PHREAKISH EYES', type: ['red'], pack: 'Techlings' });
+addBasicCard({ score: 2 }, { name: 'POISONOUS', type: ['purple'], pack: 'Classic' });
 
 // +1 for every card in your trait pile with a face value of 1 (including this one)
-const pollination: PlayerCard = {
+addBasicCard({ score: 1 }, {
   name: 'POLLINATION',
   type: ['green'],
   pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 1, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -95,12 +88,11 @@ const pollination: PlayerCard = {
       }
     });
   }
-};
-addCard(pollination);
+});
 
-addBasicCard('PREPPER', 'colourless', 'Classic', 2);
-addBasicCard('PRIDE', 'red', 'KSE', 2);
-addBasicCard('PROPAGATION', 'green', 'Classic', 1);
-addBasicCard('PROTOFEATHERS', 'purple', 'Dinolings', -2);
-addBasicCard('PTEROSAUR WINGS', 'blue', 'Dinolings', 1);
-addBasicCard('PYCNOFIBERS', 'colourless', 'Dinolings', 1);
+addBasicCard({ score: 2 }, { name: 'PREPPER', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'PRIDE', type: ['red'], pack: 'KSE' });
+addBasicCard({ score: 1 }, { name: 'PROPAGATION', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: -2 }, { name: 'PROTOFEATHERS', type: ['purple'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, { name: 'PTEROSAUR WINGS', type: ['blue'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, { name: 'PYCNOFIBERS', type: ['colourless'], pack: 'Dinolings' });

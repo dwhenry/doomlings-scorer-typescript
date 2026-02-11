@@ -1,17 +1,12 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
-addBasicCard('RAINBOW HORN', 'colourless', 'Mythlings', 2);
+addBasicCard({ score: 2 }, { name: 'RAINBOW HORN', type: ['colourless'], pack: 'Mythlings' });
 
 // Value is equal to the size of your Gene Pool
-const randomFertilization: PlayerCard = {
-  name: 'RANDOM FERTILIZATION',
-  type: ['green'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+addBasicCard({ score: 0 }, {
+  name: 'RANDOM FERTILIZATION', type: ['green'], pack: 'Classic',
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
@@ -19,20 +14,14 @@ const randomFertilization: PlayerCard = {
     inst.applyPoints('B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
-};
-addCard(randomFertilization);
+})
 
-addBasicCard('RECKLESS', 'red', 'Classic', 3);
-addBasicCard('REGENERATIVE TISSUE', 'blue', 'Classic', 0);
-addBasicCard('RETRACTABLE CLAWS', 'red', 'Classic', 5);
-addBasicCard('RIGHTEOUS', 'blue', 'Mythlings', 1);
-const ruggedized: PlayerCard = {
-  name: 'RUGGEDIZED',
-  type: ['colourless'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 4, inst, 'face card value')
-  },
+addBasicCard({ score: 3 }, { name: 'RECKLESS', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 0 }, { name: 'REGENERATIVE TISSUE', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 5 }, { name: 'RETRACTABLE CLAWS', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'RIGHTEOUS', type: ['blue'], pack: 'Mythlings' });
+addBasicCard({ score: 4 }, {
+  name: 'RUGGEDIZED', type: ['colourless'], pack: 'Techlings',
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -49,5 +38,4 @@ const ruggedized: PlayerCard = {
     attachedTo.applyPoints('B', 0, inst, 'attached');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
-};
-addCard(ruggedized);
+});
