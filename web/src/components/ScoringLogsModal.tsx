@@ -76,6 +76,16 @@ export default function ScoringLogsModal({
   onClose
 }: ScoringLogsModalProps) {
   const [logView, setLogView] = useState<LogView>('byPlayer');
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  const toggleCard = (cardKey: string) => {
+    setExpandedCards((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardKey)) next.delete(cardKey);
+      else next.add(cardKey);
+      return next;
+    });
+  };
 
   const scorer = useMemo(
     () => buildScorer(players, selectedCatastrophes, catastropheMetadata),
@@ -159,44 +169,58 @@ export default function ScoringLogsModal({
                       <> ({player.cards.length} cards)</>
                     )}
                   </h4>
-                  {player.cards.map((card, position) => (
-                    <div
-                      key={`${player.name}-${card.name}-${position}`}
-                      className="scoring-logs-card-block"
-                    >
-                      <div className="scoring-logs-card-name">
-                        {card.name} (
-                        {card.phaseB !== undefined
-                          ? card.phaseA + card.phaseB + card.phaseC
-                          : '–'}{' '}
-                        points)
-                        <span className="scoring-logs-phases">
-                          A: {card.phaseA} · B: {card.phaseB ?? '–'} · C:{' '}
-                          {card.phaseC}
-                        </span>
+                  {player.cards.map((card, position) => {
+                    const cardKey = `${player.name}-${card.name}-${position}`;
+                    const isExpanded = expandedCards.has(cardKey);
+                    return (
+                      <div
+                        key={cardKey}
+                        className="scoring-logs-card-block"
+                      >
+                        <button
+                          type="button"
+                          className={`scoring-logs-card-name scoring-logs-card-toggle${isExpanded ? ' is-expanded' : ''}`}
+                          onClick={() => toggleCard(cardKey)}
+                          aria-expanded={isExpanded}
+                        >
+                          <span className="scoring-logs-card-chevron" aria-hidden>
+                            {isExpanded ? '▼' : '▶'}
+                          </span>
+                          {card.name} (
+                          {card.phaseB !== undefined
+                            ? card.phaseA + card.phaseB + card.phaseC
+                            : '–'}{' '}
+                          points)
+                          <span className="scoring-logs-phases">
+                            A: {card.phaseA} · B: {card.phaseB ?? '–'} · C:{' '}
+                            {card.phaseC}
+                          </span>
+                        </button>
+                        {isExpanded && (
+                          <table className="scoring-logs-table">
+                            <thead>
+                              <tr>
+                                <th>Phase</th>
+                                <th>Points</th>
+                                <th>Source</th>
+                                <th>Message</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {card.pointsLog.map((entry, i) => (
+                                <tr key={i}>
+                                  <td>{entry.phase}</td>
+                                  <td>{entry.points}</td>
+                                  <td>{entry.updates}</td>
+                                  <td>{entry.message}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
                       </div>
-                      <table className="scoring-logs-table">
-                        <thead>
-                          <tr>
-                            <th>Phase</th>
-                            <th>Points</th>
-                            <th>Source</th>
-                            <th>Message</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {card.pointsLog.map((entry, i) => (
-                            <tr key={i}>
-                              <td>{entry.phase}</td>
-                              <td>{entry.points}</td>
-                              <td>{entry.updates}</td>
-                              <td>{entry.message}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </section>
               ))}
             </div>

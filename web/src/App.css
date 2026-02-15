@@ -768,6 +768,36 @@ body {
   margin-bottom: 4px;
 }
 
+.scoring-logs-card-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.scoring-logs-card-toggle:hover {
+  color: #495057;
+}
+
+.scoring-logs-card-toggle.is-expanded {
+  margin-bottom: 6px;
+}
+
+.scoring-logs-card-chevron {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #adb5bd;
+}
+
 .scoring-logs-phases {
   font-weight: normal;
   color: #adb5bd;
