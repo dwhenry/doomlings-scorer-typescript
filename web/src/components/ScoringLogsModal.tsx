@@ -143,30 +143,51 @@ export default function ScoringLogsModal({
           )}
           {hasLogs && logsData && (
             <div className="scoring-logs-tables">
+              <div
+                className="scoring-logs-score-row scoring-logs-score-header"
+                aria-hidden
+              >
+                <span className="scoring-logs-score-name" />
+                <span className="scoring-logs-score-total">Total</span>
+                <span className="scoring-logs-score-a">A</span>
+                <span className="scoring-logs-score-b">B</span>
+                <span className="scoring-logs-score-c">C</span>
+              </div>
               {logsData.map((player) => (
                 <section
                   key={player.name}
                   className="scoring-logs-player-section"
                 >
-                  <h4 className="scoring-logs-player-name">
-                    {player.name}
+                  <h4 className="scoring-logs-player-name scoring-logs-score-row">
+                    <span className="scoring-logs-score-name">
+                      {player.name} ({player.cards.length} cards)
+                    </span>
                     {player.phaseA !== undefined ? (
                       <>
-                        {' '}
-                        (
-                        {player.phaseB !== undefined
-                          ? (player.phaseA ?? 0) +
-                            (player.phaseB ?? 0) +
-                            (player.phaseC ?? 0)
-                          : '–'}{' '}
-                        points : {player.cards.length} cards)
-                        <span className="scoring-logs-phases">
-                          A: {player.phaseA} · B: {player.phaseB ?? '–'} · C:{' '}
+                        <span className="scoring-logs-score-total">
+                          {player.phaseB !== undefined
+                            ? (player.phaseA ?? 0) +
+                              (player.phaseB ?? 0) +
+                              (player.phaseC ?? 0)
+                            : '–'}
+                        </span>
+                        <span className="scoring-logs-score-a">
+                          {player.phaseA}
+                        </span>
+                        <span className="scoring-logs-score-b">
+                          {player.phaseB ?? '–'}
+                        </span>
+                        <span className="scoring-logs-score-c">
                           {player.phaseC}
                         </span>
                       </>
                     ) : (
-                      <> ({player.cards.length} cards)</>
+                      <>
+                        <span className="scoring-logs-score-total" />
+                        <span className="scoring-logs-score-a" />
+                        <span className="scoring-logs-score-b" />
+                        <span className="scoring-logs-score-c" />
+                      </>
                     )}
                   </h4>
                   {player.cards.map((card, position) => {
@@ -179,20 +200,28 @@ export default function ScoringLogsModal({
                       >
                         <button
                           type="button"
-                          className={`scoring-logs-card-name scoring-logs-card-toggle${isExpanded ? ' is-expanded' : ''}`}
+                          className={`scoring-logs-card-name scoring-logs-card-toggle scoring-logs-score-row${isExpanded ? ' is-expanded' : ''}`}
                           onClick={() => toggleCard(cardKey)}
                           aria-expanded={isExpanded}
                         >
-                          <span className="scoring-logs-card-chevron" aria-hidden>
-                            {isExpanded ? '▼' : '▶'}
+                          <span className="scoring-logs-score-name">
+                            <span className="scoring-logs-card-chevron" aria-hidden>
+                              {isExpanded ? '▼' : '▶'}
+                            </span>
+                            {card.name}
                           </span>
-                          {card.name} (
-                          {card.phaseB !== undefined
-                            ? card.phaseA + card.phaseB + card.phaseC
-                            : '–'}{' '}
-                          points)
-                          <span className="scoring-logs-phases">
-                            A: {card.phaseA} · B: {card.phaseB ?? '–'} · C:{' '}
+                          <span className="scoring-logs-score-total">
+                            {card.phaseB !== undefined
+                              ? card.phaseA + card.phaseB + card.phaseC
+                              : '–'}
+                          </span>
+                          <span className="scoring-logs-score-a">
+                            {card.phaseA}
+                          </span>
+                          <span className="scoring-logs-score-b">
+                            {card.phaseB ?? '–'}
+                          </span>
+                          <span className="scoring-logs-score-c">
                             {card.phaseC}
                           </span>
                         </button>

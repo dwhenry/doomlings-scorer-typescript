@@ -753,6 +753,60 @@ body {
   border-bottom: 1px solid #dee2e6;
 }
 
+/* Align Total, A, B, C columns across player and card rows */
+.scoring-logs-score-row {
+  display: grid;
+  grid-template-columns: 1fr 4rem 2.5rem 2.5rem 2.5rem;
+  gap: 12px 16px;
+  align-items: baseline;
+}
+
+.scoring-logs-score-name {
+  min-width: 0;
+}
+
+.scoring-logs-score-total,
+.scoring-logs-score-a,
+.scoring-logs-score-b,
+.scoring-logs-score-c {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoring-logs-score-total {
+  font-weight: 600;
+}
+
+.scoring-logs-score-a,
+.scoring-logs-score-b,
+.scoring-logs-score-c {
+  font-weight: normal;
+  color: #adb5bd;
+}
+
+.scoring-logs-player-name .scoring-logs-score-a,
+.scoring-logs-player-name .scoring-logs-score-b,
+.scoring-logs-player-name .scoring-logs-score-c {
+  color: #adb5bd;
+}
+
+.scoring-logs-score-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #adb5bd;
+  margin-bottom: 4px;
+  padding-bottom: 2px;
+}
+
+.scoring-logs-score-header .scoring-logs-score-total,
+.scoring-logs-score-header .scoring-logs-score-a,
+.scoring-logs-score-header .scoring-logs-score-b,
+.scoring-logs-score-header .scoring-logs-score-c {
+  color: #adb5bd;
+}
+
 .scoring-logs-card-block {
   margin-bottom: 12px;
 }
@@ -769,9 +823,6 @@ body {
 }
 
 .scoring-logs-card-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   width: 100%;
   padding: 0;
   margin-bottom: 4px;
@@ -782,6 +833,12 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+.scoring-logs-card-toggle .scoring-logs-score-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .scoring-logs-card-toggle:hover {
