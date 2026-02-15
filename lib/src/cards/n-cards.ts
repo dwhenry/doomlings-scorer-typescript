@@ -23,9 +23,9 @@ addBasicCard({ score: 0 }, {
         }
 
         attachedTo.attachedCards.push(inst);
-        attachedTo.applyPoints('B', 0, inst, 'attached');
+        attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
 
-        inst.applyPoints(
+        inst.applyPoints(currentPlayer,
           'B',
           attachedTo.finalA,
           inst,

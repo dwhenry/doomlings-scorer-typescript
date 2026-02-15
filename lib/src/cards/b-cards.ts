@@ -19,7 +19,7 @@ addBasicCard({ score: -1 }, {
     // TODO: work out when this is attached and set to 2 when it is
     const multiplier = inst.attachedCards.length > 0 ? 2 : 1;
     filterCardByPack(playerCards, 'Techlings').forEach((playerCard) => {
-      playerCard.applyPoints('B', multiplier, inst, 'Bionic Arm is attached');
+      playerCard.applyPoints(currentPlayer, 'B', multiplier, inst, 'Bionic Arm is attached');
     });
   }
 });
@@ -43,7 +43,7 @@ addBasicCard({ score: 4 }, {
     }
 
     attachedTo.attachedCards.push(inst);
-    attachedTo.applyPoints('B', 0, inst, 'attached');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
 });
@@ -63,7 +63,7 @@ addBasicCard({ score: 0 }, {
     const playerCards = allPlayerCards[currentPlayer];
     playerCards.forEach((card) => {
       if (hasEffect(card.card.name)) {
-        card.applyPoints('B', 1, inst, 'this card has no effect');
+        card.applyPoints(currentPlayer, 'B', 1, inst, 'this card has no effect');
       }
     });
   }
@@ -86,7 +86,7 @@ addBasicCard({ score: 0 }, {
       }
     });
 
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       points,
       inst,

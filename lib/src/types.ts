@@ -45,7 +45,7 @@ export type PackType = (typeof PACK_TYPES)[number];
 const simpleMetaDataTypes = [
   'number',
   'trait',
-  'CardType',
+  'card_type',
   'catastrophe',
   'player_card',
   'any_player_card'
@@ -127,6 +127,7 @@ export class CardInstance {
   generatedMetadata: Record<string, string | number | string[]> = {};
   blocksDiscardingOnInst: boolean = false;
   pointsLog: Array<{
+    currentPlayer: number;
     phase: 'A' | 'B' | 'C';
     phaseSubtotal: number | undefined;
     points: number | undefined;
@@ -155,6 +156,7 @@ export class CardInstance {
   }
 
   applyPoints(
+    currentPlayer: number,
     phase: 'A' | 'B' | 'C',
     points: number | undefined,
     fromCard: CardInstance,
@@ -183,7 +185,7 @@ export class CardInstance {
       this.finalC += points ?? 0;
       phaseSubtotal = this.finalC;
     }
-    this.pointsLog.push({ phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
+    this.pointsLog.push({ currentPlayer, phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
   }
 }
 

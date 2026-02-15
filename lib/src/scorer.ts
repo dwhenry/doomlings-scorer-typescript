@@ -72,14 +72,15 @@ export class Scorer {
   }
 
   calcC() {
-    this.allPlayerCards.forEach((playerCards) => {
+    this.allPlayerCards.forEach((playerCards, currentPlayer) => {
       playerCards.forEach((inst) => {
-        if (inst.discarded) {
-          inst.applyPoints(
+        const currentPoints = inst.finalA + (inst.finalB ?? 0)
+        if (inst.discarded && currentPoints !== 0) {
+          inst.applyPoints(currentPlayer,
             'C',
-            -(inst.finalA + (inst.finalB ?? 0)),
+            -currentPoints,
             inst,
-            'Discarded'
+            'points set to 0 due to card being discarded'
           );
         }
       });

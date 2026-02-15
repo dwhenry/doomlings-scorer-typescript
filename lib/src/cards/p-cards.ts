@@ -54,7 +54,7 @@ addBasicCard({ score: 3 }, {
     } else {
       pairCount = maxPairCount;
     }
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       pairCount + multiColourCount,
       inst,
@@ -84,7 +84,7 @@ addBasicCard({ score: 1 }, {
   ): void => {
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
       if (cardInst.finalA === 1) {
-        cardInst.applyPoints('B', 1, inst, 'for having a face value of 1');
+        cardInst.applyPoints(currentPlayer, 'B', 1, inst, 'for having a face value of 1');
       }
     });
   }

@@ -15,7 +15,7 @@ addBasicCard({ score: 0 }, {
     if (typeof inst.metadata.biggest_gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       inst.metadata.biggest_gene_pool_size,
       inst,

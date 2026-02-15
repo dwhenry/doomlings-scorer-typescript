@@ -10,7 +10,7 @@ addBasicCard({ score: 0 }, {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.applyPoints('B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 })
@@ -32,7 +32,7 @@ addBasicCard({ score: 4 }, {
       }
     });
 
-    inst.applyPoints('B', points, inst, 'has the most traits');
+    inst.applyPoints(currentPlayer, 'B', points, inst, 'has the most traits');
   }
 })
 addBasicCard({ score: 3 }, { name: 'APPEALING', type: ['green'], pack: 'Classic' });

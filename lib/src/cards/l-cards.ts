@@ -26,7 +26,7 @@ addBasicCard({ score: 1 }, {
 
         attachedTo.attachedCards.push(inst);
         attachedTo.skipCalcB = true;
-        attachedTo.applyPoints('B', 0, inst, 'attached and effect is disabled');
+        attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached and effect is disabled');
       }
     })
   },

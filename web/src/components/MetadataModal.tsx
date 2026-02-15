@@ -223,6 +223,22 @@ export default function MetadataModal({
                   ))}
                 </select>
               )}
+              {field.type === 'card_type' && (
+                <select
+                  id={`meta-${field.key}`}
+                  value={(values[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                  }
+                >
+                  <option value="">Select...</option>
+                  {COLOR_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              )}
               {field.type === 'card_per_person' &&
                 Array.from({ length: playerCount }, (_, pos) => pos).map(
                   (pos) => {

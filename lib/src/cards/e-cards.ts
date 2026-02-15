@@ -30,7 +30,7 @@ addBasicCard({ score: 1 }, {
         }
 
         attachedTo.attachedCards.push(inst);
-        attachedTo.applyPoints('B', 0, inst, 'attached');
+        attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
       }
     })
   },
@@ -47,7 +47,7 @@ addBasicCard({ score: -1 }, {
   ): void => {
     const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings');
 
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       mythlingCards.length,
       inst,
