@@ -923,6 +923,58 @@ body {
   text-decoration: none;
 }
 
+.scoring-logs-file-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scoring-logs-import-error {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  background: #f8d7da;
+  color: #721c24;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.scoring-logs-modal .modal-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.scoring-logs-export-btn,
+.scoring-logs-import-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scoring-logs-export-btn {
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+}
+
+.scoring-logs-export-btn:hover {
+  background: #f0eeff;
+}
+
+.scoring-logs-import-btn {
+  border: 2px solid #28a745;
+  background: white;
+  color: #28a745;
+}
+
+.scoring-logs-import-btn:hover {
+  background: #e8f5e9;
+}
+
 /* Discarded card visual treatment */
 .card--discarded {
   opacity: 0.45;

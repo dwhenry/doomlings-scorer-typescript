@@ -1,8 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Scorer } from '@scorer/scorer';
 import type { PlayerInput } from '@scorer/types';
-import type { PlayerState } from '../types';
-import type { CardEntry } from '../types';
+import type {
+  CardEntry,
+  GameStateExport,
+  PlayerState
+} from '../types';
+import { GAME_STATE_EXPORT_VERSION } from '../types';
 
 type LogView = 'byPlayer' | 'bySource';
 
@@ -36,7 +40,9 @@ interface ScoringLogsModalProps {
     string,
     Record<string, string | number | string[]>
   >;
+  selectedPacks?: string[];
   onClose: () => void;
+  onImport: (state: GameStateExport) => void;
 }
 
 function buildScorer(
@@ -69,14 +75,82 @@ function buildScorer(
   }
 }
 
+function isValidGameStateExport(
+  data: unknown
+): data is GameStateExport {
+  if (!data || typeof data !== 'object') return false;
+  const o = data as Record<string, unknown>;
+  return (
+    typeof o.version === 'number' &&
+    Array.isArray(o.players) &&
+    (o.selectedPacks === undefined || Array.isArray(o.selectedPacks))
+  );
+}
+
 export default function ScoringLogsModal({
   players,
   selectedCatastrophes,
   catastropheMetadata,
-  onClose
+  selectedPacks = ['Classic'],
+  onClose,
+  onImport
 }: ScoringLogsModalProps) {
   const [logView, setLogView] = useState<LogView>('byPlayer');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [importError, setImportError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    const state: GameStateExport = {
+      version: GAME_STATE_EXPORT_VERSION,
+      exportedAt: new Date().toISOString(),
+      players,
+      selectedCatastrophes,
+      catastropheMetadata,
+      selectedPacks
+    };
+    const blob = new Blob([JSON.stringify(state, null, 2)], {
+      type: 'application/json'
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `doomlings-game-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportClick = () => {
+    setImportError(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setImportError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = reader.result;
+        if (typeof text !== 'string') {
+          setImportError('Could not read file.');
+          return;
+        }
+        const data = JSON.parse(text) as unknown;
+        if (!isValidGameStateExport(data)) {
+          setImportError('Invalid game state file.');
+          return;
+        }
+        onImport(data);
+        onClose();
+      } catch {
+        setImportError('Invalid JSON or file format.');
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const toggleCard = (cardKey: string) => {
     setExpandedCards((prev) => {
@@ -256,7 +330,34 @@ export default function ScoringLogsModal({
           )}
         </div>
 
+        {importError && (
+          <p className="scoring-logs-import-error" role="alert">
+            {importError}
+          </p>
+        )}
         <div className="modal-actions">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={handleFileChange}
+            className="scoring-logs-file-input"
+            aria-hidden
+          />
+          <button
+            type="button"
+            className="scoring-logs-export-btn"
+            onClick={handleExport}
+          >
+            Export game
+          </button>
+          <button
+            type="button"
+            className="scoring-logs-import-btn"
+            onClick={handleImportClick}
+          >
+            Import game
+          </button>
           <button type="button" className="modal-cancel" onClick={onClose}>
             Close
           </button>
