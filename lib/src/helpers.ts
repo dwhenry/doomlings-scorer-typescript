@@ -6,7 +6,7 @@ export const groupByCardByFromCard = (logs: Array<PointsLog & {
 }>) => {
   const response: {
     inst: CardInstance,
-    logs: Array<T>
+    logs: Array<PointsLog & { affectedPlayer: number; affectedCard: CardInstance }>
   }[] = []
 
   logs.forEach((log) => {

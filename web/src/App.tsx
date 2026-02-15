@@ -16,6 +16,7 @@ import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
+import ScoringLogsModal from './components/ScoringLogsModal';
 import { CardScore } from '@scorer/scorer';
 
 // State
@@ -33,6 +34,7 @@ interface AppState {
   modal: ModalState | null;
   catastropheModal: CatastropheModalState | null;
   mobileAddingForPlayer: number | null;
+  scoringLogsModalOpen: boolean;
 }
 
 type Action =
@@ -73,7 +75,9 @@ type Action =
       metadata: { card: CardScore; playerIndex: number; cardIndex: number }[];
     }
   | { type: 'START_ADDING_FOR_PLAYER'; playerId: number }
-  | { type: 'STOP_ADDING' };
+  | { type: 'STOP_ADDING' }
+  | { type: 'OPEN_SCORING_LOGS' }
+  | { type: 'CLOSE_SCORING_LOGS' };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -325,6 +329,10 @@ function reducer(state: AppState, action: Action): AppState {
         selectedPlayerId: null,
         mobileAddingForPlayer: null
       };
+    case 'OPEN_SCORING_LOGS':
+      return { ...state, scoringLogsModalOpen: true };
+    case 'CLOSE_SCORING_LOGS':
+      return { ...state, scoringLogsModalOpen: false };
     default:
       return state;
   }
@@ -340,7 +348,8 @@ const initialState: AppState = {
   hoveredCard: null,
   catastropheModal: null,
   modal: null,
-  mobileAddingForPlayer: null
+  mobileAddingForPlayer: null,
+  scoringLogsModalOpen: false
 };
 
 export default function App() {
@@ -675,6 +684,27 @@ export default function App() {
         onClickCatastrophe={handleClickCatastrophe}
         onDeselectCatastrophe={handleDeselectCatastrophe}
       />
+
+      <footer className="scoring-logs-footer">
+        <button
+          type="button"
+          className="scoring-logs-footer-btn"
+          onClick={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
+          disabled={!gameScore}
+          title={gameScore ? 'View detailed scoring logs' : 'Add cards to see scoring logs'}
+        >
+          View scoring logs
+        </button>
+      </footer>
+
+      {state.scoringLogsModalOpen && (
+        <ScoringLogsModal
+          players={state.players}
+          selectedCatastrophes={state.selectedCatastrophes}
+          catastropheMetadata={state.catastropheMetadata}
+          onClose={() => dispatch({ type: 'CLOSE_SCORING_LOGS' })}
+        />
+      )}
 
       {state.modal && modalCard && hasAnyModalFields && (
         <MetadataModal

@@ -676,6 +676,166 @@ body {
   color: #155724;
 }
 
+/* Scoring logs modal */
+.scoring-logs-modal {
+  max-width: 90vw;
+  width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.scoring-logs-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.scoring-logs-header h3 {
+  margin: 0;
+}
+
+.scoring-logs-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.scoring-logs-tab {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #f8f9fa;
+  font-size: 13px;
+  cursor: pointer;
+  color: #495057;
+}
+
+.scoring-logs-tab:hover {
+  background: #e9ecef;
+}
+
+.scoring-logs-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.scoring-logs-body {
+  flex: 1;
+  overflow: auto;
+  margin-bottom: 16px;
+}
+
+.scoring-logs-empty {
+  color: #6c757d;
+  margin: 0;
+  padding: 16px 0;
+}
+
+.scoring-logs-player-section {
+  margin-bottom: 20px;
+}
+
+.scoring-logs-player-section:last-child {
+  margin-bottom: 0;
+}
+
+.scoring-logs-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.scoring-logs-card-block {
+  margin-bottom: 12px;
+}
+
+.scoring-logs-card-block:last-child {
+  margin-bottom: 0;
+}
+
+.scoring-logs-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.scoring-logs-phases {
+  font-weight: normal;
+  color: #adb5bd;
+  margin-left: 8px;
+}
+
+.scoring-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.scoring-logs-table th,
+.scoring-logs-table td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.scoring-logs-table th {
+  font-weight: 600;
+  color: #6c757d;
+  background: #f8f9fa;
+}
+
+.scoring-logs-table td {
+  color: #495057;
+}
+
+.scoring-logs-table tr:hover td {
+  background: #f8f9fa;
+}
+
+/* Footer: View scoring logs */
+.scoring-logs-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid #e9ecef;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+}
+
+.scoring-logs-footer-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #667eea;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.scoring-logs-footer-btn:hover {
+  text-decoration: underline;
+}
+
+.scoring-logs-footer-btn:disabled {
+  color: #adb5bd;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 /* Discarded card visual treatment */
 .card--discarded {
   opacity: 0.45;

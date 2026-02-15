@@ -15,6 +15,7 @@ export class Scorer {
   // allCards contains player and catastrophe cards -  we only return scores for player cards
   private allPlayerCards: Array<Array<CardInstance>>;
   private catastopheCards: Array<CardInstance> = [];
+  private scoringRun: boolean = false;
 
   constructor(...cardsInput: Array<Array<PlayerInput>>) {
     this.allPlayerCards = cardsInput.map((playerCards) => {
@@ -122,6 +123,9 @@ export class Scorer {
     return this.allPlayerCards.map((playerCards, playerIndex) => {
       return {
         name: `Player ${playerIndex + 1}`,
+        phaseA: playerCards.reduce((sum, card) => sum + card.finalA, 0),
+        phaseB: playerCards.reduce((sum: number | undefined, card) => (sum !== undefined && card.finalB !== undefined) ? (sum + card.finalB) : undefined, 0),
+        phaseC: playerCards.reduce((sum, card) => sum + card.finalC, 0),
         cards: playerCards.map((playerCards) => {
           return {
             name: playerCards.card.name,
@@ -170,7 +174,10 @@ export class Scorer {
       const logsByCard = groupByCardByFromCard(currentPlayerLogs)
       return {
         name: `Player ${currentPlayerIndex + 1}`,
-        cards: logsByCard.forEach(({ inst, logs }) => {
+        phaseA: undefined,
+        phaseB: undefined,
+        phaseC: undefined,
+        cards: logsByCard.map(({ inst, logs }) => {
           return {
             name: inst.card.name,
             inst: inst,
@@ -180,7 +187,7 @@ export class Scorer {
             pointsLog: logs.sort((a, b) => a.phase.localeCompare(b.phase)).map((log) => {
               return {
                 phase: log.phase,
-                updates: `${log.currentPlayer === currentPlayerIndex ? 'Self' : `Player ${log.currentPlayer + 1}`}:${log.fromCard.card.name}`,
+                updates: `${log.affectedPlayer === currentPlayerIndex ? 'Self' : `Player ${log.currentPlayer + 1}`}:${log.affectedCard.card.name}`,
                 points: `${log.points} (${log.phaseSubtotal})`,
                 message: log.message
               }
@@ -193,7 +200,10 @@ export class Scorer {
 
   logs(style: 'bySource' | 'byPlayer') {
     // first we generate the scores
-    this.scores()
+    if (!this.scoringRun) {
+      this.scores()
+      this.scoringRun = true;
+    }
 
     if (style === 'byPlayer') {
       return this.formatPointsByPlayer()

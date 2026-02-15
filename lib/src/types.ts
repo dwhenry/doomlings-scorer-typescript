@@ -163,13 +163,12 @@ export class CardInstance {
     fromCard: CardInstance,
     message: string
   ) {
-    let finalPoints: number | undefined = undefined;
     let finalMessage: string = message;
     let phaseSubtotal: number | undefined = undefined;
 
     if (phase === 'A') {
       this.finalA = points ?? 0;
-      finalPoints = this.finalA;
+      phaseSubtotal = this.finalA;
     } else if (phase === 'B') {
       // undefined is due to metadata not being set, this will update once the metadata is set
       if (this.finalB !== undefined) {
@@ -180,13 +179,13 @@ export class CardInstance {
         } else {
           this.finalB += points;
         }
-        phaseSubtotal = this.finalB
+        phaseSubtotal = this.finalB ? this.finalB + this.finalA : undefined;
       }
     } else if (phase === 'C') {
       this.finalC += points ?? 0;
-      phaseSubtotal = this.finalC;
+      phaseSubtotal = this.finalB ? this.finalA + this.finalB + this.finalC : undefined;
     }
-    this.pointsLog.push({ currentPlayer, phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
+    this.pointsLog.push({ currentPlayer, phase, phaseSubtotal, points, fromCard, message: finalMessage });
   }
 }
 
