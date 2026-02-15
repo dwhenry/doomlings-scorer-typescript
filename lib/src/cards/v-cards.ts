@@ -24,7 +24,7 @@ addBasicCard({ score: 2 }, {
       if (playerIndex !== currentPlayer) {
         playerCards.forEach((card) => {
           if (card.type.includes(chosenColour)) {
-            card.applyPoints(
+            card.applyPoints(currentPlayer,
               'B',
               -1,
               inst,
@@ -34,11 +34,8 @@ addBasicCard({ score: 2 }, {
         });
       }
     });
-
-    // TODO: rescore after any colour changes
-    // TODO: test that this actually works
   },
-  metadataRequired: [['colour', 'CardType', 'card']]
+  metadataRequired: [['colour', 'card_type', 'card']]
 });
 
 addBasicCard({ score: 2 }, { name: 'VORACIOUS', type: ['red'], pack: 'Classic' });

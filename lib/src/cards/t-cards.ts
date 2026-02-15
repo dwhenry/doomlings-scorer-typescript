@@ -35,11 +35,11 @@ addBasicCard({ score: 0 }, {
       (c: CardInstance) => isDominant(c.card.name)
     ).length;
     if (dominantCount === 0) {
-      inst.applyPoints('B', 8, inst, 'for having no dominant traits');
+      inst.applyPoints(currentPlayer, 'B', 8, inst, 'for having no dominant traits');
     } else if (dominantCount <= 1) {
-      inst.applyPoints('B', 4, inst, 'for having 1 dominant trait');
+      inst.applyPoints(currentPlayer, 'B', 4, inst, 'for having 1 dominant trait');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 2+ dominant traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 2+ dominant traits');
     }
   }
 });
@@ -59,11 +59,11 @@ addBasicCard({ score: 0 }, {
       'red'
     ).length;
     if (redCount === 0) {
-      inst.applyPoints('B', 6, inst, 'for having no red traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having no red traits');
     } else if (redCount <= 2) {
-      inst.applyPoints('B', 3, inst, 'for having 1-2 red traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 1-2 red traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 3+ red traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 3+ red traits');
     }
   }
 });
@@ -80,11 +80,11 @@ addBasicCard({ score: 0 }, {
     }
     const genePool = inst.metadata.gene_pool_size;
     if (genePool === 1 || genePool === 2) {
-      inst.applyPoints('B', 7, inst, 'for having gene pool between 1-2');
+      inst.applyPoints(currentPlayer, 'B', 7, inst, 'for having gene pool between 1-2');
     } else if (genePool === 3) {
-      inst.applyPoints('B', 3, inst, 'for having gene pool of 3');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having gene pool of 3');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having gene pool of 4+');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having gene pool of 4+');
     }
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
@@ -111,9 +111,9 @@ addBasicCard({ score: 0 }, {
     })
 
     if (scores[currentPlayer] === Math.min(...scores)) {
-      inst.applyPoints('B', 12, inst, 'for having the fewest points before Meaning of Life bonuses');
+      inst.applyPoints(currentPlayer, 'B', 12, inst, 'for having the fewest points before Meaning of Life bonuses');
     } else {
-      inst.applyPoints('B', 0, inst, 'for not having the fewest points before Meaning of Life bonuses');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for not having the fewest points before Meaning of Life bonuses');
     }
   }
 });
@@ -134,11 +134,11 @@ addBasicCard({ score: 0 }, {
       'blue'
     ).length;
     if (blueCount === 0) {
-      inst.applyPoints('B', 6, inst, 'for having no blue traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having no blue traits');
     } else if (blueCount <= 2) {
-      inst.applyPoints('B', 3, inst, 'for having 1-2 blue traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 1-2 blue traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 3+ blue traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 3+ blue traits');
     }
   }
 });
@@ -159,11 +159,11 @@ addBasicCard({ score: 0 }, {
       'blue'
     ).length;
     if (blueCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ blue traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ blue traits');
     } else if (blueCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 blue traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 blue traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 blue traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 3 blue traits');
     }
   }
 });
@@ -183,11 +183,11 @@ addBasicCard({ score: 0 }, {
       (c) => isEffectless(c.card.name)
     ).length;
     if (effectlessCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ effectless traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ effectless traits');
     } else if (effectlessCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 effectless traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 effectless traits');
     } else {
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         0,
         inst,
@@ -213,11 +213,11 @@ addBasicCard({ score: 0 }, {
       'green'
     ).length;
     if (greenCount === 0) {
-      inst.applyPoints('B', 6, inst, 'for having no green traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having no green traits');
     } else if (greenCount <= 2) {
-      inst.applyPoints('B', 3, inst, 'for having 1-2 green traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 1-2 green traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 3+ green traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 3+ green traits');
     }
   }
 });
@@ -238,11 +238,11 @@ addBasicCard({ score: 0 }, {
       'colourless'
     ).length;
     if (colourlessCount === 0) {
-      inst.applyPoints('B', 6, inst, 'for having no colourless traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having no colourless traits');
     } else if (colourlessCount <= 2) {
-      inst.applyPoints('B', 3, inst, 'for having 1-2 colourless traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 1-2 colourless traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 3+ colourless traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 3+ colourless traits');
     }
   }
 });
@@ -260,11 +260,11 @@ addBasicCard({ score: 0 }, {
   ): void => {
     const traitCount = playerCards(allPlayerCards, currentPlayer).length;
     if (traitCount >= 15) {
-      inst.applyPoints('B', 7, inst, 'for having 15+ traits');
+      inst.applyPoints(currentPlayer, 'B', 7, inst, 'for having 15+ traits');
     } else if (traitCount >= 10) {
-      inst.applyPoints('B', 3, inst, 'for having 10-14 traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 10-14 traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 10 traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 10 traits');
     }
   }
 });
@@ -285,11 +285,11 @@ addBasicCard({ score: 0 }, {
       'purple'
     ).length;
     if (purpleCount === 0) {
-      inst.applyPoints('B', 6, inst, 'for having no purple traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having no purple traits');
     } else if (purpleCount <= 2) {
-      inst.applyPoints('B', 3, inst, 'for having 1-2 purple traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 1-2 purple traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having 3+ purple traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having 3+ purple traits');
     }
   }
 });
@@ -310,11 +310,11 @@ addBasicCard({ score: 0 }, {
       'colourless'
     ).length;
     if (colourlessCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ colourless traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ colourless traits');
     } else if (colourlessCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 colourless traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 colourless traits');
     } else {
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         0,
         inst,
@@ -345,11 +345,11 @@ addBasicCard({ score: 0 }, {
       hasAction(c.card.name)
     ).length;
     if (actionCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ action traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ action traits');
     } else if (actionCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 action traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 action traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 action traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 3 action traits');
     }
   }
 });
@@ -378,23 +378,23 @@ addBasicCard({ score: 0 }, {
     });
 
     if (minOther === undefined) {
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         undefined,
         inst,
         'Error: not card count for other players'
       );
     } else if (myCount < minOther) {
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         7,
         inst,
         'for having fewer traits than all opponents'
       );
     } else if (myCount === minOther) {
-      inst.applyPoints('B', 2, inst, 'for having tied for fewest traits');
+      inst.applyPoints(currentPlayer, 'B', 2, inst, 'for having tied for fewest traits');
     } else {
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         0,
         inst,
@@ -420,11 +420,11 @@ addBasicCard({ score: 0 }, {
       'purple'
     ).length;
     if (purpleCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ purple traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ purple traits');
     } else if (purpleCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 purple traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 purple traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 purple traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 3 purple traits');
     }
   }
 });
@@ -445,11 +445,11 @@ addBasicCard({ score: 0 }, {
       'green'
     ).length;
     if (greenCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ green traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ green traits');
     } else if (greenCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 green traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 green traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 green traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 3 green traits');
     }
   }
 });
@@ -470,11 +470,11 @@ addBasicCard({ score: 0 }, {
       'red'
     ).length;
     if (redCount >= 6) {
-      inst.applyPoints('B', 6, inst, 'for having 6+ red traits');
+      inst.applyPoints(currentPlayer, 'B', 6, inst, 'for having 6+ red traits');
     } else if (redCount >= 3) {
-      inst.applyPoints('B', 3, inst, 'for having 3-5 red traits');
+      inst.applyPoints(currentPlayer, 'B', 3, inst, 'for having 3-5 red traits');
     } else {
-      inst.applyPoints('B', 0, inst, 'for having less than 3 red traits');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for having less than 3 red traits');
     }
   }
 });
@@ -506,7 +506,7 @@ addBasicCard({ score: 0 }, {
     });
     // Number of complete sets = minimum count across all 4 colours
     const completeSets = Math.min(...Object.values(colourCounts));
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       completeSets * 3,
       inst,
@@ -528,7 +528,7 @@ addBasicCard({ score: 17 }, {
     currentPlayer: number
   ): void => {
     const traitCount = playerCards(allPlayerCards, currentPlayer).length;
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       -traitCount,
       inst,
@@ -546,7 +546,7 @@ addBasicCard({ score: -1 }, {
     if (typeof inst.metadata.dinolings_in_discard !== 'number') {
       throw new Error('invalid data for metadata field dinolings_in_discard');
     }
-    inst.applyPoints('B', inst.metadata.dinolings_in_discard, inst, 'Dinolings in Discard');
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.dinolings_in_discard, inst, 'Dinolings in Discard');
   },
   metadataRequired: [['dinolings_in_discard', 'number', 'global']]
 });
@@ -571,7 +571,7 @@ addBasicCard({ score: 1 }, {
 
     attachedTo.attachedCards.push(inst);
     attachedTo.setOverride('type', ['green']);
-    attachedTo.applyPoints('B', 0, inst, 'attached and set colour to green');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached and set colour to green');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
 });

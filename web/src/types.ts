@@ -37,4 +37,19 @@ export interface CatastropheModalState {
   cardName: string;
 }
 
+/** Serializable game state for export/import */
+export const GAME_STATE_EXPORT_VERSION = 1;
+
+export interface GameStateExport {
+  version: number;
+  exportedAt: string;
+  players: PlayerState[];
+  selectedCatastrophes: CardEntry[];
+  catastropheMetadata: Record<
+    string,
+    Record<string, string | number | string[]>
+  >;
+  selectedPacks?: string[];
+}
+
 export type { Card, CardType, PackType };

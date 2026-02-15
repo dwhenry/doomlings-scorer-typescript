@@ -24,8 +24,12 @@ export function addBasicCard(custom: { score: number }, card: PlayerCardWithOpti
   addCard({
     calcBRunPhase: CALC_B_PHASES.POST_CATASTROPHE,
     blocksDiscarding: false,
-    calcA: (inst: CardInstance): void => {
-      inst.applyPoints('A', custom.score, inst, 'face card value')
+    calcA: (
+      inst: CardInstance,
+      allPlayerCards: Array<Array<CardInstance>>,
+      currentPlayer: number
+    ): void => {
+      inst.applyPoints(currentPlayer, 'A', custom.score, inst, 'face card value')
     },
     ...card
   })
@@ -43,7 +47,7 @@ export function addCardThatPointsByColour(
     ): void => {
       filterCardsByType(allPlayerCards[currentPlayer], custom.colour).forEach(
         (colourInst) => {
-          colourInst.applyPoints(
+          colourInst.applyPoints(currentPlayer,
             'B',
             custom.pointsPerCard,
             inst,

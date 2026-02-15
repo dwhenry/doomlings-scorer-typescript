@@ -11,7 +11,7 @@ addBasicCard({ score: 0 }, {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }
-    inst.applyPoints('B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.gene_pool_size, inst, 'Gene Pool Size');
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 })
@@ -36,7 +36,7 @@ addBasicCard({ score: 4 }, {
     }
 
     attachedTo.attachedCards.push(inst);
-    attachedTo.applyPoints('B', 0, inst, 'attached');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
 });

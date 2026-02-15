@@ -34,9 +34,9 @@ addBasicCard({ score: 1 }, {
     );
 
     if (uniqueMatchingColours.size === validColours.length) {
-      card.applyPoints('B', 4, card, 'all 4 colours are present');
+      card.applyPoints(currentPlayer, 'B', 4, card, 'all 4 colours are present');
     } else {
-      card.applyPoints('B', 0, card, 'not all 4 colours are present');
+      card.applyPoints(currentPlayer, 'B', 0, card, 'not all 4 colours are present');
     }
   }
 });

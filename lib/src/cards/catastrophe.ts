@@ -100,7 +100,7 @@ const aiTakeover: CatastropheCard = {
     );
 
     colourlessCards.forEach((c: CardInstance) => {
-      c.applyPoints('A', 2, inst, 'overwrite card face value to 2');
+      c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
       c.skipCalcB = true;
     });
   }
@@ -196,7 +196,7 @@ const deusExMachina: CatastropheCard = {
           );
         }
         if (active.length > 0) {
-          active[0].applyPoints(
+          active[0].applyPoints(currentPlayer,
             'C',
             parsedValue as number,
             inst,
@@ -285,7 +285,7 @@ const greyGoo: CatastropheCard = {
     });
 
     selectedCards.forEach((card) => {
-      card.applyPoints('C', -5, inst, 'for having the most traits');
+      card.applyPoints(currentPlayer, 'C', -5, inst, 'for having the most traits');
     });
   }
 };
@@ -300,7 +300,7 @@ const iceAge: CatastropheCard = {
     forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
       playerCards.forEach((card) => {
         if (card.type.includes('red')) {
-          card.applyPoints('C', -1, inst, 'for being a red trait');
+          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a red trait');
         }
       });
     });
@@ -317,7 +317,7 @@ const impactEvent: CatastropheCard = {
     forEachPlayerCards(allPlayerCards, (playerCards) => {
       playerCards.forEach((c) => {
         if (c.finalA >= 3) {
-          c.applyPoints(
+          c.applyPoints(currentPlayer,
             'C',
             -1,
             inst,
@@ -385,7 +385,7 @@ const overpopulation: CatastropheCard = {
     });
 
     selectedCards.forEach((card) => {
-      card.applyPoints('C', 4, inst, 'for having the fewest traits');
+      card.applyPoints(currentPlayer, 'C', 4, inst, 'for having the fewest traits');
     });
   }
 };
@@ -412,7 +412,7 @@ const retrovirus: CatastropheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('green')) {
-          card.applyPoints('C', -1, inst, 'for being a green trait');
+          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a green trait');
         }
       });
     });
@@ -429,7 +429,7 @@ const solarFlare: CatastropheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('purple')) {
-          card.applyPoints('C', -1, inst, 'for being a purple trait');
+          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a purple trait');
         }
       });
     });
@@ -446,7 +446,7 @@ const superVolcano: CatastropheCard = {
     allPlayerCards.forEach((playerCards) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('blue')) {
-          card.applyPoints('C', -1, inst, 'for being a blue trait');
+          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a blue trait');
         }
       });
     });
@@ -466,7 +466,7 @@ const theBigOne: CatastropheCard = {
         .sort((a, b) => a.finalA - b.finalA)
         .splice(7, active.length - 7)
         .forEach((card) => {
-          card.applyPoints(
+          card.applyPoints(currentPlayer,
             'C',
             -2,
             inst,

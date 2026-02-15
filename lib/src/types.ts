@@ -45,7 +45,7 @@ export type PackType = (typeof PACK_TYPES)[number];
 const simpleMetaDataTypes = [
   'number',
   'trait',
-  'CardType',
+  'card_type',
   'catastrophe',
   'player_card',
   'any_player_card'
@@ -113,6 +113,14 @@ type Metadata = {
   colour?: CardType;
 };
 
+export type PointsLog = {
+  currentPlayer: number;
+  phase: 'A' | 'B' | 'C';
+  phaseSubtotal: number | undefined;
+  points: number | undefined;
+  fromCard: CardInstance;
+  message: string;
+}
 export class CardInstance {
   card: PlayerCard | CatastropheCard;
   overrides: { [key: string]: string[] | string | number } = {};
@@ -126,13 +134,7 @@ export class CardInstance {
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
   blocksDiscardingOnInst: boolean = false;
-  pointsLog: Array<{
-    phase: 'A' | 'B' | 'C';
-    phaseSubtotal: number | undefined;
-    points: number | undefined;
-    fromCard: CardInstance;
-    message: string;
-  }> = [];
+  pointsLog: Array<PointsLog> = [];
 
   constructor(card: PlayerCard | CatastropheCard, metadata: Metadata) {
     this.card = card;
@@ -155,18 +157,18 @@ export class CardInstance {
   }
 
   applyPoints(
+    currentPlayer: number,
     phase: 'A' | 'B' | 'C',
     points: number | undefined,
     fromCard: CardInstance,
     message: string
   ) {
-    let finalPoints: number | undefined = undefined;
     let finalMessage: string = message;
     let phaseSubtotal: number | undefined = undefined;
 
     if (phase === 'A') {
       this.finalA = points ?? 0;
-      finalPoints = this.finalA;
+      phaseSubtotal = this.finalA;
     } else if (phase === 'B') {
       // undefined is due to metadata not being set, this will update once the metadata is set
       if (this.finalB !== undefined) {
@@ -177,13 +179,13 @@ export class CardInstance {
         } else {
           this.finalB += points;
         }
-        phaseSubtotal = this.finalB
+        phaseSubtotal = this.finalB ? this.finalB + this.finalA : undefined;
       }
     } else if (phase === 'C') {
       this.finalC += points ?? 0;
-      phaseSubtotal = this.finalC;
+      phaseSubtotal = this.finalB ? this.finalA + this.finalB + this.finalC : undefined;
     }
-    this.pointsLog.push({ phase, phaseSubtotal, points: finalPoints, fromCard, message: finalMessage });
+    this.pointsLog.push({ currentPlayer, phase, phaseSubtotal, points, fromCard, message: finalMessage });
   }
 }
 

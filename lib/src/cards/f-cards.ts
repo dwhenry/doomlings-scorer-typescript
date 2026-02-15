@@ -54,9 +54,9 @@ addBasicCard({ score: 1 }, {
     let maxSize = Math.max(...Object.values(colours));
     // only when more green than others
     if (maxSize < greenSize) {
-      inst.applyPoints('B', 2, inst, 'more green than other colours');
+      inst.applyPoints(currentPlayer, 'B', 2, inst, 'more green than other colours');
     } else {
-      inst.applyPoints('B', 0, inst, 'less green than other colours');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'less green than other colours');
     }
   }
 });

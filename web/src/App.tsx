@@ -2,7 +2,12 @@ import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import { PACK_TYPES } from '@scorer/types';
 import '@scorer/cards';
-import type { Card, CatastropheModalState, ModalState } from './types';
+import type {
+  Card,
+  CatastropheModalState,
+  GameStateExport,
+  ModalState
+} from './types';
 import type { PlayerState, CardEntry } from './types';
 import { useScorer } from './hooks/useScorer';
 import {
@@ -16,6 +21,7 @@ import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
+import ScoringLogsModal from './components/ScoringLogsModal';
 import { CardScore } from '@scorer/scorer';
 
 // State
@@ -33,6 +39,7 @@ interface AppState {
   modal: ModalState | null;
   catastropheModal: CatastropheModalState | null;
   mobileAddingForPlayer: number | null;
+  scoringLogsModalOpen: boolean;
 }
 
 type Action =
@@ -73,7 +80,10 @@ type Action =
       metadata: { card: CardScore; playerIndex: number; cardIndex: number }[];
     }
   | { type: 'START_ADDING_FOR_PLAYER'; playerId: number }
-  | { type: 'STOP_ADDING' };
+  | { type: 'STOP_ADDING' }
+  | { type: 'OPEN_SCORING_LOGS' }
+  | { type: 'CLOSE_SCORING_LOGS' }
+  | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -325,6 +335,41 @@ function reducer(state: AppState, action: Action): AppState {
         selectedPlayerId: null,
         mobileAddingForPlayer: null
       };
+    case 'OPEN_SCORING_LOGS':
+      return { ...state, scoringLogsModalOpen: true };
+    case 'CLOSE_SCORING_LOGS':
+      return { ...state, scoringLogsModalOpen: false };
+    case 'IMPORT_GAME_STATE': {
+      const { payload } = action;
+      const players = payload.players.map((p, i) => ({
+        ...p,
+        id: i,
+        name: p.name ?? `Player ${i + 1}`,
+        cards: Array.isArray(p.cards) ? p.cards : []
+      }));
+      const playerCount = players.length;
+      return {
+        ...state,
+        players,
+        playerCount,
+        selectedCatastrophes: Array.isArray(payload.selectedCatastrophes)
+          ? payload.selectedCatastrophes
+          : [],
+        catastropheMetadata:
+          payload.catastropheMetadata && typeof payload.catastropheMetadata === 'object'
+            ? payload.catastropheMetadata
+            : {},
+        selectedPacks:
+          Array.isArray(payload.selectedPacks) && payload.selectedPacks.length > 0
+            ? payload.selectedPacks
+            : state.selectedPacks,
+        selectedPlayerId: null,
+        modal: null,
+        catastropheModal: null,
+        mobileAddingForPlayer: null,
+        scoringLogsModalOpen: false
+      };
+    }
     default:
       return state;
   }
@@ -340,7 +385,8 @@ const initialState: AppState = {
   hoveredCard: null,
   catastropheModal: null,
   modal: null,
-  mobileAddingForPlayer: null
+  mobileAddingForPlayer: null,
+  scoringLogsModalOpen: false
 };
 
 export default function App() {
@@ -675,6 +721,31 @@ export default function App() {
         onClickCatastrophe={handleClickCatastrophe}
         onDeselectCatastrophe={handleDeselectCatastrophe}
       />
+
+      <footer className="scoring-logs-footer">
+        <button
+          type="button"
+          className="scoring-logs-footer-btn"
+          onClick={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
+          disabled={!gameScore}
+          title={gameScore ? 'View detailed scoring logs' : 'Add cards to see scoring logs'}
+        >
+          View scoring logs
+        </button>
+      </footer>
+
+      {state.scoringLogsModalOpen && (
+        <ScoringLogsModal
+          players={state.players}
+          selectedCatastrophes={state.selectedCatastrophes}
+          catastropheMetadata={state.catastropheMetadata}
+          selectedPacks={state.selectedPacks}
+          onClose={() => dispatch({ type: 'CLOSE_SCORING_LOGS' })}
+          onImport={(payload) =>
+            dispatch({ type: 'IMPORT_GAME_STATE', payload })
+          }
+        />
+      )}
 
       {state.modal && modalCard && hasAnyModalFields && (
         <MetadataModal

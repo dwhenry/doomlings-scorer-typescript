@@ -20,13 +20,13 @@ addBasicCard({ score: -1 }, {
       .find((c) => chosenCardName === c.card.name);
 
     if (!attachedTo) {
-      inst.applyPoints('B', undefined, inst, `chosen card ${chosenCardName} not found`);
+      inst.applyPoints(currentPlayer, 'B', undefined, inst, `chosen card ${chosenCardName} not found`);
       inst.generatedMetadata.attached_card_name = '';
       return;
     }
 
     attachedTo.attachedCards.push(inst);
-    attachedTo.applyPoints('B', 0, inst, 'attached');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
   },
   calcB2: (
     inst: CardInstance,
@@ -42,7 +42,7 @@ addBasicCard({ score: -1 }, {
 
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
       if (!!cardInst.card.type.find((type) => attachedTo?.card.type.includes(type))) {
-        cardInst.applyPoints('B', 1, inst, `for being a same trait as ${attachedTo?.card.name}`);
+        cardInst.applyPoints(currentPlayer, 'B', 1, inst, `for being a same trait as ${attachedTo?.card.name}`);
       }
     })
   },
@@ -61,7 +61,7 @@ addBasicCard({ score: 0 }, {
         .flatMap((a) => a.card.type)
         .filter((c) => c !== 'colourless' && c !== 'catastrophe')
     );
-    inst.applyPoints(
+    inst.applyPoints(currentPlayer,
       'B',
       uniquePlayerTraits.size,
       inst,

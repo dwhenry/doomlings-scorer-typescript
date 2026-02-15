@@ -8,7 +8,7 @@ addBasicCard({ score: 2 }, {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
       throw new Error('invalid data for metadata field cards_in_hand');
     }
-    inst.applyPoints('B', inst.metadata.cards_in_hand, inst, 'point for each card in hand');
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.cards_in_hand, inst, 'point for each card in hand');
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
 });
@@ -29,7 +29,7 @@ addBasicCard({ score: 4 }, {
     const types = playerCards(allPlayerCards, currentPlayer)
       .flatMap((inst) => inst.type)
     // we minus one as we have at least one colourless that doesn't count
-    inst.applyPoints('B', -([...new Set(types)].length - 1), inst, 'point for each colour trait that we have');
+    inst.applyPoints(currentPlayer, 'B', -([...new Set(types)].length - 1), inst, 'point for each colour trait that we have');
   }
 });
 addBasicCard({ score: 1 }, { name: 'CURIOSITY', type: ['blue', 'red'], pack: 'multi-colour' });
@@ -50,7 +50,7 @@ addBasicCard({ score: 1 }, {
 
     attachedTo.attachedCards.push(inst);
     attachedTo.setOverride('type', ['blue']);
-    attachedTo.applyPoints('B', 0, inst, 'attached and colour set to blue');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached and colour set to blue');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
 });

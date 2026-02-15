@@ -28,7 +28,7 @@ addBasicCard({ score: 2 }, {
     const chosenColour = inst.metadata.colour as CardType;
     filterCardsByType(allPlayerCards[currentPlayer], chosenColour).forEach(
       (cardInst) => {
-        cardInst.applyPoints(
+        cardInst.applyPoints(currentPlayer,
           'B',
           1,
           inst,
@@ -50,7 +50,7 @@ addBasicCard({ score: 5 }, {
   ): void => {
     playerCards(allPlayerCards, currentPlayer).filter((cardInst) => {
       if (isDominant(cardInst.card.name)) {
-        cardInst.applyPoints('B', -2, inst, 'for being a dominant trait');
+        cardInst.applyPoints(currentPlayer, 'B', -2, inst, 'for being a dominant trait');
       }
     });
   }
@@ -84,7 +84,7 @@ addBasicCard({ score: -1 }, {
 
         attachedTo.attachedCards.push(inst);
         attachedTo.blocksDiscardingOnInst = true;
-        attachedTo.applyPoints('B', 0, inst, 'attached and block discarding');
+        attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached and block discarding');
       }
     })
   },
@@ -108,7 +108,7 @@ function createSwarm(name: string): [{ score: number }, PlayerCardWithOptionalIn
       const swarmCount = allCards.filter(
         (c) => !c.discarded && c.card.name.startsWith('SWARM')
       ).length;
-      inst.applyPoints(
+      inst.applyPoints(currentPlayer,
         'B',
         swarmCount,
         inst,
@@ -153,7 +153,7 @@ addBasicCard({ score: 3 }, {
 
     const colours = Object.keys(colourCounts);
     if (colours.length < 2) {
-      inst.applyPoints('B', 0, inst, 'for not having 2+ colours');
+      inst.applyPoints(currentPlayer, 'B', 0, inst, 'for not having 2+ colours');
       return;
     }
 
@@ -166,7 +166,7 @@ addBasicCard({ score: 3 }, {
 
     filterCardsByType(allPlayerCards[currentPlayer], lowestColour).forEach(
       (cardInst) => {
-        cardInst.applyPoints(
+        cardInst.applyPoints(currentPlayer,
           'B',
           2,
           inst,

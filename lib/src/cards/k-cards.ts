@@ -15,7 +15,7 @@ function createKidney(name: string): [{ score: number }, PlayerCard] {
     ): void => {
       playerCards(allPlayerCards, currentPlayer).filter((c) => {
         if (c.card.name.startsWith('KIDNEY')) {
-          c.applyPoints('B', 1, inst, 'for being a kidney card');
+          c.applyPoints(currentPlayer, 'B', 1, inst, 'for being a kidney card');
         }
       });
     }

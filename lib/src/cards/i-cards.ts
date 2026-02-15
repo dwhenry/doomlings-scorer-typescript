@@ -13,7 +13,7 @@ addBasicCard({ score: 4 }, {
   ): void => {
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
       if (cardInst.finalA < 0) {
-        cardInst.applyPoints(
+        cardInst.applyPoints(currentPlayer,
           'B',
           2,
           inst,

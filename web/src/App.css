@@ -676,6 +676,305 @@ body {
   color: #155724;
 }
 
+/* Scoring logs modal */
+.scoring-logs-modal {
+  max-width: 90vw;
+  width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.scoring-logs-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.scoring-logs-header h3 {
+  margin: 0;
+}
+
+.scoring-logs-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.scoring-logs-tab {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #f8f9fa;
+  font-size: 13px;
+  cursor: pointer;
+  color: #495057;
+}
+
+.scoring-logs-tab:hover {
+  background: #e9ecef;
+}
+
+.scoring-logs-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.scoring-logs-body {
+  flex: 1;
+  overflow: auto;
+  margin-bottom: 16px;
+}
+
+.scoring-logs-empty {
+  color: #6c757d;
+  margin: 0;
+  padding: 16px 0;
+}
+
+.scoring-logs-player-section {
+  margin-bottom: 20px;
+}
+
+.scoring-logs-player-section:last-child {
+  margin-bottom: 0;
+}
+
+.scoring-logs-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Align Total, A, B, C columns across player and card rows */
+.scoring-logs-score-row {
+  display: grid;
+  grid-template-columns: 1fr 4rem 2.5rem 2.5rem 2.5rem;
+  gap: 12px 16px;
+  align-items: baseline;
+}
+
+.scoring-logs-score-name {
+  min-width: 0;
+}
+
+.scoring-logs-score-total,
+.scoring-logs-score-a,
+.scoring-logs-score-b,
+.scoring-logs-score-c {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoring-logs-score-total {
+  font-weight: 600;
+}
+
+.scoring-logs-score-a,
+.scoring-logs-score-b,
+.scoring-logs-score-c {
+  font-weight: normal;
+  color: #adb5bd;
+}
+
+.scoring-logs-player-name .scoring-logs-score-a,
+.scoring-logs-player-name .scoring-logs-score-b,
+.scoring-logs-player-name .scoring-logs-score-c {
+  color: #adb5bd;
+}
+
+.scoring-logs-score-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #adb5bd;
+  margin-bottom: 4px;
+  padding-bottom: 2px;
+}
+
+.scoring-logs-score-header .scoring-logs-score-total,
+.scoring-logs-score-header .scoring-logs-score-a,
+.scoring-logs-score-header .scoring-logs-score-b,
+.scoring-logs-score-header .scoring-logs-score-c {
+  color: #adb5bd;
+}
+
+.scoring-logs-card-block {
+  margin-bottom: 12px;
+}
+
+.scoring-logs-card-block:last-child {
+  margin-bottom: 0;
+}
+
+.scoring-logs-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.scoring-logs-card-toggle {
+  width: 100%;
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.scoring-logs-card-toggle .scoring-logs-score-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scoring-logs-card-toggle:hover {
+  color: #495057;
+}
+
+.scoring-logs-card-toggle.is-expanded {
+  margin-bottom: 6px;
+}
+
+.scoring-logs-card-chevron {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #adb5bd;
+}
+
+.scoring-logs-phases {
+  font-weight: normal;
+  color: #adb5bd;
+  margin-left: 8px;
+}
+
+.scoring-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.scoring-logs-table th,
+.scoring-logs-table td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.scoring-logs-table th {
+  font-weight: 600;
+  color: #6c757d;
+  background: #f8f9fa;
+}
+
+.scoring-logs-table td {
+  color: #495057;
+}
+
+.scoring-logs-table tr:hover td {
+  background: #f8f9fa;
+}
+
+/* Footer: View scoring logs */
+.scoring-logs-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid #e9ecef;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+}
+
+.scoring-logs-footer-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #667eea;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.scoring-logs-footer-btn:hover {
+  text-decoration: underline;
+}
+
+.scoring-logs-footer-btn:disabled {
+  color: #adb5bd;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.scoring-logs-file-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scoring-logs-import-error {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  background: #f8d7da;
+  color: #721c24;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.scoring-logs-modal .modal-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.scoring-logs-export-btn,
+.scoring-logs-import-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scoring-logs-export-btn {
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+}
+
+.scoring-logs-export-btn:hover {
+  background: #f0eeff;
+}
+
+.scoring-logs-import-btn {
+  border: 2px solid #28a745;
+  background: white;
+  color: #28a745;
+}
+
+.scoring-logs-import-btn:hover {
+  background: #e8f5e9;
+}
+
 /* Discarded card visual treatment */
 .card--discarded {
   opacity: 0.45;

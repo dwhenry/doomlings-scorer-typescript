@@ -22,11 +22,11 @@ addBasicCard({ score: 2 }, {
     }
 
     attachedTo.attachedCards.push(inst);
-    attachedTo.applyPoints('B', 0, inst, 'attached');
+    attachedTo.applyPoints(currentPlayer, 'B', 0, inst, 'attached');
 
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
       if (isEffectless(cardInst.card.name)) {
-        cardInst.applyPoints('B', 0, inst, 'for being an effectless trait');
+        cardInst.applyPoints(currentPlayer, 'B', 0, inst, 'for being an effectless trait');
       }
     });
   },
