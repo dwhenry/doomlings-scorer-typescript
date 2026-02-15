@@ -356,11 +356,13 @@ function reducer(state: AppState, action: Action): AppState {
           ? payload.selectedCatastrophes
           : [],
         catastropheMetadata:
-          payload.catastropheMetadata && typeof payload.catastropheMetadata === 'object'
+          payload.catastropheMetadata &&
+          typeof payload.catastropheMetadata === 'object'
             ? payload.catastropheMetadata
             : {},
         selectedPacks:
-          Array.isArray(payload.selectedPacks) && payload.selectedPacks.length > 0
+          Array.isArray(payload.selectedPacks) &&
+          payload.selectedPacks.length > 0
             ? payload.selectedPacks
             : state.selectedPacks,
         selectedPlayerId: null,
@@ -712,6 +714,7 @@ export default function App() {
 
       <PackDisplay
         cards={cardsMap}
+        playerCount={state.playerCount}
         selectedPacks={state.selectedPacks}
         selectedPlayerId={state.selectedPlayerId}
         mobileAddingForPlayer={state.mobileAddingForPlayer}
@@ -728,7 +731,11 @@ export default function App() {
           className="scoring-logs-footer-btn"
           onClick={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
           disabled={!gameScore}
-          title={gameScore ? 'View detailed scoring logs' : 'Add cards to see scoring logs'}
+          title={
+            gameScore
+              ? 'View detailed scoring logs'
+              : 'Add cards to see scoring logs'
+          }
         >
           View scoring logs
         </button>
