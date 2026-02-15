@@ -113,6 +113,14 @@ type Metadata = {
   colour?: CardType;
 };
 
+export type PointsLog = {
+  currentPlayer: number;
+  phase: 'A' | 'B' | 'C';
+  phaseSubtotal: number | undefined;
+  points: number | undefined;
+  fromCard: CardInstance;
+  message: string;
+}
 export class CardInstance {
   card: PlayerCard | CatastropheCard;
   overrides: { [key: string]: string[] | string | number } = {};
@@ -126,14 +134,7 @@ export class CardInstance {
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};
   blocksDiscardingOnInst: boolean = false;
-  pointsLog: Array<{
-    currentPlayer: number;
-    phase: 'A' | 'B' | 'C';
-    phaseSubtotal: number | undefined;
-    points: number | undefined;
-    fromCard: CardInstance;
-    message: string;
-  }> = [];
+  pointsLog: Array<PointsLog> = [];
 
   constructor(card: PlayerCard | CatastropheCard, metadata: Metadata) {
     this.card = card;

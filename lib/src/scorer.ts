@@ -1,6 +1,7 @@
-import { CALC_B_PHASES, CardInstance, PlayerInput, SCORING_PHASES } from './types';
+import { CALC_B_PHASES, CardInstance, PlayerInput, PointsLog, SCORING_PHASES } from './types';
 import { getCard } from './cardContainer';
 import './cards';
+import { groupByCardByFromCard } from './helpers';
 
 export enum Player {
   One = 0,
@@ -115,6 +116,91 @@ export class Scorer {
 
       inst.card.calcC?.(inst, filteredPlayerCards);
     });
+  }
+
+  private formatPointsByPlayer() {
+    return this.allPlayerCards.map((playerCards, playerIndex) => {
+      return {
+        name: `Player ${playerIndex + 1}`,
+        cards: playerCards.map((playerCards) => {
+          return {
+            name: playerCards.card.name,
+            inst: playerCards,
+            phaseA: playerCards.finalA,
+            phaseB: playerCards.finalB,
+            phaseC: playerCards.finalC,
+            pointsLog: playerCards.pointsLog.map((log) => {
+              return {
+                phase: log.phase,
+                points: `${log.phaseSubtotal} (${log.points})`,
+                updates: `${log.currentPlayer === playerIndex ? 'Self' : `Player ${log.currentPlayer + 1}`}:${log.fromCard.card.name}`,
+                message: log.message
+              }
+            })
+          }
+        })
+      }
+    })
+  }
+
+  private formatPointsBySource() {
+    const logsWithAffectedPlayer = this.allPlayerCards.flatMap((playerCards, playerIndex) => {
+      return playerCards.flatMap((playerCard) => {
+        return playerCard.pointsLog.map((log) => {
+          return {
+            ...log,
+            affectedPlayer: playerIndex,
+            affectedCard: playerCard
+          }
+        })
+      })
+    })
+
+    const logsBySource: Array<Array<PointsLog & {
+      affectedPlayer: number,
+      affectedCard: CardInstance,
+    }>> = []
+
+    logsWithAffectedPlayer.forEach((log) => {
+      logsBySource[log.currentPlayer] = logsBySource[log.currentPlayer] ?? []
+      logsBySource[log.currentPlayer].push(log)
+    })
+
+    return logsBySource.map((currentPlayerLogs, currentPlayerIndex) => {
+      const logsByCard = groupByCardByFromCard(currentPlayerLogs)
+      return {
+        name: `Player ${currentPlayerIndex + 1}`,
+        cards: logsByCard.forEach(({ inst, logs }) => {
+          return {
+            name: inst.card.name,
+            inst: inst,
+            phaseA: inst.finalA,
+            phaseB: inst.finalB,
+            phaseC: inst.finalC,
+            pointsLog: logs.sort((a, b) => a.phase.localeCompare(b.phase)).map((log) => {
+              return {
+                phase: log.phase,
+                updates: `${log.currentPlayer === currentPlayerIndex ? 'Self' : `Player ${log.currentPlayer + 1}`}:${log.fromCard.card.name}`,
+                points: `${log.points} (${log.phaseSubtotal})`,
+                message: log.message
+              }
+            })
+          }
+        })
+      }
+    })
+  }
+
+  logs(style: 'bySource' | 'byPlayer') {
+    // first we generate the scores
+    this.scores()
+
+    if (style === 'byPlayer') {
+      return this.formatPointsByPlayer()
+    }
+    if (style === 'bySource') {
+      return this.formatPointsBySource()
+    }
   }
 
   // Functions
