@@ -1,4 +1,4 @@
-import { CatastopheCard, CardInstance, CardType } from '../types';
+import { CatastropheCard, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
 import { filterCardsByType, forEachPlayerCards } from './helpers';
 
@@ -90,7 +90,7 @@ function colourDiscard(
 // --- Catastrophe Cards ---
 
 // All colorless traits are now worth 2 points
-const aiTakeover: CatastopheCard = {
+const aiTakeover: CatastropheCard = {
   name: 'AI TAKEOVER',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -108,7 +108,7 @@ const aiTakeover: CatastopheCard = {
 addCard(aiTakeover);
 
 // Remove a card from each player's hand (from the colour with highest count)
-const bioPlague: CatastopheCard = {
+const bioPlague: CatastropheCard = {
   name: 'BIOENGINEERED PLAGUE',
   type: ['catastrophe'],
   pack: 'Techlings',
@@ -179,7 +179,7 @@ const bioPlague: CatastopheCard = {
 addCard(bioPlague);
 
 // World's End: Draw a card. Add its face value to your final score.
-const deusExMachina: CatastopheCard = {
+const deusExMachina: CatastropheCard = {
   name: 'DEUS EX MACHINA',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -213,7 +213,7 @@ const deusExMachina: CatastopheCard = {
 addCard(deusExMachina);
 
 // World's End: Discard your highest face value trait from your trait pile
-const eyesOpenFromBehindTheStars: CatastopheCard = {
+const eyesOpenFromBehindTheStars: CatastropheCard = {
   name: 'EYES OPEN FROM BEHIND THE STARS',
   type: ['catastrophe'],
   pack: 'Mythlings',
@@ -255,7 +255,7 @@ const eyesOpenFromBehindTheStars: CatastopheCard = {
 addCard(eyesOpenFromBehindTheStars);
 
 // World's End: Discard 1 blue trait from your trait pile at random
-const glacialMeltdown: CatastopheCard = {
+const glacialMeltdown: CatastropheCard = {
   name: 'GLACIAL MELTDOWN',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -267,7 +267,7 @@ const glacialMeltdown: CatastopheCard = {
 addCard(glacialMeltdown);
 
 // World's End: -5 points to the player(s) with the most traits in their trait pile
-const greyGoo: CatastopheCard = {
+const greyGoo: CatastropheCard = {
   name: 'GREY GOO',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -292,7 +292,7 @@ const greyGoo: CatastopheCard = {
 addCard(greyGoo);
 
 // World's End: -1 for every red trait in your trait pile
-const iceAge: CatastopheCard = {
+const iceAge: CatastropheCard = {
   name: 'ICE AGE',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -309,7 +309,7 @@ const iceAge: CatastopheCard = {
 addCard(iceAge);
 
 // World's End: -1 for each trait with face value of 3 or more
-const impactEvent: CatastopheCard = {
+const impactEvent: CatastropheCard = {
   name: 'IMPACT EVENT',
   type: ['catastrophe'],
   pack: 'Dinolings',
@@ -331,7 +331,7 @@ const impactEvent: CatastopheCard = {
 addCard(impactEvent);
 
 // World's End: Discard 1 green trait from your trait pile at random
-const massExtinction: CatastopheCard = {
+const massExtinction: CatastropheCard = {
   name: 'MASS EXTINCTION',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -343,7 +343,7 @@ const massExtinction: CatastopheCard = {
 addCard(massExtinction);
 
 // World's End: Discard 1 red trait from your trait pile at random
-const megaTsunami: CatastopheCard = {
+const megaTsunami: CatastropheCard = {
   name: 'MEGA TSUNAMI',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -355,7 +355,7 @@ const megaTsunami: CatastopheCard = {
 addCard(megaTsunami);
 
 // World's End: Discard 1 colorless trait from your trait pile
-const nuclearWinter: CatastopheCard = {
+const nuclearWinter: CatastropheCard = {
   name: 'NUCLEAR WINTER',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -367,7 +367,7 @@ const nuclearWinter: CatastopheCard = {
 addCard(nuclearWinter);
 
 // World's End: +4 points to the player(s) with the fewest traits in their trait pile
-const overpopulation: CatastopheCard = {
+const overpopulation: CatastropheCard = {
   name: 'OVERPOPULATION',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -392,7 +392,7 @@ const overpopulation: CatastopheCard = {
 addCard(overpopulation);
 
 // World's End: Discard 1 purple trait from your trait pile at random
-const pulseEvent: CatastopheCard = {
+const pulseEvent: CatastropheCard = {
   name: 'PULSE EVENT',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -404,7 +404,7 @@ const pulseEvent: CatastopheCard = {
 addCard(pulseEvent);
 
 // World's End: -1 for every green trait in your trait pile
-const retrovirus: CatastopheCard = {
+const retrovirus: CatastropheCard = {
   name: 'RETROVIRUS',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -421,7 +421,7 @@ const retrovirus: CatastopheCard = {
 addCard(retrovirus);
 
 // World's End: -1 for every purple trait in your trait pile
-const solarFlare: CatastopheCard = {
+const solarFlare: CatastropheCard = {
   name: 'SOLAR FLARE',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -438,7 +438,7 @@ const solarFlare: CatastopheCard = {
 addCard(solarFlare);
 
 // World's End: -1 for every blue trait in your trait pile
-const superVolcano: CatastopheCard = {
+const superVolcano: CatastropheCard = {
   name: 'SUPER VOLCANO',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -455,7 +455,7 @@ const superVolcano: CatastopheCard = {
 addCard(superVolcano);
 
 // World's End: -2 to your score for each card over 7 in your trait pile
-const theBigOne: CatastopheCard = {
+const theBigOne: CatastropheCard = {
   name: 'THE BIG ONE',
   type: ['catastrophe'],
   pack: 'Classic',
@@ -479,7 +479,7 @@ const theBigOne: CatastopheCard = {
 addCard(theBigOne);
 
 // World's End: Discard 1 trait from your trait pile with face value of 3 or more
-const theFourHorsemen: CatastopheCard = {
+const theFourHorsemen: CatastropheCard = {
   name: 'THE FOUR HORSEMEN',
   type: ['catastrophe'],
   pack: 'Classic',

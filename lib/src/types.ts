@@ -81,7 +81,7 @@ export interface Card {
   metadataRequired?: Array<MetaData>;
 }
 
-export interface CatastopheCard extends Card {
+export interface CatastropheCard extends Card {
   calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
   calcB?(
     inst: CardInstance,
@@ -99,8 +99,8 @@ export interface PlayerCard extends Card {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
-  calcB?: CatastopheCard['calcB']
-  calcB2?: CatastopheCard['calcB']
+  calcB?: CatastropheCard['calcB']
+  calcB2?: CatastropheCard['calcB']
 }
 
 export type PlayerCardWithOptionalInputs<T extends keyof PlayerCard> =
@@ -114,7 +114,7 @@ type Metadata = {
 };
 
 export class CardInstance {
-  card: PlayerCard | CatastopheCard;
+  card: PlayerCard | CatastropheCard;
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
   finalB: number | undefined = 0;
@@ -134,7 +134,7 @@ export class CardInstance {
     message: string;
   }> = [];
 
-  constructor(card: PlayerCard | CatastopheCard, metadata: Metadata) {
+  constructor(card: PlayerCard | CatastropheCard, metadata: Metadata) {
     this.card = card;
     this.metadata = metadata;
   }
