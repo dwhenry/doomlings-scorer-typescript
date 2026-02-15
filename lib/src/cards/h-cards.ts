@@ -1,22 +1,16 @@
 import {
   addBasicCard,
-  addCard,
   addCardThatPointsByColour
 } from '../cardContainer';
-import { CardInstance, PlayerCard } from '../types';
+import { CardInstance } from '../types';
 
-addBasicCard('HAND-WING', ['red', 'purple'], 'multi-colour', 1);
-addCardThatPointsByColour('HEAT VISION', 'red', 'Classic', -1, 'red', 1);
-addBasicCard('HEROIC', 'green', 'Classic', 7);
-addBasicCard('HOT TEMPER', 'red', 'Classic', 2);
-addBasicCard('HYPER-INTELLIGENCE', 'red', 'Classic', 4);
-const hyperMyelination: PlayerCard = {
-  name: 'HYPER-MYELINATION',
-  type: ['purple'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+addBasicCard({ score: 1 }, { name: 'HAND-WING', type: ['red', 'purple'], pack: 'multi-colour' });
+addCardThatPointsByColour({ score: -1, colour: 'red', pointsPerCard: 1 }, { name: 'HEAT VISION', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 7 }, { name: 'HEROIC', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'HOT TEMPER', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 4 }, { name: 'HYPER-INTELLIGENCE', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 0 }, {
+  name: 'HYPER-MYELINATION', type: ['purple'], pack: 'Techlings',
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.biggest_gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
@@ -29,5 +23,4 @@ const hyperMyelination: PlayerCard = {
     );
   },
   metadataRequired: [['biggest_gene_pool_size', 'number', 'global']]
-};
-addCard(hyperMyelination);
+});

@@ -1,23 +1,17 @@
-import { addBasicCard, addCard } from '../cardContainer';
-import { CardInstance, CardType, PlayerCard } from '../types';
+import { addBasicCard } from '../cardContainer';
+import { CardInstance, CardType } from '../types';
 import { playerCards } from './helpers';
 
-addBasicCard('DEEP ROOTS', 'green', 'Classic', 2);
-addBasicCard('DELICIOUS', 'colourless', 'Classic', 4);
-addBasicCard('DERMAL ARMOR', 'colourless', 'Dinolings', 2);
-addBasicCard('DESTINED', 'colourless', 'Mythlings', 4);
-addBasicCard('DIAPHANOUS WINGS', 'blue', 'Mythlings', -1);
-addBasicCard('DIRECTLY REGISTER', 'purple', 'Classic', 1);
-addBasicCard('DOTING', 'colourless', 'Classic', 2);
-
+addBasicCard({ score: 2 }, { name: 'DEEP ROOTS', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 4 }, { name: 'DELICIOUS', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'DERMAL ARMOR', type: ['colourless'], pack: 'Dinolings' });
+addBasicCard({ score: 4 }, { name: 'DESTINED', type: ['colourless'], pack: 'Mythlings' });
+addBasicCard({ score: -1 }, { name: 'DIAPHANOUS WINGS', type: ['blue'], pack: 'Mythlings' });
+addBasicCard({ score: 1 }, { name: 'DIRECTLY REGISTER', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'DOTING', type: ['colourless'], pack: 'Classic' });
 // Bonus 4 points if "all 4 colours" are present
-const dragonHeart: PlayerCard = {
-  name: 'DRAGON HEART',
-  type: ['red'],
-  pack: 'Mythlings',
-  calcA: function (card: CardInstance): void {
-    card.applyPoints('A', 1, card, 'face card value')
-  },
+addBasicCard({ score: 1 }, {
+  name: 'DRAGON HEART', type: ['red'], pack: 'Mythlings',
   calcB: function (
     card: CardInstance,
     allPlayerCards,
@@ -45,20 +39,12 @@ const dragonHeart: PlayerCard = {
       card.applyPoints('B', 0, card, 'not all 4 colours are present');
     }
   }
-};
-addCard(dragonHeart);
+});
 
 // TODO: we need to order the catastrophe cards based on the order they are selected.
 // ignore_next_catastrophe will then ignore based off position in the order.
-const denial: PlayerCard = {
-  name: 'DENIAL',
-  type: ['colourless'],
-  pack: 'Classic',
-  calcA: function (card: CardInstance): void {
-    card.applyPoints('A', 4, card, 'face card value')
-  },
+addBasicCard({ score: 4 }, {
+  name: 'DENIAL', type: ['colourless'], pack: 'Classic',
   metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
-};
-addCard(denial);
-
-addBasicCard('DREAMER', 'purple', 'Classic', 1);
+});
+addBasicCard({ score: 1 }, { name: 'DREAMER', type: ['purple'], pack: 'Classic' });

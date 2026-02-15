@@ -1,6 +1,6 @@
 import { CatastopheCard, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
-import { forEachPlayerCards } from './helpers';
+import { filterCardsByType, forEachPlayerCards } from './helpers';
 
 // --- Helpers ---
 
@@ -42,9 +42,8 @@ function selectCardByColour(
   colour: CardType,
   previousName?: string
 ): CardInstance | undefined {
-  const candidates = activeCards(playerCards).filter((c) =>
-    c.type.includes(colour)
-  );
+  // we also exclude any marked as cannot_discard here
+  const candidates = filterCardsByType(playerCards, colour).filter((c) => !c.metadata.cannot_discard);
   if (candidates.length === 0) return undefined;
 
   // Reuse previous selection if still valid
@@ -93,18 +92,12 @@ const aiTakeover: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const colourlessCards: Array<CardInstance> = allPlayerCards.reduce(
-      (allCards, playerCards) => {
-        const clessCards: Array<CardInstance> = activeCards(playerCards).filter(
-          (c: CardInstance) => c.type.includes('colourless')
-        );
-        return [...clessCards, ...allCards];
-      },
-      [] as CardInstance[]
+    const colourlessCards: Array<CardInstance> = activeCards(allPlayerCards.flatMap(
+      (playerCards) => playerCards).filter((c: CardInstance) => c.type.includes('colourless'))
     );
 
     colourlessCards.forEach((c: CardInstance) => {
-      c.applyPoints('C', 2 - c.finalA, inst, 'set points to 2');
+      c.applyPoints('A', 2, inst, 'overwrite card face value to 2');
       c.skipCalcB = true;
     });
   }
@@ -163,7 +156,7 @@ const bioPlague: CatastopheCard = {
 
         if (maxColour.length > 0) {
           const targets = active.filter(
-            (card) => !!maxColour.find((colour) => card.type.includes(colour))
+            (card) => !!maxColour.find((colour) => card.type.includes(colour) || !card.metadata.cannot_discard)
           );
           if (targets.length > 0) {
             const target = deterministicPick(targets);

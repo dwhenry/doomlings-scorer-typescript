@@ -1,3 +1,3 @@
 import { addBasicCard } from '../cardContainer';
 
-addBasicCard('QUICK', 'red', 'Classic', 2);
+addBasicCard({ score: 2 }, { name: 'QUICK', type: ['red'], pack: 'Classic' });

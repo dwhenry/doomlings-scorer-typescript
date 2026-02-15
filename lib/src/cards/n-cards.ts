@@ -1,15 +1,12 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { forEachPlayerCards } from './helpers';
 
 // Attach to a trait in any trait pile. Value is equal to the face value of the host trait.
-const nano: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'NANO',
   type: ['green'],
   pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -37,9 +34,8 @@ const nano: PlayerCard = {
     })
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
-};
-addCard(nano);
-addBasicCard('NECROMANTIC', 'purple', 'Mythlings', 1);
-addBasicCard('NEURAL LINK', 'blue', 'Techlings', 2);
-addBasicCard('NOCTURNAL', 'purple', 'Classic', 3);
-addBasicCard('NOSY', 'purple', 'Classic', 1);
+});
+addBasicCard({ score: 1 }, { name: 'NECROMANTIC', type: ['purple'], pack: 'Mythlings' });
+addBasicCard({ score: 2 }, { name: 'NEURAL LINK', type: ['blue'], pack: 'Techlings' });
+addBasicCard({ score: 3 }, { name: 'NOCTURNAL', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'NOSY', type: ['purple'], pack: 'Classic' });

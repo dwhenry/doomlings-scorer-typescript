@@ -1,14 +1,9 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
-const camouflage: PlayerCard = {
-  name: 'CAMOUFLAGE',
-  type: ['red'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 2, inst, 'face card value')
-  },
+addBasicCard({ score: 2 }, {
+  name: 'CAMOUFLAGE', type: ['red'], pack: 'Techlings',
   calcB: (inst: CardInstance): void => {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
       throw new Error('invalid data for metadata field cards_in_hand');
@@ -16,22 +11,16 @@ const camouflage: PlayerCard = {
     inst.applyPoints('B', inst.metadata.cards_in_hand, inst, 'point for each card in hand');
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
-};
-addCard(camouflage);
-addBasicCard('CARNOSAUR JAW', 'red', 'Dinolings', 9);
-addBasicCard('CERATOPSIAN HORNS', 'green', 'Dinolings', 4);
-addBasicCard('CHROMATOPHORES', 'blue', 'Classic', 0);
-addBasicCard('CLEVER', 'purple', 'Classic', 1);
-addBasicCard('COLD BLOOD', 'blue', 'Classic', 1);
-addBasicCard('CONFUSION', 'colourless', 'Classic', -2);
-addBasicCard('COSTLY SIGNALING', 'blue', 'Classic', -2);
-const cranialCrest: PlayerCard = {
-  name: 'CRANIAL CREST',
-  type: ['colourless'],
-  pack: 'Dinolings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 4, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 9 }, { name: 'CARNOSAUR JAW', type: ['red'], pack: 'Dinolings' });
+addBasicCard({ score: 4 }, { name: 'CERATOPSIAN HORNS', type: ['green'], pack: 'Dinolings' });
+addBasicCard({ score: 0 }, { name: 'CHROMATOPHORES', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'CLEVER', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'COLD BLOOD', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: -2 }, { name: 'CONFUSION', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: -2 }, { name: 'COSTLY SIGNALING', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 4 }, {
+  name: 'CRANIAL CREST', type: ['colourless'], pack: 'Dinolings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -42,16 +31,10 @@ const cranialCrest: PlayerCard = {
     // we minus one as we have at least one colourless that doesn't count
     inst.applyPoints('B', -([...new Set(types)].length - 1), inst, 'point for each colour trait that we have');
   }
-};
-addCard(cranialCrest);
-addBasicCard('CURIOSITY', ['blue', 'red'], 'multi-colour', 1);
-const cybernetic: PlayerCard = {
-  name: 'CYBERNETIC',
-  type: ['blue'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 1, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 1 }, { name: 'CURIOSITY', type: ['blue', 'red'], pack: 'multi-colour' });
+addBasicCard({ score: 1 }, {
+  name: 'CYBERNETIC', type: ['blue'], pack: 'Techlings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -69,5 +52,4 @@ const cybernetic: PlayerCard = {
     attachedTo.applyPoints('B', 0, inst, 'attached and colour set to blue');
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
-};
-addCard(cybernetic);
+});

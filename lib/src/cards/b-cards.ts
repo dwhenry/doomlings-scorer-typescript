@@ -1,21 +1,15 @@
-import { PlayerCard, CardInstance } from '../types';
-import { addCard, addBasicCard } from '../cardContainer';
+import { CardInstance } from '../types';
+import { addBasicCard } from '../cardContainer';
 import { hasEffect } from './effect_cards';
 import { filterCardByPack, filterCardsByType, playerCards } from './helpers';
 
-addBasicCard('BAD', 'red', 'Classic', 1);
-addBasicCard('BARK', 'green', 'Classic', 2);
-addBasicCard('BEAUTY', 'green', 'KSE', 2);
-addBasicCard('BIG EARS', 'purple', 'Classic', 1);
-addBasicCard('BINARY', 'colourless', 'Techlings', 0);
-
-const bionic_arm: PlayerCard = {
-  name: 'BIONIC ARM',
-  type: ['red'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', -1, inst, 'face card value')
-  },
+addBasicCard({ score: 1 }, { name: 'BAD', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'BARK', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'BEAUTY', type: ['green'], pack: 'KSE' });
+addBasicCard({ score: 1 }, { name: 'BIG EARS', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 0 }, { name: 'BINARY', type: ['colourless'], pack: 'Techlings' });
+addBasicCard({ score: -1 }, {
+  name: 'BIONIC ARM', type: ['red'], pack: 'Techlings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -28,19 +22,12 @@ const bionic_arm: PlayerCard = {
       playerCard.applyPoints('B', multiplier, inst, 'Bionic Arm is attached');
     });
   }
-};
-addCard(bionic_arm);
+});
+addBasicCard({ score: 1 }, { name: 'BLOOM', type: ['green', 'blue'], pack: 'multi-colour' });
+addBasicCard({ score: 4 }, { name: 'BLUBBER', type: ['blue'], pack: 'Classic' });
 
-addBasicCard('BLOOM', ['green', 'blue'], 'multi-colour', 1);
-addBasicCard('BLUBBER', 'blue', 'Classic', 4);
-
-const boneReinforcement: PlayerCard = {
-  name: 'BONE REINFORCEMENT',
-  type: ['red'],
-  pack: 'Techlings',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 4, inst, 'face card value')
-  },
+addBasicCard({ score: 4 }, {
+  name: 'BONE REINFORCEMENT', type: ['red'], pack: 'Techlings',
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
@@ -58,19 +45,15 @@ const boneReinforcement: PlayerCard = {
     attachedTo.applyPoints('B', 0, inst, 'attached');
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
-};
-addCard(boneReinforcement);
-addBasicCard('BONES', 'colourless', 'KSE', 2);
-addBasicCard('BONY PLATES', 'green', 'Dinolings', 2);
+});
+addBasicCard({ score: 2 }, { name: 'BONES', type: ['colourless'], pack: 'KSE' });
+addBasicCard({ score: 2 }, { name: 'BONY PLATES', type: ['green'], pack: 'Dinolings' });
 
 // TODO: Cards in hand is **not** played cards. This is buggy.
-const boredom: PlayerCard = {
+addBasicCard({ score: 0 }, {
   name: 'BOREDOM',
   type: ['colourless'],
   pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -83,16 +66,9 @@ const boredom: PlayerCard = {
       }
     });
   }
-};
-addCard(boredom);
-
-const branches: PlayerCard = {
-  name: 'BRANCHES',
-  type: ['green'],
-  pack: 'Classic',
-  calcA: (inst: CardInstance): void => {
-    inst.applyPoints('A', 0, inst, 'face card value')
-  },
+});
+addBasicCard({ score: 0 }, {
+  name: 'BRANCHES', type: ['green'], pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -118,9 +94,7 @@ const branches: PlayerCard = {
 
     // TODO: we need to queue this card for post-processing as card colours can change
   }
-};
-addCard(branches);
-
-addBasicCard('BRAVE', 'red', 'Classic', 2);
-addBasicCard('BRUTE STRENGTH', 'red', 'Classic', 4);
-addBasicCard('BULLHEADED', ['red', 'green'], 'multi-colour', 1);
+});
+addBasicCard({ score: 2 }, { name: 'BRAVE', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 4 }, { name: 'BRUTE STRENGTH', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'BULLHEADED', type: ['red', 'green'], pack: 'multi-colour' });

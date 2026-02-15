@@ -1,16 +1,13 @@
 import { PlayerCard, CardInstance } from '../types';
-import { addCard } from '../cardContainer';
+import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
 // Value is equal to the number of Kidneys in your trait pile (including this one)
-function createKidney(name: string): PlayerCard {
-  return {
+function createKidney(name: string): [{ score: number }, PlayerCard] {
+  return [{ score: 0 }, {
     name,
     type: ['red'],
     pack: 'Classic',
-    calcA: (inst: CardInstance): void => {
-      inst.applyPoints('A', 0, inst, 'face card value')
-    },
     calcB: (
       inst: CardInstance,
       allPlayerCards: Array<Array<CardInstance>>,
@@ -22,11 +19,11 @@ function createKidney(name: string): PlayerCard {
         }
       });
     }
-  };
+  } as PlayerCard];
 }
 
-addCard(createKidney('KIDNEY (1)'));
-addCard(createKidney('KIDNEY (2)'));
-addCard(createKidney('KIDNEY (3)'));
-addCard(createKidney('KIDNEY (4)'));
-addCard(createKidney('KIDNEY (5)'));
+addBasicCard(...createKidney('KIDNEY (1)'));
+addBasicCard(...createKidney('KIDNEY (2)'));
+addBasicCard(...createKidney('KIDNEY (3)'));
+addBasicCard(...createKidney('KIDNEY (4)'));
+addBasicCard(...createKidney('KIDNEY (5)'));
