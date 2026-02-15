@@ -1,4 +1,4 @@
-import { CardInstance, CardType, PlayerCardWithOptionalInputs } from '../types';
+import { CALC_B_PHASES, CardInstance, CardType, PlayerCardWithOptionalInputs } from '../types';
 import {
   addBasicCard,
   addCardThatPointsByColour,
@@ -66,6 +66,7 @@ addBasicCard({ score: 2 }, { name: 'STONE SKIN', type: ['red'], pack: 'Classic' 
 addBasicCard({ score: -1 }, {
   name: 'SUBDERMAL PLATING', type: ['purple'], pack: 'Techlings',
   blocksDiscarding: true,
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number

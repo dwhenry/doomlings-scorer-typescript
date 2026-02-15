@@ -1,5 +1,5 @@
 import { addBasicCard, addCardThatPointsByColour } from '../cardContainer';
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { isEffectless } from './effect_cards';
 import { playerCards } from './helpers';
 
@@ -7,6 +7,7 @@ addBasicCard({ score: 2 }, {
   name: 'MECHA',
   type: ['blue'],
   pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

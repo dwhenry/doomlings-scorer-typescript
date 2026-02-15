@@ -22,7 +22,7 @@ function findCard(name: string): PlayerCard | CatastopheCard {
 
 export function addBasicCard(custom: { score: number }, card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA'>) {
   addCard({
-    calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
+    calcBRunPhase: CALC_B_PHASES.POST_CATASTROPHE,
     blocksDiscarding: false,
     calcA: (inst: CardInstance): void => {
       inst.applyPoints('A', custom.score, inst, 'face card value')

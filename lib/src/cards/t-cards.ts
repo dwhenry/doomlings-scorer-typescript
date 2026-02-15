@@ -556,6 +556,7 @@ addBasicCard({ score: 1 }, {
   name: 'TRANSGENIC MODIFICATION',
   type: ['green'],
   pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number

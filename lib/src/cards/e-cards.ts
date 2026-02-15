@@ -1,4 +1,4 @@
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import {
   addBasicCard,
   addCardThatPointsByColour,
@@ -13,6 +13,7 @@ addCardThatPointsByColour(
 addBasicCard({ score: 1 }, { name: 'EGG PREDATION', type: ['purple'], pack: 'Dinolings' });
 addBasicCard({ score: 1 }, {
   name: 'ELECTROMAGNETIC', type: ['green'], pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
