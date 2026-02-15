@@ -12,6 +12,9 @@ function activeCards(playerCards: CardInstance[]): CardInstance[] {
 /** Soft-delete a card: marks it as discarded (scorer zeros its score) */
 function softDiscard(card: CardInstance): void {
   card.discarded = true;
+  card.attachedCards.forEach((c) => {
+    c.discarded = true;
+  });
 }
 
 /**
