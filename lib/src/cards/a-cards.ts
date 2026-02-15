@@ -6,7 +6,11 @@ addBasicCard({ score: 2 }, { name: 'ACROBATIC', type: ['purple', 'green'], pack:
 addBasicCard({ score: 4 }, { name: 'ADORABLE', type: ['purple'], pack: 'Classic' });
 addBasicCard({ score: 0 }, {
   name: 'ALTRUISTIC', type: ['colourless'], pack: 'Classic',
-  calcB: (inst: CardInstance): void => {
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }

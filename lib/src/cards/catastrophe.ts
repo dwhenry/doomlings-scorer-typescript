@@ -10,10 +10,10 @@ function activeCards(playerCards: CardInstance[]): CardInstance[] {
 }
 
 /** Soft-delete a card: marks it as discarded (scorer zeros its score) */
-function softDiscard(card: CardInstance): void {
-  card.discarded = true;
+function softDiscard(card: CardInstance, inst: CardInstance): void {
+  card.discarded = inst;
   card.attachedCards.forEach((c) => {
-    c.discarded = true;
+    c.discarded = inst;
   });
 }
 
@@ -78,7 +78,7 @@ function colourDiscard(
     const previousName = previousDiscard[position] as string | undefined;
     const target = selectCardByColour(playerCards, colour, previousName);
     if (target) {
-      softDiscard(target);
+      softDiscard(target, inst);
       return target.card.name;
     }
     return '';
@@ -95,14 +95,19 @@ const aiTakeover: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const colourlessCards: Array<CardInstance> = activeCards(allPlayerCards.flatMap(
-      (playerCards) => playerCards).filter((c: CardInstance) => c.type.includes('colourless'))
-    );
+    const colourlessCardsByPlayer: Array<CardInstance[]> = allPlayerCards.map(
+      (playerCards) => activeCards(playerCards).filter(
+        (c: CardInstance) => c.type.includes('colourless')
+      )
+    )
 
-    colourlessCards.forEach((c: CardInstance) => {
-      c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
-      c.skipCalcB = true;
-    });
+
+    colourlessCardsByPlayer.forEach((colourlessCards, currentPlayer) => {
+      colourlessCards.forEach((c: CardInstance) => {
+        c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
+        c.skipCalcB = true;
+      });
+    })
   }
 };
 addCard(aiTakeover);
@@ -152,7 +157,7 @@ const bioPlague: CatastropheCard = {
           // if the colour of the previous selection is in the max colour list, use it,
           // other we need a new card to discard
           if (prev && !!maxColour.find((c) => prev.type.includes(c))) {
-            softDiscard(prev);
+            softDiscard(prev, inst);
             return prev.card.name;
           }
         }
@@ -163,7 +168,7 @@ const bioPlague: CatastropheCard = {
           );
           if (targets.length > 0) {
             const target = deterministicPick(targets);
-            softDiscard(target);
+            softDiscard(target, inst);
             return target.card.name;
           }
         }
@@ -184,15 +189,15 @@ const deusExMachina: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, position) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
       const active = activeCards(playerCards);
       if ((inst.metadata.drawn_face_values instanceof Array)) {
-        const faceValue = inst.metadata.drawn_face_values![position];
+        const faceValue = inst.metadata.drawn_face_values![currentPlayer];
         // TODO: add number[] as a valid type - we currently only support number or string[]
         const parsedValue = parseInt(faceValue);
         if (typeof parsedValue !== 'number') {
           throw new Error(
-            `no drawn face value specified for Player ${position + 1}`
+            `no drawn face value specified for Player ${currentPlayer + 1}`
           );
         }
         if (active.length > 0) {
@@ -236,14 +241,14 @@ const eyesOpenFromBehindTheStars: CatastropheCard = {
         if (previousName) {
           const prev = active.find((c) => c.card.name === previousName);
           if (prev && prev.finalA === maxValue) {
-            softDiscard(prev);
+            softDiscard(prev, inst);
             return prev.card.name;
           }
         }
 
         const tied = active.filter((c) => c.finalA === maxValue);
         const target = deterministicPick(tied);
-        softDiscard(target);
+        softDiscard(target, inst);
         return target.card.name;
       }
     );
@@ -273,19 +278,19 @@ const greyGoo: CatastropheCard = {
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let maxTraits = 0;
-    let selectedCards: CardInstance[] = [];
+    let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
 
-    forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       if (playerCards.length > maxTraits) {
         maxTraits = playerCards.length;
-        selectedCards = [playerCards[0]];
+        selectedCards = [{ inst: playerCards[0], currentPlayer }];
       } else if (playerCards.length === maxTraits) {
-        selectedCards.push(playerCards[0]);
+        selectedCards.push({ inst: playerCards[0], currentPlayer });
       }
     });
 
-    selectedCards.forEach((card) => {
-      card.applyPoints(currentPlayer, 'C', -5, inst, 'for having the most traits');
+    selectedCards.forEach(({ inst, currentPlayer }) => {
+      inst.applyPoints(currentPlayer, 'C', -5, inst, 'for having the most traits');
     });
   }
 };
@@ -297,7 +302,7 @@ const iceAge: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    forEachPlayerCards(allPlayerCards, (playerCards, playerIndex) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       playerCards.forEach((card) => {
         if (card.type.includes('red')) {
           card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a red trait');
@@ -314,7 +319,7 @@ const impactEvent: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Dinolings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    forEachPlayerCards(allPlayerCards, (playerCards) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       playerCards.forEach((c) => {
         if (c.finalA >= 3) {
           c.applyPoints(currentPlayer,
@@ -373,19 +378,19 @@ const overpopulation: CatastropheCard = {
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let minTraits = 0;
-    let selectedCards: CardInstance[] = [];
+    let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
 
-    forEachPlayerCards(allPlayerCards, (playerCards) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       if (playerCards.length < minTraits) {
         minTraits = playerCards.length;
-        selectedCards = [playerCards[0]];
+        selectedCards = [{ inst: playerCards[0], currentPlayer }];
       } else if (playerCards.length === minTraits) {
-        selectedCards.push(playerCards[0]);
+        selectedCards.push({ inst: playerCards[0], currentPlayer });
       }
     });
 
-    selectedCards.forEach((card) => {
-      card.applyPoints(currentPlayer, 'C', 4, inst, 'for having the fewest traits');
+    selectedCards.forEach(({ inst, currentPlayer }) => {
+      inst.applyPoints(currentPlayer, 'C', 4, inst, 'for having the fewest traits');
     });
   }
 };
@@ -409,7 +414,7 @@ const retrovirus: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('green')) {
           card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a green trait');
@@ -426,7 +431,7 @@ const solarFlare: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('purple')) {
           card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a purple trait');
@@ -443,7 +448,7 @@ const superVolcano: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
         if (card.type.includes('blue')) {
           card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a blue trait');
@@ -460,7 +465,7 @@ const theBigOne: CatastropheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
       const active = activeCards(playerCards);
       active
         .sort((a, b) => a.finalA - b.finalA)
@@ -500,14 +505,14 @@ const theFourHorsemen: CatastropheCard = {
         if (previousName) {
           const prev = candidates.find((c) => c.card.name === previousName);
           if (prev) {
-            softDiscard(prev);
+            softDiscard(prev, inst);
             return prev.card.name;
           }
         }
 
         // Deterministically pick from candidates with face value >= 3
         const target = deterministicPick(candidates);
-        softDiscard(target);
+        softDiscard(target, inst);
         return target.card.name;
       }
     );

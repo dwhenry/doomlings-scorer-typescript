@@ -37,7 +37,7 @@ addBasicCard({ score: 2 }, {
       }
     );
   },
-  metadataRequired: [['colour', 'CardType', 'card']]
+  metadataRequired: [['colour', 'card_type', 'card']]
 });
 
 // -2 for each dominant trait in your trait pile
@@ -102,7 +102,8 @@ function createSwarm(name: string): [{ score: number }, PlayerCardWithOptionalIn
     pack: 'Classic',
     calcB: (
       inst: CardInstance,
-      allPlayerCards: Array<Array<CardInstance>>
+      allPlayerCards: Array<Array<CardInstance>>,
+      currentPlayer: number
     ): void => {
       const allCards = allPlayerCards.flat();
       const swarmCount = allCards.filter(

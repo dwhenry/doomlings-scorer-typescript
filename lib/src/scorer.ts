@@ -81,7 +81,7 @@ export class Scorer {
           inst.applyPoints(currentPlayer,
             'C',
             -currentPoints,
-            inst,
+            inst.discarded,
             'points set to 0 due to card being discarded'
           );
         }
@@ -240,7 +240,7 @@ export class Scorer {
           const finalA = c.finalA;
           const finalB = c.finalB;
           const finalC = c.finalC;
-          const discarded = c.discarded;
+          const discarded = !!c.discarded;
           const total =
             finalB !== undefined ? finalA + finalB + finalC : undefined;
           const generatedMetadata =
