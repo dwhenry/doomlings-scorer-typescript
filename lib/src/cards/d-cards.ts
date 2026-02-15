@@ -41,7 +41,6 @@ addBasicCard({ score: 1 }, {
   }
 });
 
-// TODO: we need to order the catastrophe cards based on the order they are selected.
 // ignore_next_catastrophe will then ignore based off position in the order.
 addBasicCard({ score: 4 }, {
   name: 'DENIAL', type: ['colourless'], pack: 'Classic',

@@ -46,14 +46,24 @@ export class Scorer {
   calcB(calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES]) {
     this.allPlayerCards.forEach((playerCards, i) => {
       playerCards.forEach((inst) => {
+        if (!('calcBRunPhase' in inst.card)) return;
+        if (inst.discarded) return;
+        if (inst.skipCalcB) {
+          inst.finalB = inst.finalB ?? 0;
+          return
+        }
         if (calcBRunPhase === inst.card.calcBRunPhase) {
-          if (inst.discarded || inst.skipCalcB) {
-            return;
-          }
           if (!inst.metadataComplete) {
             inst.finalB = undefined;
           } else {
             inst.card.calcB?.(inst, this.allPlayerCards, i);
+          }
+        }
+        if (calcBRunPhase === inst.card.calcBRunPhase2) {
+          if (!inst.metadataComplete) {
+            inst.finalB = undefined;
+          } else {
+            inst.card.calcB2?.(inst, this.allPlayerCards, i);
           }
         }
       });

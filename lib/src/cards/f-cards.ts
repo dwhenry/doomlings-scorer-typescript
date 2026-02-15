@@ -1,9 +1,10 @@
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { filterCardsByType, playerCards } from './helpers';
 
 addBasicCard({ score: 4 }, {
   name: 'FAITH', type: ['colourless'], pack: 'Classic',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -61,6 +62,7 @@ addBasicCard({ score: 1 }, {
 });
 addBasicCard({ score: 2 }, {
   name: 'FREE WILL', type: ['colourless'], pack: 'multi-colour',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

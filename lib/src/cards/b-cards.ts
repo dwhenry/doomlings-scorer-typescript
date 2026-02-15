@@ -1,4 +1,4 @@
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { hasEffect } from './effect_cards';
 import { filterCardByPack, filterCardsByType, playerCards } from './helpers';
@@ -28,6 +28,7 @@ addBasicCard({ score: 4 }, { name: 'BLUBBER', type: ['blue'], pack: 'Classic' })
 
 addBasicCard({ score: 4 }, {
   name: 'BONE REINFORCEMENT', type: ['red'], pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number

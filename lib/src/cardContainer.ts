@@ -6,14 +6,14 @@ import {
   CardType,
   PlayerInput,
   CALC_B_PHASES,
-  CatastopheCard,
+  CatastropheCard,
   PlayerCardWithOptionalInputs
 } from './types';
 
-const cardsMap: Map<string, PlayerCard | CatastopheCard> = new Map();
+const cardsMap: Map<string, PlayerCard | CatastropheCard> = new Map();
 
-function findCard(name: string): PlayerCard | CatastopheCard {
-  const card: PlayerCard | CatastopheCard | undefined = cardsMap.get(name);
+function findCard(name: string): PlayerCard | CatastropheCard {
+  const card: PlayerCard | CatastropheCard | undefined = cardsMap.get(name);
   if (card === undefined) {
     throw new Error(`unknown card: ${name}`);
   }
@@ -22,7 +22,7 @@ function findCard(name: string): PlayerCard | CatastopheCard {
 
 export function addBasicCard(custom: { score: number }, card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA'>) {
   addCard({
-    calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
+    calcBRunPhase: CALC_B_PHASES.POST_CATASTROPHE,
     blocksDiscarding: false,
     calcA: (inst: CardInstance): void => {
       inst.applyPoints('A', custom.score, inst, 'face card value')
@@ -56,7 +56,7 @@ export function addCardThatPointsByColour(
   })
 }
 
-export function addCard(card: PlayerCard | CatastopheCard) {
+export function addCard(card: PlayerCard | CatastropheCard) {
   if (cardsMap.has(card.name)) {
     throw new Error(
       `Duplicate card name ${card.name} was attempted to be added`

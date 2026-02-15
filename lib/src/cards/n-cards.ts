@@ -1,4 +1,4 @@
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { forEachPlayerCards } from './helpers';
 
@@ -7,6 +7,7 @@ addBasicCard({ score: 0 }, {
   name: 'NANO',
   type: ['green'],
   pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number

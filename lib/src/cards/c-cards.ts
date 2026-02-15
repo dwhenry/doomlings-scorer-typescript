@@ -1,4 +1,4 @@
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
@@ -35,6 +35,7 @@ addBasicCard({ score: 4 }, {
 addBasicCard({ score: 1 }, { name: 'CURIOSITY', type: ['blue', 'red'], pack: 'multi-colour' });
 addBasicCard({ score: 1 }, {
   name: 'CYBERNETIC', type: ['blue'], pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

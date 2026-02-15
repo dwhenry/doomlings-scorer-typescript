@@ -1,5 +1,5 @@
 import { addBasicCard } from '../cardContainer';
-import { CardInstance } from '../types';
+import { CALC_B_PHASES, CardInstance } from '../types';
 import { playerCards } from './helpers';
 
 addBasicCard({ score: 1 }, { name: 'GELATINOUS', type: ['red'], pack: 'Mythlings' });
@@ -7,6 +7,8 @@ addBasicCard({ score: 1 }, { name: 'GILLS', type: ['blue'], pack: 'Classic' });
 
 addBasicCard({ score: -1 }, {
   name: 'GMO', type: ['colourless'], pack: 'Techlings',
+  calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
+  calcBRunPhase2: CALC_B_PHASES.POST_CATASTROPHE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -25,6 +27,18 @@ addBasicCard({ score: -1 }, {
 
     attachedTo.attachedCards.push(inst);
     attachedTo.applyPoints('B', 0, inst, 'attached');
+  },
+  calcB2: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const chosenCardName = inst.metadata['attached_to'] as string;
+
+    const attachedTo = playerCards(allPlayerCards, currentPlayer)
+      .find((c) => chosenCardName === c.card.name);
+
+    if (!attachedTo) return;
 
     playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
       if (!!cardInst.card.type.find((type) => attachedTo?.card.type.includes(type))) {
@@ -32,10 +46,7 @@ addBasicCard({ score: -1 }, {
       }
     })
   },
-  // TODO: Change me to use a better mechanism !!!! - allow selection of existing card by name
   metadataRequired: [['attached_to', 'player_card', 'card']]
-
-  // TODO: rescore any cards that rely on attached cards
 });
 
 addBasicCard({ score: 0 }, {

@@ -77,27 +77,30 @@ export interface Card {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
+  calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  metadataRequired?: Array<MetaData>;
+}
+
+export interface CatastropheCard extends Card {
+  calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
   calcB?(
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
-  calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
-  metadataRequired?: Array<MetaData>;
-}
-
-export interface CatastopheCard extends Card {
-  calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
 }
 
 export interface PlayerCard extends Card {
   calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];
+  calcBRunPhase2?: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];
   blocksDiscarding: boolean;
   calcA(
     card: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
+  calcB?: CatastropheCard['calcB']
+  calcB2?: CatastropheCard['calcB']
 }
 
 export type PlayerCardWithOptionalInputs<T extends keyof PlayerCard> =
@@ -111,9 +114,7 @@ type Metadata = {
 };
 
 export class CardInstance {
-  card: PlayerCard | CatastopheCard;
-  // TODO AF: See if we can delete traitPoints?
-  traitPoints: number = 0;
+  card: PlayerCard | CatastropheCard;
   overrides: { [key: string]: string[] | string | number } = {};
   finalA: number = 0;
   finalB: number | undefined = 0;
@@ -133,7 +134,7 @@ export class CardInstance {
     message: string;
   }> = [];
 
-  constructor(card: PlayerCard | CatastopheCard, metadata: Metadata) {
+  constructor(card: PlayerCard | CatastropheCard, metadata: Metadata) {
     this.card = card;
     this.metadata = metadata;
   }
