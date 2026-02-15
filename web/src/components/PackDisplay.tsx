@@ -11,6 +11,7 @@ import { getCatastropheMetadataFields } from 'src/utils/cardMetadata';
 
 interface PackDisplayProps {
   cards: Map<string, Card>;
+  playerCount: number;
   selectedPacks: string[];
   selectedPlayerId: number | null;
   mobileAddingForPlayer: number | null;
@@ -23,6 +24,7 @@ interface PackDisplayProps {
 
 export default function PackDisplay({
   cards,
+  playerCount,
   selectedPacks,
   selectedPlayerId,
   mobileAddingForPlayer,
@@ -144,6 +146,7 @@ export default function PackDisplay({
           />
           {filteredCatastrophes.length > 0 && (
             <CatastropheInline
+              playerCount={playerCount}
               catastropheCards={filteredCatastrophes}
               selectedCatastrophes={selectedCatastrophes}
               clickCard={onClickCatastrophe}
@@ -154,6 +157,7 @@ export default function PackDisplay({
         </>
       ) : activeTab === 'catastrophe' ? (
         <CatastropheInline
+          playerCount={playerCount}
           catastropheCards={filteredCatastrophes}
           selectedCatastrophes={selectedCatastrophes}
           clickCard={onClickCatastrophe}
