@@ -11,7 +11,7 @@ export const groupByCardByFromCard = (logs: Array<PointsLog & {
 
   logs.forEach((log) => {
     const fromCard = log.fromCard
-    const existing = response.find((r) => r.inst.card.name === fromCard.card.name)
+    const existing = response.find((r) => r.inst === fromCard)
     if (existing) {
       existing.logs.push(log)
     } else {

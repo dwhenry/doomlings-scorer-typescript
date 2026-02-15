@@ -126,7 +126,7 @@ export class Scorer {
         phaseA: playerCards.reduce((sum, card) => sum + card.finalA, 0),
         phaseB: playerCards.reduce((sum: number | undefined, card) => (sum !== undefined && card.finalB !== undefined) ? (sum + card.finalB) : undefined, 0),
         phaseC: playerCards.reduce((sum, card) => sum + card.finalC, 0),
-        cards: playerCards.map((playerCards) => {
+        cards: playerCards.sort((a, b) => a.card.name.localeCompare(b.card.name)).map((playerCards) => {
           return {
             name: playerCards.card.name,
             inst: playerCards,
@@ -177,7 +177,7 @@ export class Scorer {
         phaseA: undefined,
         phaseB: undefined,
         phaseC: undefined,
-        cards: logsByCard.map(({ inst, logs }) => {
+        cards: logsByCard.sort((a, b) => a.inst.card.name.localeCompare(b.inst.card.name)).map(({ inst, logs }, position) => {
           return {
             name: inst.card.name,
             inst: inst,

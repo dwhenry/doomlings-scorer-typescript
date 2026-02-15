@@ -139,21 +139,29 @@ export default function ScoringLogsModal({
                   className="scoring-logs-player-section"
                 >
                   <h4 className="scoring-logs-player-name">
-                    {player.name} (
-                    {player.phaseB !== undefined
-                      ? (player.phaseA ?? 0) +
-                        (player.phaseB ?? 0) +
-                        (player.phaseC ?? 0)
-                      : '–'}{' '}
-                    points)
-                    <span className="scoring-logs-phases">
-                      A: {player.phaseA} · B: {player.phaseB ?? '–'} · C:{' '}
-                      {player.phaseC}
-                    </span>
+                    {player.name}
+                    {player.phaseA !== undefined ? (
+                      <>
+                        {' '}
+                        (
+                        {player.phaseB !== undefined
+                          ? (player.phaseA ?? 0) +
+                            (player.phaseB ?? 0) +
+                            (player.phaseC ?? 0)
+                          : '–'}{' '}
+                        points : {player.cards.length} cards)
+                        <span className="scoring-logs-phases">
+                          A: {player.phaseA} · B: {player.phaseB ?? '–'} · C:{' '}
+                          {player.phaseC}
+                        </span>
+                      </>
+                    ) : (
+                      <> ({player.cards.length} cards)</>
+                    )}
                   </h4>
-                  {player.cards.map((card) => (
+                  {player.cards.map((card, position) => (
                     <div
-                      key={`${player.name}-${card.name}`}
+                      key={`${player.name}-${card.name}-${position}`}
                       className="scoring-logs-card-block"
                     >
                       <div className="scoring-logs-card-name">
