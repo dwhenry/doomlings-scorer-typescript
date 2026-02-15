@@ -11,7 +11,11 @@ addBasicCard({ score: 2 }, { name: 'HOT TEMPER', type: ['red'], pack: 'Classic' 
 addBasicCard({ score: 4 }, { name: 'HYPER-INTELLIGENCE', type: ['red'], pack: 'Classic' });
 addBasicCard({ score: 0 }, {
   name: 'HYPER-MYELINATION', type: ['purple'], pack: 'Techlings',
-  calcB: (inst: CardInstance): void => {
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
     if (typeof inst.metadata.biggest_gene_pool_size !== 'number') {
       throw new Error('invalid data for metadata field gene_pool_size');
     }

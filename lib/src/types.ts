@@ -129,7 +129,7 @@ export class CardInstance {
   finalC: number = 0;
   metadataComplete: boolean = true;
   metadata: Metadata;
-  discarded: boolean = false;
+  discarded: CardInstance | undefined = undefined;
   attachedCards: CardInstance[] = [];
   skipCalcB: boolean = false;
   generatedMetadata: Record<string, string | number | string[]> = {};

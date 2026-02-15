@@ -20,8 +20,8 @@ addBasicCard({ score: 4 }, {
     // TODO: so this need to re-score any cards that rely on card colour
   },
   metadataRequired: [
-    ['fromColour', 'CardType', 'card'],
-    ['toColour', 'CardType', 'card']
+    ['fromColour', 'card_type', 'card'],
+    ['toColour', 'card_type', 'card']
   ]
 });
 addBasicCard({ score: 1 }, { name: 'FANGS', type: ['red'], pack: 'Classic' });
@@ -71,7 +71,7 @@ addBasicCard({ score: 2 }, {
     inst.setOverride('type', [inst.metadata.chosen_colour!] as string[]);
 
   },
-  metadataRequired: [['chosen_colour', 'CardType', 'card']]
+  metadataRequired: [['chosen_colour', 'card_type', 'card']]
 });
 addBasicCard({ score: 0 }, { name: 'FRONDS', type: ['green'], pack: 'Dinolings' });
 addBasicCard({ score: 4 }, { name: 'FULFILLED', type: ['colourless'], pack: 'KSE' });

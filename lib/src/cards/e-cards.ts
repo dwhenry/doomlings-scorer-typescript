@@ -14,7 +14,8 @@ addBasicCard({ score: 1 }, { name: 'EGG PREDATION', type: ['purple'], pack: 'Din
 addBasicCard({ score: 1 }, {
   name: 'ELECTROMAGNETIC', type: ['green'], pack: 'Techlings',
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
-  calcB: (inst: CardInstance,
+  calcB: (
+    inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
@@ -43,7 +44,7 @@ addBasicCard({ score: -1 }, {
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
-    _currentPlayer: number
+    currentPlayer: number
   ): void => {
     const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings');
 

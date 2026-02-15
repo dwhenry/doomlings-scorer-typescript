@@ -4,7 +4,11 @@ import { playerCards } from './helpers';
 
 addBasicCard({ score: 2 }, {
   name: 'CAMOUFLAGE', type: ['red'], pack: 'Techlings',
-  calcB: (inst: CardInstance): void => {
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
     if (typeof inst.metadata.cards_in_hand !== 'number') {
       throw new Error('invalid data for metadata field cards_in_hand');
     }
