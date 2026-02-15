@@ -518,7 +518,7 @@ addBasicCard({ score: 0 }, {
 });
 
 // -1 for each trait in your trait pile (including this one)
-addBasicCard({ score: 0 }, {
+addBasicCard({ score: 17 }, {
   name: 'TINY',
   type: ['blue'],
   pack: 'Classic',
@@ -538,7 +538,7 @@ addBasicCard({ score: 0 }, {
 });
 
 // +1 for each Dinoling in the discard pile
-addBasicCard({ score: 0 }, {
+addBasicCard({ score: -1 }, {
   name: 'TINY ARMS',
   type: ['red'],
   pack: 'Dinolings',
@@ -552,7 +552,7 @@ addBasicCard({ score: 0 }, {
 });
 
 addBasicCard({ score: 1 }, { name: 'TINY LITTLE MELONS', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 0 }, {
+addBasicCard({ score: 1 }, {
   name: 'TRANSGENIC MODIFICATION',
   type: ['green'],
   pack: 'Techlings',
@@ -574,12 +574,12 @@ addBasicCard({ score: 0 }, {
   },
   metadataRequired: [['attached_to', 'player_card', 'card']]
 });
-addBasicCard({ score: 0 }, {
+addBasicCard({ score: 1 }, {
   name: 'TRUNK',
   type: ['green'],
   pack: 'Classic',
 });
-addBasicCard({ score: 0 }, {
+addBasicCard({ score: 2 }, {
   name: 'TUBE FEET',
   type: ['blue'],
   pack: 'KSE',

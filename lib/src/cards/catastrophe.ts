@@ -42,7 +42,8 @@ function selectCardByColour(
   colour: CardType,
   previousName?: string
 ): CardInstance | undefined {
-  const candidates = filterCardsByType(playerCards, colour)
+  // we also exclude any marked as cannot_discard here
+  const candidates = filterCardsByType(playerCards, colour).filter((c) => !c.metadata.cannot_discard);
   if (candidates.length === 0) return undefined;
 
   // Reuse previous selection if still valid
@@ -91,18 +92,12 @@ const aiTakeover: CatastopheCard = {
   type: ['catastrophe'],
   pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const colourlessCards: Array<CardInstance> = allPlayerCards.reduce(
-      (allCards, playerCards) => {
-        const clessCards: Array<CardInstance> = activeCards(playerCards).filter(
-          (c: CardInstance) => c.type.includes('colourless')
-        );
-        return [...clessCards, ...allCards];
-      },
-      [] as CardInstance[]
+    const colourlessCards: Array<CardInstance> = activeCards(allPlayerCards.flatMap(
+      (playerCards) => playerCards).filter((c: CardInstance) => c.type.includes('colourless'))
     );
 
     colourlessCards.forEach((c: CardInstance) => {
-      c.applyPoints('C', 2 - c.finalA, inst, 'set card face value to 2');
+      c.applyPoints('A', 2, inst, 'overwrite card face value to 2');
       c.skipCalcB = true;
     });
   }
