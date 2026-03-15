@@ -42,6 +42,7 @@ import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
 import ScoringLogsModal from './components/ScoringLogsModal';
 import { CardScore } from '@scorer/scorer';
+import { PLAYER_CARD_NAME } from '@scorer/types';
 
 // State
 interface AppState {
@@ -114,7 +115,7 @@ function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     name: `Player ${i + 1}`,
-    cards: []
+    cards: [{ name: PLAYER_CARD_NAME }]
   }));
 }
 
@@ -249,6 +250,11 @@ function reducer(state: AppState, action: Action): AppState {
       };
     }
     case 'REMOVE_CARD': {
+      const targetPlayer = state.players.find((p) => p.id === action.playerId);
+      const targetCard = targetPlayer?.cards[action.cardIndex];
+      if (targetCard?.name === PLAYER_CARD_NAME) {
+        return state;
+      }
       return {
         ...state,
         players: state.players.map((p) => {
@@ -399,12 +405,17 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, scoringLogsModalOpen: false };
     case 'IMPORT_GAME_STATE': {
       const { payload } = action;
-      const players = payload.players.map((p, i) => ({
-        ...p,
-        id: i,
-        name: p.name ?? `Player ${i + 1}`,
-        cards: Array.isArray(p.cards) ? p.cards : []
-      }));
+      const players = payload.players.map((p, i) => {
+        const cards = Array.isArray(p.cards) ? p.cards : [];
+        const hasPlayerCard = cards.some((c) => c.name === PLAYER_CARD_NAME);
+        const normalizedCards = hasPlayerCard ? cards : [{ name: PLAYER_CARD_NAME }, ...cards];
+        return {
+          ...p,
+          id: i,
+          name: p.name ?? `Player ${i + 1}`,
+          cards: normalizedCards
+        };
+      });
       const playerCount = players.length;
       return {
         ...state,
@@ -441,12 +452,17 @@ function getInitialState(): AppState {
     const data = JSON.parse(raw) as unknown;
     if (!isValidPersistedState(data)) return getDefaultState();
     const players = data.players.map(
-      (p: PlayerState & { name?: string; cards?: CardEntry[] }, i: number) => ({
-        ...p,
-        id: i,
-        name: p.name ?? `Player ${i + 1}`,
-        cards: Array.isArray(p.cards) ? p.cards : []
-      })
+      (p: PlayerState & { name?: string; cards?: CardEntry[] }, i: number) => {
+        const cards = Array.isArray(p.cards) ? p.cards : [];
+        const hasPlayerCard = cards.some((c) => c.name === PLAYER_CARD_NAME);
+        const normalizedCards = hasPlayerCard ? cards : [{ name: PLAYER_CARD_NAME }, ...cards];
+        return {
+          ...p,
+          id: i,
+          name: p.name ?? `Player ${i + 1}`,
+          cards: normalizedCards
+        };
+      }
     );
     const playerCount = players.length;
     return {

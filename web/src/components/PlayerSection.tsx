@@ -1,5 +1,6 @@
 import type { PlayerState, CardGroup, Card } from '../types';
 import type { GameScore } from '@scorer/scorer';
+import { PLAYER_CARD_NAME } from '@scorer/types';
 import {
   getCardMetadataFields,
   isMetadataComplete,
@@ -104,7 +105,8 @@ function buildCardGroups(
     }
   });
 
-  return [...Array.from(groups.values()), ...individualCards];
+  const allGroups = [...Array.from(groups.values()), ...individualCards];
+  return allGroups.filter((g) => g.name !== PLAYER_CARD_NAME);
 }
 
 export default function PlayerSection({

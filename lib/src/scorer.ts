@@ -1,4 +1,4 @@
-import { CALC_B_PHASES, CardInstance, PlayerInput, PointsLog, SCORING_PHASES } from './types';
+import { CALC_B_PHASES, CardInstance, PlayerInput, PointsLog, PLAYER_CARD_NAME, SCORING_PHASES } from './types';
 import { getCard } from './cardContainer';
 import './cards';
 import { groupByCardByFromCard } from './helpers';
@@ -19,7 +19,9 @@ export class Scorer {
 
   constructor(...cardsInput: Array<Array<PlayerInput>>) {
     this.allPlayerCards = cardsInput.map((playerCards) => {
-      return playerCards.map(
+      const hasPlayerCard = playerCards.some((c: PlayerInput) => c.name === PLAYER_CARD_NAME);
+      const normalized = hasPlayerCard ? playerCards : [...playerCards, { name: PLAYER_CARD_NAME }];
+      return normalized.map(
         (playerInput: PlayerInput): CardInstance =>
           getCard(playerInput.name, playerInput)
       );

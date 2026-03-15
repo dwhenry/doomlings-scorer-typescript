@@ -1,7 +1,7 @@
 import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { hasEffect, isDominant } from './effect_cards';
-import { filterCardsByCollection, filterCardsByType, playerCards } from './helpers';
+import { filterCardsByCollection, filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
 addBasicCard({ score: 1 }, { name: 'BAD', type: ['red'] });
 addBasicCard({ score: 2 }, { name: 'BARK', type: ['green'] });
@@ -15,11 +15,10 @@ addBasicCard({ score: -1 }, {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    // TODO: work out when this is attached and set to 2 when it is
     const multiplier = inst.attachedCards.length > 0 ? 2 : 1;
-    filterCardsByCollection(playerCards, 'Techlings').forEach((playerCard) => {
-      playerCard.applyPoints(currentPlayer, 'B', multiplier, inst, 'Bionic Arm is attached');
+    const message = inst.attachedCards.length > 0 ? 'attached' : 'not attached';
+    filterCardsByCollection(allPlayerCards[currentPlayer], 'Techlings').forEach((playerCard) => {
+      playerCard.applyPoints(currentPlayer, 'B', multiplier, inst, `Bionic Arm is ${message}`);
     });
   }
 });
@@ -77,13 +76,11 @@ addBasicCard({ score: 0 }, {
     let points = 0;
 
     // point for each pair of green cards in each players hand
-    allPlayerCards.forEach((playerCards, index) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, index) => {
       if (index !== currentPlayer) {
-        points =
-          points +
-          Math.floor(filterCardsByType(playerCards, 'green').length / 2);
+        points += Math.floor(filterCardsByType(playerCards, 'green').length / 2);
       }
-    });
+    })
 
     inst.applyPoints(currentPlayer,
       'B',

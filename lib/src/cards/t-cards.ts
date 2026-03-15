@@ -73,7 +73,7 @@ addBasicCard({ score: 0 }, {
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
+    _allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
@@ -475,14 +475,13 @@ addBasicCard({ score: 0 }, {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {
       red: 0,
       green: 0,
       blue: 0,
       purple: 0
     };
-    playerCards.forEach((c) => {
+    playerCards(allPlayerCards, currentPlayer).forEach((c) => {
       c.type.forEach((type) => {
         if (type in colourCounts) {
           colourCounts[type]++;

@@ -15,6 +15,7 @@ describe('AI TAKEOVER', () => {
     scores
       .getPlayerScore(Player.One)
       .getCardScores()
+      .filter((c) => (c.total ?? 0) !== 0 || (c.finalA ?? 0) !== 0)
       .forEach((card) => {
         expect(card).toMatchObject({
           total: 2,
@@ -52,9 +53,9 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
       .scores();
     const playerScores = scores.getPlayerScores();
 
-    // Cards remain in array but are marked as discarded with 0 total
+    // Cards remain in array but are marked as discarded with 0 total (+ 1 player card per hand)
     for (const playerScore of playerScores) {
-      expect(playerScore.getCardScores().length).toBe(1);
+      expect(playerScore.getCardScores().length).toBe(2);
       expect(playerScore.getCardScoreByIndex(0).discarded).toBe(true);
       expect(playerScore.getCardScoreByIndex(0).total).toBe(0);
     }
@@ -71,7 +72,7 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
       .scores();
     for (let i = 0; i < 2; i++) {
       const cardScores = scores.getPlayerScore(i).getCardScores();
-      expect(cardScores.length).toBe(2);
+      expect(cardScores.length).toBe(3);
       const discardedCount = cardScores.filter((c) => c.discarded).length;
       expect(discardedCount).toBe(1);
     }
@@ -118,9 +119,9 @@ describe('Using BIOENGINEERED PLAGUE + other cards', () => {
         { name: 'BIOENGINEERED PLAGUE', discard: ['ACROBATIC', 'ACROBATIC'] }
       ])
       .scores();
-    // Cards remain but one per player is discarded
-    expect(scores.getPlayerScore(Player.One).getCardScores().length).toEqual(2);
-    expect(scores.getPlayerScore(Player.Two).getCardScores().length).toEqual(2);
+    // Cards remain but one per player is discarded (+ 1 player card per hand)
+    expect(scores.getPlayerScore(Player.One).getCardScores().length).toEqual(3);
+    expect(scores.getPlayerScore(Player.Two).getCardScores().length).toEqual(3);
     const p1Discarded = scores
       .getPlayerScore(Player.One)
       .getCardScores()

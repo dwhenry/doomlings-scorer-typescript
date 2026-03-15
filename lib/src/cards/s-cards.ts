@@ -147,9 +147,8 @@ addBasicCard({ score: 3 }, {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {};
-    playerCards.forEach((c) => {
+    playerCards(allPlayerCards, currentPlayer).forEach((c) => {
       c.type.forEach((type) => {
         if (
           type !== 'colourless' &&
@@ -184,7 +183,5 @@ addBasicCard({ score: 3 }, {
         );
       }
     );
-
-    // TODO: we need to rescore this after any colour changes
   }
 });

@@ -1,6 +1,6 @@
 import { CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
-import { forEachPlayerCards } from './helpers';
+import { forEachPlayerCards, playerCards } from './helpers';
 
 addBasicCard({ score: 2 }, { name: 'ACROBATIC', type: ['purple', 'green'] });
 addBasicCard({ score: 4 }, { name: 'ADORABLE', type: ['purple'] });
@@ -28,10 +28,10 @@ addBasicCard({ score: 4 }, {
     currentPlayer: number
   ): void => {
     let points: number = 4;
-    const myCount: number = allPlayerCards[currentPlayer].length;
+    const myCount: number = playerCards(allPlayerCards, currentPlayer).length;
 
-    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
-      if (i !== currentPlayer && playerCards.length >= myCount) {
+    forEachPlayerCards(allPlayerCards, (traitCards, i) => {
+      if (i !== currentPlayer && traitCards.length >= myCount) {
         points = 0;
       }
     });

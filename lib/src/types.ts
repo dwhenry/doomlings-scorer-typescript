@@ -55,6 +55,9 @@ export const COLLECTION_TYPES = [
 ] as const;
 export type CollectionType = (typeof COLLECTION_TYPES)[number];
 
+/** Name of the special per-player card used for catastrophe player-level points. Not visible in UI; cannot be removed. */
+export const PLAYER_CARD_NAME = '__PLAYER__';
+
 const simpleMetaDataTypes = [
   'number',
   'trait',

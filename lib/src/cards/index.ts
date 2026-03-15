@@ -1,6 +1,7 @@
 import './a-cards';
 import './ages';
 import './b-cards';
+import './player-card';
 import './c-cards';
 import './d-cards';
 import './catastrophe';

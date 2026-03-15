@@ -39,10 +39,14 @@ addBasicCard({ score: 4 }, {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
+    if(!inst.metadata.fromColour || !inst.metadata.toColour) {
+      throw new Error('invalid data for metadata fields fromColour or toColour');
+    }
     filterCardsByType(
       allPlayerCards[currentPlayer],
-      inst.metadata.fromColour!
+      inst.metadata.fromColour
     ).forEach((card) => {
+      card.applyPoints(currentPlayer, 'B', 0, inst, `converted to colour: ${inst.metadata.toColour}`);
       card.setOverride('type', [inst.metadata.toColour!]);
     });
   },

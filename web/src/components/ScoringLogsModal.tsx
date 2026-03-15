@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Scorer } from '@scorer/scorer';
 import type { PlayerInput } from '@scorer/types';
+import { PLAYER_CARD_NAME } from '@scorer/types';
 import type {
   CardEntry,
   GameStateExport,
@@ -286,7 +287,9 @@ export default function ScoringLogsModal({
                             <span className="scoring-logs-card-chevron" aria-hidden>
                               {isExpanded ? '▼' : '▶'}
                             </span>
-                            {card.name}
+                            {card.name === PLAYER_CARD_NAME
+                              ? 'Player (catastrophe points)'
+                              : card.name}
                           </span>
                           <span className="scoring-logs-score-total">
                             {card.phaseB !== undefined

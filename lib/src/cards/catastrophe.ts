@@ -1,13 +1,13 @@
-import { CatastropheCardInput, CardInstance, CardType } from '../types';
+import { CatastropheCardInput, CardInstance, CardType, PLAYER_CARD_NAME } from '../types';
 import { addCard } from '../cardContainer';
-import { filterCardsByType, forEachPlayerCards } from './helpers';
+import { filterCardsByType, forEachPlayerCards, getPlayerCard } from './helpers';
 import { isDominant } from './effect_cards';
 
 // --- Helpers ---
 
-/** Returns only non-discarded cards from a player's hand */
+/** Returns only non-discarded, non-player-card trait cards from a player's hand */
 function activeCards(playerCards: CardInstance[]): CardInstance[] {
-  return playerCards.filter((c) => !c.discarded);
+  return playerCards.filter((c) => !c.discarded && c.card.name !== PLAYER_CARD_NAME);
 }
 
 /** Soft-delete a card: marks it as discarded (scorer zeros its score) */
@@ -97,15 +97,8 @@ const aiTakeover: CatastropheCardInput = {
   name: 'AI TAKEOVER',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const colourlessCardsByPlayer: Array<CardInstance[]> = allPlayerCards.map(
-      (playerCards) => activeCards(playerCards).filter(
-        (c: CardInstance) => c.type.includes('colourless')
-      )
-    )
-
-
-    colourlessCardsByPlayer.forEach((colourlessCards, currentPlayer) => {
-      colourlessCards.forEach((c: CardInstance) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      filterCardsByType(playerCards, 'colourless').forEach((c) => {
         c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
         if (!isDominant(c.card.name)) {
           c.applyPoints(currentPlayer, 'A', 0, inst, 'effect is removed as non-dominant trait');
@@ -127,25 +120,25 @@ const bioPlague: CatastropheCardInput = {
         ? (inst.metadata.discard as string[])
         : [];
 
-    const discardNames: string[] = allPlayerCards.map(
+    const discardNames: string[] = []
+    forEachPlayerCards(allPlayerCards,
       (playerCards, position) => {
-        const active = activeCards(playerCards);
-        if (active.length === 0) return '';
+        if (playerCards.length === 0) return;
 
         // get the colour counts first to ensure removing a otehr cards in the same group
         // are not autoselected for discard
-        const colourCounts = new Map<string, number>();
-        active.forEach((c) => {
+        const colourCounts: { [key: string]: number } = {};
+        playerCards.forEach((c) => {
           c.type.forEach((t) => {
             if (['colourless', 'purple', 'red', 'green', 'blue'].includes(t)) {
-              colourCounts.set(t, (colourCounts.get(t) || 0) + 1);
+              colourCounts[t] = (colourCounts[t] || 0) + 1;
             }
           });
         });
 
         let maxColour: string[] = [];
         let maxCount = 0;
-        colourCounts.forEach((count, colour) => {
+        Object.entries(colourCounts).forEach(([colour, count]) => {
           if (count > maxCount) {
             maxCount = count;
             maxColour = [colour];
@@ -157,27 +150,26 @@ const bioPlague: CatastropheCardInput = {
         // Check if previous selection is still valid
         const previousName = previousDiscard[position] as string | undefined;
         if (previousName) {
-          const prev = active.find((c) => c.card.name === previousName);
+          const prev = playerCards.find((c) => c.card.name === previousName);
           // if the colour of the previous selection is in the max colour list, use it,
           // other we need a new card to discard
           if (prev && !!maxColour.find((c) => prev.type.includes(c))) {
             softDiscard(prev, inst, position);
-            return prev.card.name;
+            discardNames[position] = prev.card.name;
+            return;
           }
         }
 
         if (maxColour.length > 0) {
-          const targets = active.filter(
+          const targets = playerCards.filter(
             (card) => !!maxColour.find((colour) => card.type.includes(colour) || !card.metadata.cannot_discard)
           );
           if (targets.length > 0) {
             const target = deterministicPick(targets);
             softDiscard(target, inst, position);
-            return target.card.name;
+            discardNames[position] = target.card.name;
           }
         }
-
-        return '';
       }
     );
 
@@ -192,27 +184,22 @@ const deusExMachina: CatastropheCardInput = {
   name: 'DEUS EX MACHINA',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      const active = activeCards(playerCards);
-      if ((inst.metadata.drawn_face_values instanceof Array)) {
-        const faceValue = inst.metadata.drawn_face_values![currentPlayer];
-        // TODO: add number[] as a valid type - we currently only support number or string[]
-        const parsedValue = parseInt(faceValue);
-        if (typeof parsedValue !== 'number') {
-          throw new Error(
-            `no drawn face value specified for Player ${currentPlayer + 1}`
-          );
-        }
-        if (active.length > 0) {
-          active[0].applyPoints(currentPlayer,
-            'C',
-            Math.min(parsedValue, 5),
-            inst,
-            'for drawing a trait with face value of ' + faceValue + ' (max 5)'
-          );
-        }
+    if (!(inst.metadata.drawn_face_values instanceof Array)) {
+      throw new Error('invalid data for metadata field drawn_face_values');
+    }
+    if (inst.metadata.drawn_face_values.filter(v => v === '').length != allPlayerCards.length) {
+      throw new Error('invalid data for metadata field drawn_face_values');
+    }
+    inst.metadata.drawn_face_values.forEach((faceValue, currentPlayer) => {
+      // TODO: add number[] as a valid type - we currently only support number or string[]
+      const parsedValue = parseInt(faceValue);
+      if (typeof parsedValue !== 'number') {
+        throw new Error(
+          `no drawn face value specified for Player ${currentPlayer + 1}`
+        );
       }
-    });
+      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(currentPlayer, 'C', Math.min(parsedValue, 5), inst, 'for drawing a trait with face value of ' + faceValue + ' (max 5)');
+    })
 
     // TODO: would be nice if this allow selection by card name
   },
@@ -230,30 +217,29 @@ const eyesOpenFromBehindTheStars: CatastropheCardInput = {
         ? (inst.metadata.discard as string[])
         : [];
 
-    const discardNames: string[] = allPlayerCards.map(
-      (playerCards, position) => {
-        const active = activeCards(playerCards);
-        if (active.length === 0) return '';
+    const discardNames: string[] = []
+    forEachPlayerCards(allPlayerCards, (playerCards, position) => {
+      if (playerCards.length === 0) return;
 
-        // Auto-compute: find highest face value card(s), then pick deterministically among ties
-        const maxValue = Math.max(...active.map((c) => c.finalA));
+      // Auto-compute: find highest face value card(s), then pick deterministically among ties
+      const maxValue = Math.max(...playerCards.map((c) => c.finalA));
 
-        // Check if previous selection is still valid
-        const previousName = previousDiscard[position] as string | undefined;
-        if (previousName) {
-          const prev = active.find((c) => c.card.name === previousName);
-          if (prev && prev.finalA === maxValue) {
-            softDiscard(prev, inst, position);
-            return prev.card.name;
-          }
+      // Check if previous selection is still valid
+      const previousName = previousDiscard[position] as string | undefined;
+      if (previousName) {
+        const prev = playerCards.find((c) => c.card.name === previousName);
+        if (prev && prev.finalA === maxValue) {
+          softDiscard(prev, inst, position);
+          discardNames[position] = prev.card.name;
+          return;
         }
-
-        const tied = active.filter((c) => c.finalA === maxValue);
-        const target = deterministicPick(tied);
-        softDiscard(target, inst, position);
-        return target.card.name;
       }
-    );
+
+      const tied = playerCards.filter((c) => c.finalA === maxValue);
+      const target = deterministicPick(tied);
+      softDiscard(target, inst, position);
+      discardNames[position] = target.card.name;
+    })
 
     inst.generatedMetadata.discard = discardNames;
   },
@@ -279,19 +265,23 @@ const greyGoo: CatastropheCardInput = {
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let maxTraits = 0;
-    let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
+    const selectedPlayerIndices: number[] = [];
 
     forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       if (playerCards.length > maxTraits) {
         maxTraits = playerCards.length;
-        selectedCards = [{ inst: playerCards[0], currentPlayer }];
+        selectedPlayerIndices.length = 0;
+        selectedPlayerIndices.push(currentPlayer);
       } else if (playerCards.length === maxTraits) {
-        selectedCards.push({ inst: playerCards[0], currentPlayer });
+        selectedPlayerIndices.push(currentPlayer);
       }
     });
 
-    selectedCards.forEach(({ inst, currentPlayer }) => {
-      inst.applyPoints(currentPlayer, 'C', -5, inst, 'for having the most traits');
+    selectedPlayerIndices.forEach((currentPlayer) => {
+      const playerCard = getPlayerCard(allPlayerCards, currentPlayer);
+      if (playerCard) {
+        playerCard.applyPoints(currentPlayer, 'C', -5, inst, 'for having the most traits');
+      }
     });
   }
 };
@@ -376,20 +366,24 @@ const overpopulation: CatastropheCardInput = {
   name: 'OVERPOPULATION',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    let minTraits = 0;
-    let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
+    let minTraits = Infinity;
+    const selectedPlayerIndices: number[] = [];
 
     forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       if (playerCards.length < minTraits) {
         minTraits = playerCards.length;
-        selectedCards = [{ inst: playerCards[0], currentPlayer }];
+        selectedPlayerIndices.length = 0;
+        selectedPlayerIndices.push(currentPlayer);
       } else if (playerCards.length === minTraits) {
-        selectedCards.push({ inst: playerCards[0], currentPlayer });
+        selectedPlayerIndices.push(currentPlayer);
       }
     });
 
-    selectedCards.forEach(({ inst, currentPlayer }) => {
-      inst.applyPoints(currentPlayer, 'C', 4, inst, 'for having the fewest traits');
+    selectedPlayerIndices.forEach((currentPlayer) => {
+      const playerCard = getPlayerCard(allPlayerCards, currentPlayer);
+      if (playerCard) {
+        playerCard.applyPoints(currentPlayer, 'C', 4, inst, 'for having the fewest traits');
+      }
     });
   }
 };
@@ -412,11 +406,9 @@ const retrovirus: CatastropheCardInput = {
   name: 'RETROVIRUS',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      activeCards(playerCards).forEach((card) => {
-        if (card.type.includes('green')) {
-          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a green trait');
-        }
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      filterCardsByType(playerCards, 'green').forEach((card) => {
+        card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a green trait');
       });
     });
   }
@@ -428,11 +420,9 @@ const solarFlare: CatastropheCardInput = {
   name: 'SOLAR FLARE',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      activeCards(playerCards).forEach((card) => {
-        if (card.type.includes('purple')) {
-          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a purple trait');
-        }
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      filterCardsByType(playerCards, 'purple').forEach((card) => {
+        card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a purple trait');
       });
     });
   }
@@ -444,11 +434,9 @@ const superVolcano: CatastropheCardInput = {
   name: 'SUPER VOLCANO',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      activeCards(playerCards).forEach((card) => {
-        if (card.type.includes('blue')) {
-          card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a blue trait');
-        }
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      filterCardsByType(playerCards, 'blue').forEach((card) => {
+        card.applyPoints(currentPlayer, 'C', -1, inst, 'for being a blue trait');
       });
     });
   }
@@ -460,19 +448,9 @@ const theBigOne: CatastropheCardInput = {
   name: 'THE BIG ONE',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      const active = activeCards(playerCards);
-      active
-        .sort((a, b) => a.finalA - b.finalA)
-        .splice(7, active.length - 7)
-        .forEach((card) => {
-          card.applyPoints(currentPlayer,
-            'C',
-            -2,
-            inst,
-            'for having more than 7 traits in your pile'
-          );
-        });
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      getPlayerCard(allPlayerCards, currentPlayer)?.
+      applyPoints(currentPlayer, 'C', -2 * (playerCards.length - 7), inst, 'for having more than 7 traits in your pile');
     });
   }
 };
@@ -488,10 +466,9 @@ const theFourHorsemen: CatastropheCardInput = {
         ? (inst.metadata.discard as string[])
         : [];
 
-    const discardNames: string[] = allPlayerCards.map(
-      (playerCards, position) => {
-        const active = activeCards(playerCards);
-        const candidates = active.filter((c) => c.finalA >= 3);
+    const discardNames: string[] = []
+    forEachPlayerCards(allPlayerCards, (playerCards, position) => {
+        const candidates = playerCards.filter((c) => c.finalA >= 3);
         if (candidates.length === 0) return '';
 
         // Check if previous selection is still valid
@@ -500,14 +477,15 @@ const theFourHorsemen: CatastropheCardInput = {
           const prev = candidates.find((c) => c.card.name === previousName);
           if (prev) {
             softDiscard(prev, inst, position);
-            return prev.card.name;
+            discardNames[position] = prev.card.name;
+            return
           }
         }
 
         // Deterministically pick from candidates with face value >= 3
         const target = deterministicPick(candidates);
         softDiscard(target, inst, position);
-        return target.card.name;
+        discardNames[position] = target.card.name;
       }
     );
 
@@ -524,20 +502,14 @@ const aiTakeoverKs: CatastropheCardInput = {
   name: 'AI TAKEOVER (kickstarter)',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    const colourlessCardsByPlayer: Array<CardInstance[]> = allPlayerCards.map(
-      (playerCards) => activeCards(playerCards).filter(
-        (c: CardInstance) => c.type.includes('colourless')
-      )
-    )
-
-
-    colourlessCardsByPlayer.forEach((colourlessCards, currentPlayer) => {
-      colourlessCards.forEach((c: CardInstance) => {
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      filterCardsByType(playerCards, 'colourless').forEach((c) => {
         c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
-        c.applyPoints(currentPlayer, 'A', 0, inst, 'effect is removed');
+        c.applyPoints(currentPlayer, 'A', 0, inst, 'effect is removed as non-dominant trait');
         c.skipCalcB = true;
       });
     })
+
   }
 };
 addCard(aiTakeoverKs);
@@ -546,27 +518,22 @@ const deusExMachinaKs: CatastropheCardInput = {
   name: 'DEUS EX MACHINA (kickstarter)',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    allPlayerCards.forEach((playerCards, currentPlayer) => {
-      const active = activeCards(playerCards);
-      if ((inst.metadata.drawn_face_values instanceof Array)) {
-        const faceValue = inst.metadata.drawn_face_values![currentPlayer];
-        // TODO: add number[] as a valid type - we currently only support number or string[]
-        const parsedValue = parseInt(faceValue);
-        if (typeof parsedValue !== 'number') {
-          throw new Error(
-            `no drawn face value specified for Player ${currentPlayer + 1}`
-          );
-        }
-        if (active.length > 0) {
-          active[0].applyPoints(currentPlayer,
-            'C',
-            parsedValue,
-            inst,
-            'for drawing a trait with face value of ' + faceValue
-          );
-        }
+   if (!(inst.metadata.drawn_face_values instanceof Array)) {
+      throw new Error('invalid data for metadata field drawn_face_values');
+    }
+    if (inst.metadata.drawn_face_values.filter(v => v === '').length != allPlayerCards.length) {
+      throw new Error('invalid data for metadata field drawn_face_values');
+    }
+    inst.metadata.drawn_face_values.forEach((faceValue, currentPlayer) => {
+      // TODO: add number[] as a valid type - we currently only support number or string[]
+      const parsedValue = parseInt(faceValue);
+      if (typeof parsedValue !== 'number') {
+        throw new Error(
+          `no drawn face value specified for Player ${currentPlayer + 1}`
+        );
       }
-    });
+      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(currentPlayer, 'C', parsedValue, 5, inst, 'for drawing a trait with face value of ' + faceValue);
+    })
 
     // TODO: would be nice if this allow selection by card name
   },
