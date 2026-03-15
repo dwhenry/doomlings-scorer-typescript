@@ -1,4 +1,4 @@
-import { CardInstance, CardType, PackType } from '../types';
+import { CardInstance, CardType, CollectionType } from '../types';
 
 export const filterCardsByType = (
   cards: CardInstance[],
@@ -9,11 +9,11 @@ export const filterCardsByType = (
   );
 };
 
-export const filterCardByPack = (
+export const filterCardsByCollection = (
   cards: CardInstance[],
-  pack: PackType
+  collection: CollectionType
 ): CardInstance[] => {
-  return cards.filter((card) => !card.discarded && card.card.pack === pack);
+  return cards.filter((card) => !card.discarded && card.card.collection === collection);
 };
 
 export const forEachPlayerCards = (

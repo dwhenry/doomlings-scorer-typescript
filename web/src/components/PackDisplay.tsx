@@ -12,9 +12,10 @@ import { getCatastropheMetadataFields } from 'src/utils/cardMetadata';
 interface PackDisplayProps {
   cards: Map<string, Card>;
   playerCount: number;
-  selectedReleaseCollections: string[];
-  /** All release|collection keys for a card (used when card has multiple releases) */
-  getReleaseCollectionKeys: (card: Card) => string[];
+  selectedReleases: string[];
+  selectedCollections: string[];
+  cardMatchesReleases: (card: Card, selectedReleases: string[]) => boolean;
+  cardMatchesCollections: (card: Card, selectedCollections: string[]) => boolean;
   selectedPlayerId: number | null;
   mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
@@ -27,8 +28,10 @@ interface PackDisplayProps {
 export default function PackDisplay({
   cards,
   playerCount,
-  selectedReleaseCollections,
-  getReleaseCollectionKeys,
+  selectedReleases,
+  selectedCollections,
+  cardMatchesReleases,
+  cardMatchesCollections,
   selectedPlayerId,
   mobileAddingForPlayer,
   onClickCard,
@@ -69,10 +72,9 @@ export default function PackDisplay({
   }, [cards]);
 
   function isVisible(card: Card): boolean {
-    if (selectedReleaseCollections.length === 0) return true;
-    return getReleaseCollectionKeys(card).some((key) =>
-      selectedReleaseCollections.includes(key)
-    );
+    if (selectedReleases.length > 0) return cardMatchesReleases(card, selectedReleases);
+    if (selectedCollections.length > 0) return cardMatchesCollections(card, selectedCollections);
+    return true;
   }
 
   const isSearching = searchQuery.length > 0;
@@ -100,7 +102,7 @@ export default function PackDisplay({
 
     const group = colorGroups.get(activeTab as CardType) || [];
     return group.filter(isVisible).sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeTab, colorGroups, selectedReleaseCollections, searchQuery, isSearching]);
+  }, [activeTab, colorGroups, selectedReleases, selectedCollections, searchQuery, isSearching]);
 
   const filteredCatastrophes = useMemo(() => {
     if (isSearching) {
@@ -118,7 +120,7 @@ export default function PackDisplay({
           isVisible(card)
       )
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeTab, catastropheCards, selectedReleaseCollections, searchQuery, isSearching]);
+  }, [activeTab, catastropheCards, selectedReleases, selectedCollections, searchQuery, isSearching]);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent, cardName: string) => {

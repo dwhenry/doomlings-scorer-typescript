@@ -1,4 +1,4 @@
-import { CatastropheCard, CardInstance, CardType } from '../types';
+import { CatastropheCardInput, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
 import { filterCardsByType, forEachPlayerCards } from './helpers';
 
@@ -90,10 +90,9 @@ function colourDiscard(
 // --- Catastrophe Cards ---
 
 // All colorless traits are now worth 2 points
-const aiTakeover: CatastropheCard = {
+const aiTakeover: CatastropheCardInput = {
   name: 'AI TAKEOVER',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     const colourlessCardsByPlayer: Array<CardInstance[]> = allPlayerCards.map(
       (playerCards) => activeCards(playerCards).filter(
@@ -113,10 +112,9 @@ const aiTakeover: CatastropheCard = {
 addCard(aiTakeover);
 
 // Remove a card from each player's hand (from the colour with highest count)
-const bioPlague: CatastropheCard = {
+const bioPlague: CatastropheCardInput = {
   name: 'BIOENGINEERED PLAGUE',
   type: ['catastrophe'],
-  pack: 'Techlings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     const previousDiscard =
       inst.metadata.discard instanceof Array
@@ -184,10 +182,9 @@ const bioPlague: CatastropheCard = {
 addCard(bioPlague);
 
 // World's End: Draw a card. Add its face value to your final score.
-const deusExMachina: CatastropheCard = {
+const deusExMachina: CatastropheCardInput = {
   name: 'DEUS EX MACHINA',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, currentPlayer) => {
       const active = activeCards(playerCards);
@@ -218,10 +215,9 @@ const deusExMachina: CatastropheCard = {
 addCard(deusExMachina);
 
 // World's End: Discard your highest face value trait from your trait pile
-const eyesOpenFromBehindTheStars: CatastropheCard = {
+const eyesOpenFromBehindTheStars: CatastropheCardInput = {
   name: 'EYES OPEN FROM BEHIND THE STARS',
   type: ['catastrophe'],
-  pack: 'Mythlings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     const previousDiscard =
       inst.metadata.discard instanceof Array
@@ -260,10 +256,9 @@ const eyesOpenFromBehindTheStars: CatastropheCard = {
 addCard(eyesOpenFromBehindTheStars);
 
 // World's End: Discard 1 blue trait from your trait pile at random
-const glacialMeltdown: CatastropheCard = {
+const glacialMeltdown: CatastropheCardInput = {
   name: 'GLACIAL MELTDOWN',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'blue');
   },
@@ -272,10 +267,9 @@ const glacialMeltdown: CatastropheCard = {
 addCard(glacialMeltdown);
 
 // World's End: -5 points to the player(s) with the most traits in their trait pile
-const greyGoo: CatastropheCard = {
+const greyGoo: CatastropheCardInput = {
   name: 'GREY GOO',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let maxTraits = 0;
     let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
@@ -297,10 +291,9 @@ const greyGoo: CatastropheCard = {
 addCard(greyGoo);
 
 // World's End: -1 for every red trait in your trait pile
-const iceAge: CatastropheCard = {
+const iceAge: CatastropheCardInput = {
   name: 'ICE AGE',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       playerCards.forEach((card) => {
@@ -314,10 +307,9 @@ const iceAge: CatastropheCard = {
 addCard(iceAge);
 
 // World's End: -1 for each trait with face value of 3 or more
-const impactEvent: CatastropheCard = {
+const impactEvent: CatastropheCardInput = {
   name: 'IMPACT EVENT',
   type: ['catastrophe'],
-  pack: 'Dinolings',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
       playerCards.forEach((c) => {
@@ -336,10 +328,9 @@ const impactEvent: CatastropheCard = {
 addCard(impactEvent);
 
 // World's End: Discard 1 green trait from your trait pile at random
-const massExtinction: CatastropheCard = {
+const massExtinction: CatastropheCardInput = {
   name: 'MASS EXTINCTION',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'green');
   },
@@ -348,10 +339,9 @@ const massExtinction: CatastropheCard = {
 addCard(massExtinction);
 
 // World's End: Discard 1 red trait from your trait pile at random
-const megaTsunami: CatastropheCard = {
+const megaTsunami: CatastropheCardInput = {
   name: 'MEGA TSUNAMI',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'red');
   },
@@ -360,10 +350,9 @@ const megaTsunami: CatastropheCard = {
 addCard(megaTsunami);
 
 // World's End: Discard 1 colorless trait from your trait pile
-const nuclearWinter: CatastropheCard = {
+const nuclearWinter: CatastropheCardInput = {
   name: 'NUCLEAR WINTER',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'colourless');
   },
@@ -372,10 +361,9 @@ const nuclearWinter: CatastropheCard = {
 addCard(nuclearWinter);
 
 // World's End: +4 points to the player(s) with the fewest traits in their trait pile
-const overpopulation: CatastropheCard = {
+const overpopulation: CatastropheCardInput = {
   name: 'OVERPOPULATION',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     let minTraits = 0;
     let selectedCards: { inst: CardInstance, currentPlayer: number }[] = [];
@@ -397,10 +385,9 @@ const overpopulation: CatastropheCard = {
 addCard(overpopulation);
 
 // World's End: Discard 1 purple trait from your trait pile at random
-const pulseEvent: CatastropheCard = {
+const pulseEvent: CatastropheCardInput = {
   name: 'PULSE EVENT',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'purple');
   },
@@ -409,10 +396,9 @@ const pulseEvent: CatastropheCard = {
 addCard(pulseEvent);
 
 // World's End: -1 for every green trait in your trait pile
-const retrovirus: CatastropheCard = {
+const retrovirus: CatastropheCardInput = {
   name: 'RETROVIRUS',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
@@ -426,10 +412,9 @@ const retrovirus: CatastropheCard = {
 addCard(retrovirus);
 
 // World's End: -1 for every purple trait in your trait pile
-const solarFlare: CatastropheCard = {
+const solarFlare: CatastropheCardInput = {
   name: 'SOLAR FLARE',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
@@ -443,10 +428,9 @@ const solarFlare: CatastropheCard = {
 addCard(solarFlare);
 
 // World's End: -1 for every blue trait in your trait pile
-const superVolcano: CatastropheCard = {
+const superVolcano: CatastropheCardInput = {
   name: 'SUPER VOLCANO',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, currentPlayer) => {
       activeCards(playerCards).forEach((card) => {
@@ -460,10 +444,9 @@ const superVolcano: CatastropheCard = {
 addCard(superVolcano);
 
 // World's End: -2 to your score for each card over 7 in your trait pile
-const theBigOne: CatastropheCard = {
+const theBigOne: CatastropheCardInput = {
   name: 'THE BIG ONE',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     allPlayerCards.forEach((playerCards, currentPlayer) => {
       const active = activeCards(playerCards);
@@ -484,10 +467,9 @@ const theBigOne: CatastropheCard = {
 addCard(theBigOne);
 
 // World's End: Discard 1 trait from your trait pile with face value of 3 or more
-const theFourHorsemen: CatastropheCard = {
+const theFourHorsemen: CatastropheCardInput = {
   name: 'THE FOUR HORSEMEN',
   type: ['catastrophe'],
-  pack: 'Classic',
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     const previousDiscard =
       inst.metadata.discard instanceof Array
@@ -525,39 +507,32 @@ addCard(theFourHorsemen);
 
 // --- Kickstarter duplicate catastrophes (same as Classic, alternate art) ---
 
-const KS_PACK = 'Classic (Kickstarter)' as const;
-
-const aiTakeoverKs: CatastropheCard = {
+const aiTakeoverKs: CatastropheCardInput = {
   ...aiTakeover,
   name: 'AI TAKEOVER (kickstarter)',
-  pack: KS_PACK
 };
 addCard(aiTakeoverKs);
 
-const deusExMachinaKs: CatastropheCard = {
+const deusExMachinaKs: CatastropheCardInput = {
   ...deusExMachina,
   name: 'DEUS EX MACHINA (kickstarter)',
-  pack: KS_PACK
 };
 addCard(deusExMachinaKs);
 
-const glacialMeltdownKs: CatastropheCard = {
+const glacialMeltdownKs: CatastropheCardInput = {
   ...glacialMeltdown,
   name: 'GLACIAL MELTDOWN (kickstarter)',
-  pack: KS_PACK
 };
 addCard(glacialMeltdownKs);
 
-const megaTsunamiKs: CatastropheCard = {
+const megaTsunamiKs: CatastropheCardInput = {
   ...megaTsunami,
   name: 'MEGA TSUNAMI (kickstarter)',
-  pack: KS_PACK
 };
 addCard(megaTsunamiKs);
 
-const nuclearWinterKs: CatastropheCard = {
+const nuclearWinterKs: CatastropheCardInput = {
   ...nuclearWinter,
   name: 'NUCLEAR WINTER (kickstarter)',
-  pack: KS_PACK
 };
 addCard(nuclearWinterKs);

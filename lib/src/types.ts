@@ -29,24 +29,31 @@ const CardTypes = [
 ] as const;
 export type CardType = (typeof CardTypes)[number];
 
-export const PACK_TYPES = [
-  'Classic',
-  'Classic (Kickstarter)',
+/** Known release names (display order). From worldofdoomlings.com */
+export const RELEASE_TYPES = [
+  'Classic Game',
+  'Classic Game (Kickstarter)',
+  'Black Box (Kickstarter)',
+  'Gold Box (Kickstarter)',
+  'Deluxe Bundle',
+  'Upgrade Pack',
   'Special Edition',
-  'multi-colour',
+  'Overlush'
+] as const;
+export type ReleaseType = (typeof RELEASE_TYPES)[number];
+
+/** Known collection names (display order). From worldofdoomlings.com */
+export const COLLECTION_TYPES = [
+  'Classic',
   'Dinolings',
   'Mythlings',
   'Techlings',
+  'Multi-Color',
+  'Special Edition',
   'Meaning of Life',
-  'Overlush',
-  'KSE'
+  'Overlush'
 ] as const;
-export type PackType = (typeof PACK_TYPES)[number];
-
-/** Release name (e.g. "Classic Game", "Classic Game (Kickstarter)") - from worldofdoomlings.com */
-export type ReleaseType = string;
-/** Collection (e.g. "Classic", "Special Edition") - from worldofdoomlings.com */
-export type CollectionType = string;
+export type CollectionType = (typeof COLLECTION_TYPES)[number];
 
 const simpleMetaDataTypes = [
   'number',
@@ -76,11 +83,10 @@ type MetaData = [string, MetaDataType, MetaDataScope];
 export interface Card {
   name: string;
   type: CardType[];
-  pack: PackType;
   /** Collection from worldofdoomlings.com (e.g. "Classic", "Special Edition") */
-  collection?: CollectionType;
+  collection: CollectionType;
   /** Releases from worldofdoomlings.com (e.g. ["Classic Game", "Deluxe Bundle"]) */
-  release?: ReleaseType[];
+  release: ReleaseType[];
   effect?: string;
   calcA?(
     card: CardInstance,
@@ -99,6 +105,9 @@ export interface CatastropheCard extends Card {
     currentPlayer: number
   ): void;
 }
+
+/** Catastrophe card without collection/release (set by addCard from CARD_COLLECTION_RELEASE) */
+export type CatastropheCardInput = Omit<CatastropheCard, 'collection' | 'release'> & Partial<Pick<CatastropheCard, 'collection' | 'release'>>;
 
 export interface PlayerCard extends Card {
   calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];

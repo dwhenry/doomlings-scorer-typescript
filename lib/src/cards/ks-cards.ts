@@ -7,16 +7,14 @@ import { addBasicCard } from '../cardContainer';
 import { filterCardsByType, playerCards } from './helpers';
 import { hasEffect } from './effect_cards';
 
-const KS_PACK = 'Classic (Kickstarter)' as const;
-
 // --- Trait duplicates (same logic as Classic) ---
 
-addBasicCard({ score: 1 }, { name: 'TERRITORIAL (kickstarter)', type: ['red'], pack: KS_PACK });
-addBasicCard({ score: 1 }, { name: 'LATE (kickstarter)', type: ['colourless'], pack: KS_PACK });
-addBasicCard({ score: -1 }, { name: 'SELF-AWARENESS (kickstarter)', type: ['colourless'], pack: KS_PACK });
-addBasicCard({ score: 2 }, { name: 'SAUDADE (kickstarter)', type: ['colourless'], pack: KS_PACK });
+addBasicCard({ score: 1 }, { name: 'TERRITORIAL (kickstarter)', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'LATE (kickstarter)', type: ['colourless'] });
+addBasicCard({ score: -1 }, { name: 'SELF-AWARENESS (kickstarter)', type: ['colourless'] });
+addBasicCard({ score: 2 }, { name: 'SAUDADE (kickstarter)', type: ['colourless'] });
 addBasicCard({ score: 2 }, {
-  name: 'CAMOUFLAGE (kickstarter)', type: ['red'], pack: KS_PACK,
+  name: 'CAMOUFLAGE (kickstarter)', type: ['red'],
   calcB: (
     inst: CardInstance,
     _allPlayerCards: Array<Array<CardInstance>>,
@@ -29,13 +27,12 @@ addBasicCard({ score: 2 }, {
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
 });
-addBasicCard({ score: 1 }, { name: 'TELEKINETIC (kickstarter)', type: ['purple'], pack: KS_PACK });
-addBasicCard({ score: 2 }, { name: 'BRAVE (kickstarter)', type: ['red'], pack: KS_PACK });
-addBasicCard({ score: 0 }, { name: 'TECTONIC SHIFT (kickstarter)', type: ['green'], pack: KS_PACK });
+addBasicCard({ score: 1 }, { name: 'TELEKINETIC (kickstarter)', type: ['purple'] });
+addBasicCard({ score: 2 }, { name: 'BRAVE (kickstarter)', type: ['red'] });
+addBasicCard({ score: 0 }, { name: 'TECTONIC SHIFT (kickstarter)', type: ['green'] });
 addBasicCard({ score: 0 }, {
   name: 'BOREDOM (kickstarter)',
   type: ['colourless'],
-  pack: KS_PACK,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -50,7 +47,7 @@ addBasicCard({ score: 0 }, {
   }
 });
 addBasicCard({ score: 4 }, {
-  name: 'FAITH (kickstarter)', type: ['colourless'], pack: KS_PACK,
+  name: 'FAITH (kickstarter)', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
@@ -69,10 +66,10 @@ addBasicCard({ score: 4 }, {
     ['toColour', 'card_type', 'card']
   ]
 });
-addBasicCard({ score: 0 }, { name: 'SELF-REPLICATING (kickstarter)', type: ['green'], pack: KS_PACK });
-addBasicCard({ score: 1 }, { name: 'LEAVES (kickstarter)', type: ['green'], pack: KS_PACK });
+addBasicCard({ score: 0 }, { name: 'SELF-REPLICATING (kickstarter)', type: ['green'] });
+addBasicCard({ score: 1 }, { name: 'LEAVES (kickstarter)', type: ['green'] });
 addBasicCard({ score: 1 }, {
-  name: 'FORTUNATE (kickstarter)', type: ['green'], pack: KS_PACK,
+  name: 'FORTUNATE (kickstarter)', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -100,7 +97,6 @@ addBasicCard({ score: 1 }, {
 addBasicCard({ score: 3 }, {
   name: 'PACK BEHAVIOR (kickstarter)',
   type: ['green'],
-  pack: KS_PACK,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -127,6 +123,6 @@ addBasicCard({ score: 3 }, {
     inst.applyPoints(currentPlayer, 'B', pairCount + multiColourCount, inst, 'point for each pair of colours');
   }
 });
-addBasicCard({ score: 1 }, { name: 'TENTACLES (kickstarter)', type: ['blue'], pack: KS_PACK });
-addBasicCard({ score: 0 }, { name: 'REGENERATIVE TISSUE (kickstarter)', type: ['blue'], pack: KS_PACK });
-addBasicCard({ score: 0 }, { name: 'AUTOMIMICRY (kickstarter)', type: ['blue'], pack: KS_PACK });
+addBasicCard({ score: 1 }, { name: 'TENTACLES (kickstarter)', type: ['blue'] });
+addBasicCard({ score: 0 }, { name: 'REGENERATIVE TISSUE (kickstarter)', type: ['blue'] });
+addBasicCard({ score: 0 }, { name: 'AUTOMIMICRY (kickstarter)', type: ['blue'] });

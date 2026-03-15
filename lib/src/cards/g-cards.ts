@@ -2,11 +2,11 @@ import { addBasicCard } from '../cardContainer';
 import { CALC_B_PHASES, CardInstance } from '../types';
 import { playerCards } from './helpers';
 
-addBasicCard({ score: 1 }, { name: 'GELATINOUS', type: ['red'], pack: 'Mythlings' });
-addBasicCard({ score: 1 }, { name: 'GILLS', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'GELATINOUS', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'GILLS', type: ['blue'] });
 
 addBasicCard({ score: -1 }, {
-  name: 'GMO', type: ['colourless'], pack: 'Techlings',
+  name: 'GMO', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcBRunPhase2: CALC_B_PHASES.POST_CATASTROPHE,
   calcB: (
@@ -50,7 +50,7 @@ addBasicCard({ score: -1 }, {
 });
 
 addBasicCard({ score: 0 }, {
-  name: 'GRATITUDE', type: ['colourless'], pack: 'Classic',
+  name: 'GRATITUDE', type: ['colourless'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -70,4 +70,4 @@ addBasicCard({ score: 0 }, {
   }
 });
 
-addBasicCard({ score: -1 }, { name: 'GREY HAT', type: ['colourless'], pack: 'Techlings' });
+addBasicCard({ score: -1 }, { name: 'GREY HAT', type: ['colourless'] });

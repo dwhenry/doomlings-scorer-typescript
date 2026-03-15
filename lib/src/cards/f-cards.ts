@@ -3,7 +3,7 @@ import { addBasicCard } from '../cardContainer';
 import { filterCardsByType, playerCards } from './helpers';
 
 addBasicCard({ score: 4 }, {
-  name: 'FAITH', type: ['colourless'], pack: 'Classic',
+  name: 'FAITH', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
@@ -24,16 +24,16 @@ addBasicCard({ score: 4 }, {
     ['toColour', 'card_type', 'card']
   ]
 });
-addBasicCard({ score: 1 }, { name: 'FANGS', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'FEAR', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'FECUNDITY', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'FEY', type: ['green'], pack: 'Mythlings' });
-addBasicCard({ score: 2 }, { name: 'FINE MOTOR SKILLS', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 3 }, { name: 'FIRE SKIN', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 3 }, { name: 'FLATULENCE', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'FLIGHT', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'FANGS', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'FEAR', type: ['colourless'] });
+addBasicCard({ score: 1 }, { name: 'FECUNDITY', type: ['green'] });
+addBasicCard({ score: 1 }, { name: 'FEY', type: ['green'] });
+addBasicCard({ score: 2 }, { name: 'FINE MOTOR SKILLS', type: ['purple'] });
+addBasicCard({ score: 3 }, { name: 'FIRE SKIN', type: ['red'] });
+addBasicCard({ score: 3 }, { name: 'FLATULENCE', type: ['colourless'] });
+addBasicCard({ score: 2 }, { name: 'FLIGHT', type: ['blue'] });
 addBasicCard({ score: 1 }, {
-  name: 'FORTUNATE', type: ['green'], pack: 'Classic',
+  name: 'FORTUNATE', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -61,7 +61,7 @@ addBasicCard({ score: 1 }, {
   }
 });
 addBasicCard({ score: 2 }, {
-  name: 'FREE WILL', type: ['colourless'], pack: 'multi-colour',
+  name: 'FREE WILL', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
@@ -73,5 +73,5 @@ addBasicCard({ score: 2 }, {
   },
   metadataRequired: [['chosen_colour', 'card_type', 'card']]
 });
-addBasicCard({ score: 0 }, { name: 'FRONDS', type: ['green'], pack: 'Dinolings' });
-addBasicCard({ score: 4 }, { name: 'FULFILLED', type: ['colourless'], pack: 'KSE' });
+addBasicCard({ score: 0 }, { name: 'FRONDS', type: ['green'] });
+addBasicCard({ score: 4 }, { name: 'FULFILLED', type: ['colourless'] });

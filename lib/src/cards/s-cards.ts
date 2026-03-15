@@ -6,17 +6,17 @@ import {
 import { isDominant } from './effect_cards';
 import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
-addBasicCard({ score: 1 }, { name: 'SALIVA', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'SAUDADE', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 3 }, { name: 'SCUTES', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 0 }, { name: 'SELECTIVE MEMORY', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: -1 }, { name: 'SELF-AWARENESS', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 0 }, { name: 'SELF-REPLICATING', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'SELFISH', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'SALIVA', type: ['blue'] });
+addBasicCard({ score: 2 }, { name: 'SAUDADE', type: ['colourless'] });
+addBasicCard({ score: 3 }, { name: 'SCUTES', type: ['blue'] });
+addBasicCard({ score: 0 }, { name: 'SELECTIVE MEMORY', type: ['blue'] });
+addBasicCard({ score: -1 }, { name: 'SELF-AWARENESS', type: ['colourless'] });
+addBasicCard({ score: 0 }, { name: 'SELF-REPLICATING', type: ['green'] });
+addBasicCard({ score: 1 }, { name: 'SELFISH', type: ['purple'] });
 
 // At World's End: Choose a color. +1 for all traits of that color in your trait pile.
 addBasicCard({ score: 2 }, {
-  name: 'SENTIENCE', type: ['red'], pack: 'Classic',
+  name: 'SENTIENCE', type: ['red'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -42,7 +42,7 @@ addBasicCard({ score: 2 }, {
 
 // -2 for each dominant trait in your trait pile
 addBasicCard({ score: 5 }, {
-  name: 'SERRATED TEETH', type: ['red'], pack: 'Dinolings',
+  name: 'SERRATED TEETH', type: ['red'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -56,15 +56,15 @@ addBasicCard({ score: 5 }, {
   }
 });
 
-addBasicCard({ score: 2 }, { name: 'SNEAKY', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'SPINY', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'SNEAKY', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'SPINY', type: ['blue'] });
 addCardThatPointsByColour(
   { score: -1, colour: 'purple', pointsPerCard: 1 },
-  { name: 'STICKY SECRETIONS', type: ['purple'], pack: 'Classic' }
+  { name: 'STICKY SECRETIONS', type: ['purple'] }
 );
-addBasicCard({ score: 2 }, { name: 'STONE SKIN', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'STONE SKIN', type: ['red'] });
 addBasicCard({ score: -1 }, {
-  name: 'SUBDERMAL PLATING', type: ['purple'], pack: 'Techlings',
+  name: 'SUBDERMAL PLATING', type: ['purple'],
   blocksDiscarding: true,
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
@@ -92,14 +92,13 @@ addBasicCard({ score: -1 }, {
     ['attached_to', 'any_player_card', 'card'],
   ]
 });
-addBasicCard({ score: 2 }, { name: 'SUPER SPREADER', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'SUPER SPREADER', type: ['purple'] });
 
 // Value is equal to the number of Swarm traits in all trait piles (including this one)
-function createSwarm(name: string): [{ score: number }, PlayerCardWithOptionalInputs<'blocksDiscarding' | 'calcBRunPhase' | 'calcA'>] {
+function createSwarm(name: string): [{ score: number }, PlayerCardWithOptionalInputs<'blocksDiscarding' | 'calcBRunPhase' | 'calcA' | 'collection' | 'release'>] {
   return [{ score: 0 }, {
     name,
     type: ['green'],
-    pack: 'Classic',
     calcB: (
       inst: CardInstance,
       allPlayerCards: Array<Array<CardInstance>>,
@@ -126,13 +125,12 @@ addBasicCard(...createSwarm('SWARM (4)'));
 addBasicCard(...createSwarm('SWARM (5)'));
 addBasicCard(...createSwarm('SWARM (6)'));
 
-addBasicCard({ score: 2 }, { name: 'SWEAT', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'SWEAT', type: ['blue'] });
 
 // +2 for every trait in your lowest color count (must have 2+ colors; if tied, pick 1)
 addBasicCard({ score: 3 }, {
   name: 'SYMBIOSIS',
   type: ['green'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

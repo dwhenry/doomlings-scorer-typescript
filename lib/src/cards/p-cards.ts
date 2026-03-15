@@ -6,7 +6,6 @@ import { playerCards } from './helpers';
 addBasicCard({ score: 3 }, {
   name: 'PACK BEHAVIOR',
   type: ['green'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -65,18 +64,17 @@ addBasicCard({ score: 3 }, {
   }
 });
 
-addBasicCard({ score: 1 }, { name: 'PAINTED SHELL', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: -2 }, { name: 'PARASITIC', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'PERSUASIVE', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'PHOTOSYNTHESIS', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'PHREAKISH EYES', type: ['red'], pack: 'Techlings' });
-addBasicCard({ score: 2 }, { name: 'POISONOUS', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'PAINTED SHELL', type: ['blue'] });
+addBasicCard({ score: -2 }, { name: 'PARASITIC', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'PERSUASIVE', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'PHOTOSYNTHESIS', type: ['green'] });
+addBasicCard({ score: 2 }, { name: 'PHREAKISH EYES', type: ['red'] });
+addBasicCard({ score: 2 }, { name: 'POISONOUS', type: ['purple'] });
 
 // +1 for every card in your trait pile with a face value of 1 (including this one)
 addBasicCard({ score: 1 }, {
   name: 'POLLINATION',
   type: ['green'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -90,9 +88,9 @@ addBasicCard({ score: 1 }, {
   }
 });
 
-addBasicCard({ score: 2 }, { name: 'PREPPER', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'PRIDE', type: ['red'], pack: 'KSE' });
-addBasicCard({ score: 1 }, { name: 'PROPAGATION', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: -2 }, { name: 'PROTOFEATHERS', type: ['purple'], pack: 'Dinolings' });
-addBasicCard({ score: 1 }, { name: 'PTEROSAUR WINGS', type: ['blue'], pack: 'Dinolings' });
-addBasicCard({ score: 1 }, { name: 'PYCNOFIBERS', type: ['colourless'], pack: 'Dinolings' });
+addBasicCard({ score: 2 }, { name: 'PREPPER', type: ['colourless'] });
+addBasicCard({ score: 2 }, { name: 'PRIDE', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'PROPAGATION', type: ['green'] });
+addBasicCard({ score: -2 }, { name: 'PROTOFEATHERS', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'PTEROSAUR WINGS', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'PYCNOFIBERS', type: ['colourless'] });

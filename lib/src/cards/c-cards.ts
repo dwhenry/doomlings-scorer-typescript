@@ -3,7 +3,7 @@ import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
 addBasicCard({ score: 2 }, {
-  name: 'CAMOUFLAGE', type: ['red'], pack: 'Techlings',
+  name: 'CAMOUFLAGE', type: ['red'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -16,15 +16,15 @@ addBasicCard({ score: 2 }, {
   },
   metadataRequired: [['cards_in_hand', 'number', 'player']]
 });
-addBasicCard({ score: 9 }, { name: 'CARNOSAUR JAW', type: ['red'], pack: 'Dinolings' });
-addBasicCard({ score: 4 }, { name: 'CERATOPSIAN HORNS', type: ['green'], pack: 'Dinolings' });
-addBasicCard({ score: 0 }, { name: 'CHROMATOPHORES', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'CLEVER', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'COLD BLOOD', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: -2 }, { name: 'CONFUSION', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: -2 }, { name: 'COSTLY SIGNALING', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 9 }, { name: 'CARNOSAUR JAW', type: ['red'] });
+addBasicCard({ score: 4 }, { name: 'CERATOPSIAN HORNS', type: ['green'] });
+addBasicCard({ score: 0 }, { name: 'CHROMATOPHORES', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'CLEVER', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'COLD BLOOD', type: ['blue'] });
+addBasicCard({ score: -2 }, { name: 'CONFUSION', type: ['colourless'] });
+addBasicCard({ score: -2 }, { name: 'COSTLY SIGNALING', type: ['blue'] });
 addBasicCard({ score: 4 }, {
-  name: 'CRANIAL CREST', type: ['colourless'], pack: 'Dinolings',
+  name: 'CRANIAL CREST', type: ['colourless'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -36,9 +36,9 @@ addBasicCard({ score: 4 }, {
     inst.applyPoints(currentPlayer, 'B', -([...new Set(types)].length - 1), inst, 'point for each colour trait that we have');
   }
 });
-addBasicCard({ score: 1 }, { name: 'CURIOSITY', type: ['blue', 'red'], pack: 'multi-colour' });
+addBasicCard({ score: 1 }, { name: 'CURIOSITY', type: ['blue', 'red'] });
 addBasicCard({ score: 1 }, {
-  name: 'CYBERNETIC', type: ['blue'], pack: 'Techlings',
+  name: 'CYBERNETIC', type: ['blue'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,

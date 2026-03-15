@@ -1,9 +1,8 @@
 import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import {
-  getGroupedReleaseCollections,
-  getReleaseCollectionKeys,
-  getReleaseCollectionKeysForPacks
+  cardMatchesReleases,
+  cardMatchesCollections
 } from '@scorer/releaseCollection';
 import '@scorer/cards';
 import type {
@@ -20,7 +19,6 @@ import {
   getEditableMetadataFields,
   getInternalMetadataFields
 } from './utils/cardMetadata';
-import GroupedMultiSelect from './components/GroupedMultiSelect';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
@@ -33,7 +31,8 @@ import { CardScore } from '@scorer/scorer';
 interface AppState {
   players: PlayerState[];
   selectedPlayerId: number | null;
-  selectedReleaseCollections: string[];
+  selectedReleases: string[];
+  selectedCollections: string[];
   playerCount: number;
   selectedCatastrophes: CardEntry[];
   catastropheMetadata: Record<
@@ -52,7 +51,11 @@ type Action =
   | { type: 'SELECT_PLAYER'; id: number }
   | { type: 'ADD_CARD'; playerId: number; cardName: string }
   | { type: 'REMOVE_CARD'; playerId: number; cardIndex: number }
-  | { type: 'SET_RELEASE_COLLECTIONS'; keys: string[] }
+  | {
+      type: 'SET_RELEASE_COLLECTION_FILTER';
+      releases: string[];
+      collections: string[];
+    }
   | { type: 'TOGGLE_CATASTROPHE'; cardName: string }
   | { type: 'SET_HOVERED'; cardName: string | null }
   | {
@@ -89,6 +92,53 @@ type Action =
   | { type: 'OPEN_SCORING_LOGS' }
   | { type: 'CLOSE_SCORING_LOGS' }
   | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport };
+
+/** Legacy pack names -> collection for import */
+const LEGACY_PACK_TO_COLLECTION: Record<string, string> = {
+  Classic: 'Classic',
+  'Classic (Kickstarter)': 'Classic',
+  KSE: 'Special Edition',
+  'Special Edition': 'Special Edition',
+  'multi-colour': 'Multi-Color',
+  Dinolings: 'Dinolings',
+  Mythlings: 'Mythlings',
+  Techlings: 'Techlings',
+  'Meaning of Life': 'Meaning of Life',
+  Overlush: 'Overlush'
+};
+
+function migrateImportReleases(payload: GameStateExport): string[] {
+  if (Array.isArray(payload.selectedReleases) && payload.selectedReleases.length > 0) {
+    return payload.selectedReleases;
+  }
+  if (
+    Array.isArray(payload.selectedReleaseCollections) &&
+    payload.selectedReleaseCollections.length > 0
+  ) {
+    const releases = new Set<string>();
+    for (const key of payload.selectedReleaseCollections) {
+      const r = key.split('|')[0];
+      if (r) releases.add(r);
+    }
+    return [...releases];
+  }
+  return [];
+}
+
+function migrateImportCollections(payload: GameStateExport): string[] {
+  if (Array.isArray(payload.selectedCollections) && payload.selectedCollections.length > 0) {
+    return payload.selectedCollections;
+  }
+  if (Array.isArray(payload.selectedPacks) && payload.selectedPacks.length > 0) {
+    const collections = new Set<string>();
+    for (const pack of payload.selectedPacks) {
+      const c = LEGACY_PACK_TO_COLLECTION[pack];
+      if (c) collections.add(c);
+    }
+    return [...collections];
+  }
+  return [];
+}
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -215,8 +265,12 @@ function reducer(state: AppState, action: Action): AppState {
             : state.modal
       };
     }
-    case 'SET_RELEASE_COLLECTIONS':
-      return { ...state, selectedReleaseCollections: action.keys };
+    case 'SET_RELEASE_COLLECTION_FILTER':
+      return {
+        ...state,
+        selectedReleases: action.releases,
+        selectedCollections: action.collections
+      };
     case 'TOGGLE_CATASTROPHE': {
       const has = state.selectedCatastrophes.find(
         (c) => c.name === action.cardName
@@ -365,11 +419,8 @@ function reducer(state: AppState, action: Action): AppState {
           typeof payload.catastropheMetadata === 'object'
             ? payload.catastropheMetadata
             : {},
-        selectedReleaseCollections:
-          Array.isArray(payload.selectedReleaseCollections) &&
-          payload.selectedReleaseCollections.length > 0
-            ? payload.selectedReleaseCollections
-            : state.selectedReleaseCollections,
+        selectedReleases: migrateImportReleases(payload),
+        selectedCollections: migrateImportCollections(payload),
         selectedPlayerId: null,
         modal: null,
         catastropheModal: null,
@@ -385,7 +436,8 @@ function reducer(state: AppState, action: Action): AppState {
 const initialState: AppState = {
   players: createPlayers(2),
   selectedPlayerId: null,
-  selectedReleaseCollections: [],
+  selectedReleases: [],
+  selectedCollections: [],
   playerCount: 2,
   selectedCatastrophes: [],
   catastropheMetadata: {},
@@ -693,10 +745,10 @@ export default function App() {
       <CardZoom cardName={state.hoveredCard} />
 
       <Header
-        releaseGroups={getGroupedReleaseCollections(cardsMap)}
-        selectedReleaseCollections={state.selectedReleaseCollections}
-        onReleaseCollectionsChange={(keys) =>
-          dispatch({ type: 'SET_RELEASE_COLLECTIONS', keys })
+        selectedReleases={state.selectedReleases}
+        selectedCollections={state.selectedCollections}
+        onReleaseCollectionFilterChange={(releases, collections) =>
+          dispatch({ type: 'SET_RELEASE_COLLECTION_FILTER', releases, collections })
         }
         playerCount={state.playerCount}
         onPlayerCountChange={(count) =>
@@ -722,8 +774,10 @@ export default function App() {
       <PackDisplay
         cards={cardsMap}
         playerCount={state.playerCount}
-        selectedReleaseCollections={state.selectedReleaseCollections}
-        getReleaseCollectionKeys={getReleaseCollectionKeys}
+        selectedReleases={state.selectedReleases}
+        selectedCollections={state.selectedCollections}
+        cardMatchesReleases={cardMatchesReleases}
+        cardMatchesCollections={cardMatchesCollections}
         selectedPlayerId={state.selectedPlayerId}
         mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}
@@ -754,26 +808,12 @@ export default function App() {
           players={state.players}
           selectedCatastrophes={state.selectedCatastrophes}
           catastropheMetadata={state.catastropheMetadata}
-          selectedReleaseCollections={state.selectedReleaseCollections}
+          selectedReleases={state.selectedReleases}
+          selectedCollections={state.selectedCollections}
           onClose={() => dispatch({ type: 'CLOSE_SCORING_LOGS' })}
-          onImport={(payload) => {
-            let p = payload;
-            if (
-              Array.isArray(payload.selectedPacks) &&
-              payload.selectedPacks.length > 0 &&
-              cardsMap.size > 0 &&
-              !Array.isArray(payload.selectedReleaseCollections)
-            ) {
-              p = {
-                ...payload,
-                selectedReleaseCollections: getReleaseCollectionKeysForPacks(
-                  cardsMap,
-                  payload.selectedPacks
-                )
-              };
-            }
-            dispatch({ type: 'IMPORT_GAME_STATE', payload: p });
-          }}
+          onImport={(payload) =>
+            dispatch({ type: 'IMPORT_GAME_STATE', payload })
+          }
         />
       )}
 

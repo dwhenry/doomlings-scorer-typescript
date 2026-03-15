@@ -3,16 +3,16 @@ import {
   addBasicCard,
   addCardThatPointsByColour,
 } from '../cardContainer';
-import { filterCardByPack, forEachPlayerCards } from './helpers';
+import { filterCardsByCollection, forEachPlayerCards } from './helpers';
 
-addBasicCard({ score: 4 }, { name: 'ECHOLOCATION', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: -3 }, { name: 'EFFIGIAL', type: ['colourless'], pack: 'Mythlings' });
+addBasicCard({ score: 4 }, { name: 'ECHOLOCATION', type: ['blue'] });
+addBasicCard({ score: -3 }, { name: 'EFFIGIAL', type: ['colourless'] });
 addCardThatPointsByColour(
   { score: -1, colour: 'blue', pointsPerCard: 1 },
-  { name: 'EGG CLUSTERS', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'EGG PREDATION', type: ['purple'], pack: 'Dinolings' });
+  { name: 'EGG CLUSTERS', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'EGG PREDATION', type: ['purple'] });
 addBasicCard({ score: 1 }, {
-  name: 'ELECTROMAGNETIC', type: ['green'], pack: 'Techlings',
+  name: 'ELECTROMAGNETIC', type: ['green'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (
     inst: CardInstance,
@@ -37,16 +37,16 @@ addBasicCard({ score: 1 }, {
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
 });
-addBasicCard({ score: 1 }, { name: 'ELONGATED NECK', type: ['blue'], pack: 'Dinolings' });
-addBasicCard({ score: 1 }, { name: 'ELOQUENCE', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'ELONGATED NECK', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'ELOQUENCE', type: ['colourless'] });
 addBasicCard({ score: -1 }, {
-  name: 'ELVEN EARS', type: ['green'], pack: 'Mythlings',
+  name: 'ELVEN EARS', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const mythlingCards = filterCardByPack(allPlayerCards.flat(), 'Mythlings');
+    const mythlingCards = filterCardsByCollection(allPlayerCards.flat(), 'Mythlings');
 
     inst.applyPoints(currentPlayer,
       'B',
@@ -56,4 +56,4 @@ addBasicCard({ score: -1 }, {
     );
   }
 });
-addBasicCard({ score: 1 }, { name: 'ENDURANCE', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'ENDURANCE', type: ['red'] });

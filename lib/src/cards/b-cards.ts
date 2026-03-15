@@ -1,15 +1,15 @@
 import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { hasEffect } from './effect_cards';
-import { filterCardByPack, filterCardsByType, playerCards } from './helpers';
+import { filterCardsByCollection, filterCardsByType, playerCards } from './helpers';
 
-addBasicCard({ score: 1 }, { name: 'BAD', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'BARK', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'BEAUTY', type: ['green'], pack: 'KSE' });
-addBasicCard({ score: 1 }, { name: 'BIG EARS', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 0 }, { name: 'BINARY', type: ['colourless'], pack: 'Techlings' });
+addBasicCard({ score: 1 }, { name: 'BAD', type: ['red'] });
+addBasicCard({ score: 2 }, { name: 'BARK', type: ['green'] });
+addBasicCard({ score: 2 }, { name: 'BEAUTY', type: ['green'] });
+addBasicCard({ score: 1 }, { name: 'BIG EARS', type: ['purple'] });
+addBasicCard({ score: 0 }, { name: 'BINARY', type: ['colourless'] });
 addBasicCard({ score: -1 }, {
-  name: 'BIONIC ARM', type: ['red'], pack: 'Techlings',
+  name: 'BIONIC ARM', type: ['red'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -18,16 +18,16 @@ addBasicCard({ score: -1 }, {
     const playerCards = allPlayerCards[currentPlayer];
     // TODO: work out when this is attached and set to 2 when it is
     const multiplier = inst.attachedCards.length > 0 ? 2 : 1;
-    filterCardByPack(playerCards, 'Techlings').forEach((playerCard) => {
+    filterCardsByCollection(playerCards, 'Techlings').forEach((playerCard) => {
       playerCard.applyPoints(currentPlayer, 'B', multiplier, inst, 'Bionic Arm is attached');
     });
   }
 });
-addBasicCard({ score: 1 }, { name: 'BLOOM', type: ['green', 'blue'], pack: 'multi-colour' });
-addBasicCard({ score: 4 }, { name: 'BLUBBER', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'BLOOM', type: ['green', 'blue'] });
+addBasicCard({ score: 4 }, { name: 'BLUBBER', type: ['blue'] });
 
 addBasicCard({ score: 4 }, {
-  name: 'BONE REINFORCEMENT', type: ['red'], pack: 'Techlings',
+  name: 'BONE REINFORCEMENT', type: ['red'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -47,14 +47,13 @@ addBasicCard({ score: 4 }, {
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
 });
-addBasicCard({ score: 2 }, { name: 'BONES', type: ['colourless'], pack: 'KSE' });
-addBasicCard({ score: 2 }, { name: 'BONY PLATES', type: ['green'], pack: 'Dinolings' });
+addBasicCard({ score: 2 }, { name: 'BONES', type: ['colourless'] });
+addBasicCard({ score: 2 }, { name: 'BONY PLATES', type: ['green'] });
 
 // TODO: Cards in hand is **not** played cards. This is buggy.
 addBasicCard({ score: 0 }, {
   name: 'BOREDOM',
   type: ['colourless'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -69,7 +68,7 @@ addBasicCard({ score: 0 }, {
   }
 });
 addBasicCard({ score: 0 }, {
-  name: 'BRANCHES', type: ['green'], pack: 'Classic',
+  name: 'BRANCHES', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -96,6 +95,6 @@ addBasicCard({ score: 0 }, {
     // TODO: we need to queue this card for post-processing as card colours can change
   }
 });
-addBasicCard({ score: 2 }, { name: 'BRAVE', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 4 }, { name: 'BRUTE STRENGTH', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'BULLHEADED', type: ['red', 'green'], pack: 'multi-colour' });
+addBasicCard({ score: 2 }, { name: 'BRAVE', type: ['red'] });
+addBasicCard({ score: 4 }, { name: 'BRUTE STRENGTH', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'BULLHEADED', type: ['red', 'green'] });

@@ -40,7 +40,8 @@ interface ScoringLogsModalProps {
     string,
     Record<string, string | number | string[]>
   >;
-  selectedReleaseCollections: string[];
+  selectedReleases: string[];
+  selectedCollections: string[];
   onClose: () => void;
   onImport: (state: GameStateExport) => void;
 }
@@ -85,7 +86,9 @@ function isValidGameStateExport(
     Array.isArray(o.players) &&
     (o.selectedPacks === undefined || Array.isArray(o.selectedPacks)) &&
     (o.selectedReleaseCollections === undefined ||
-      Array.isArray(o.selectedReleaseCollections))
+      Array.isArray(o.selectedReleaseCollections)) &&
+    (o.selectedReleases === undefined || Array.isArray(o.selectedReleases)) &&
+    (o.selectedCollections === undefined || Array.isArray(o.selectedCollections))
   );
 }
 
@@ -93,7 +96,8 @@ export default function ScoringLogsModal({
   players,
   selectedCatastrophes,
   catastropheMetadata,
-  selectedReleaseCollections,
+  selectedReleases,
+  selectedCollections,
   onClose,
   onImport
 }: ScoringLogsModalProps) {
@@ -109,7 +113,8 @@ export default function ScoringLogsModal({
       players,
       selectedCatastrophes,
       catastropheMetadata,
-      selectedReleaseCollections
+      selectedReleases,
+      selectedCollections
     };
     const blob = new Blob([JSON.stringify(state, null, 2)], {
       type: 'application/json'
