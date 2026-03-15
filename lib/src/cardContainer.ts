@@ -31,7 +31,7 @@ export function addBasicCard(custom: { score: number }, card: PlayerCardWithOpti
     blocksDiscarding: false,
     calcA: (
       inst: CardInstance,
-      allPlayerCards: Array<Array<CardInstance>>,
+      _allPlayerCards: Array<Array<CardInstance>>,
       currentPlayer: number
     ): void => {
       inst.applyPoints(currentPlayer, 'A', custom.score, inst, 'face card value')

@@ -53,10 +53,6 @@ export interface GameStateExport {
   selectedReleases?: string[];
   /** Filter by collection names (mutually exclusive with selectedReleases) */
   selectedCollections?: string[];
-  /** @deprecated Legacy import; converted to selectedReleases/selectedCollections */
-  selectedReleaseCollections?: string[];
-  /** @deprecated Legacy import; converted to selectedReleases */
-  selectedPacks?: string[];
 }
 
 export type { Card, CardType };

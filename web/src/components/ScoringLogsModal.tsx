@@ -84,9 +84,6 @@ function isValidGameStateExport(
   return (
     typeof o.version === 'number' &&
     Array.isArray(o.players) &&
-    (o.selectedPacks === undefined || Array.isArray(o.selectedPacks)) &&
-    (o.selectedReleaseCollections === undefined ||
-      Array.isArray(o.selectedReleaseCollections)) &&
     (o.selectedReleases === undefined || Array.isArray(o.selectedReleases)) &&
     (o.selectedCollections === undefined || Array.isArray(o.selectedCollections))
   );

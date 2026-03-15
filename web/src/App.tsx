@@ -93,53 +93,6 @@ type Action =
   | { type: 'CLOSE_SCORING_LOGS' }
   | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport };
 
-/** Legacy pack names -> collection for import */
-const LEGACY_PACK_TO_COLLECTION: Record<string, string> = {
-  Classic: 'Classic',
-  'Classic (Kickstarter)': 'Classic',
-  KSE: 'Special Edition',
-  'Special Edition': 'Special Edition',
-  'multi-colour': 'Multi-Color',
-  Dinolings: 'Dinolings',
-  Mythlings: 'Mythlings',
-  Techlings: 'Techlings',
-  'Meaning of Life': 'Meaning of Life',
-  Overlush: 'Overlush'
-};
-
-function migrateImportReleases(payload: GameStateExport): string[] {
-  if (Array.isArray(payload.selectedReleases) && payload.selectedReleases.length > 0) {
-    return payload.selectedReleases;
-  }
-  if (
-    Array.isArray(payload.selectedReleaseCollections) &&
-    payload.selectedReleaseCollections.length > 0
-  ) {
-    const releases = new Set<string>();
-    for (const key of payload.selectedReleaseCollections) {
-      const r = key.split('|')[0];
-      if (r) releases.add(r);
-    }
-    return [...releases];
-  }
-  return [];
-}
-
-function migrateImportCollections(payload: GameStateExport): string[] {
-  if (Array.isArray(payload.selectedCollections) && payload.selectedCollections.length > 0) {
-    return payload.selectedCollections;
-  }
-  if (Array.isArray(payload.selectedPacks) && payload.selectedPacks.length > 0) {
-    const collections = new Set<string>();
-    for (const pack of payload.selectedPacks) {
-      const c = LEGACY_PACK_TO_COLLECTION[pack];
-      if (c) collections.add(c);
-    }
-    return [...collections];
-  }
-  return [];
-}
-
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
     id: i,
@@ -419,8 +372,8 @@ function reducer(state: AppState, action: Action): AppState {
           typeof payload.catastropheMetadata === 'object'
             ? payload.catastropheMetadata
             : {},
-        selectedReleases: migrateImportReleases(payload),
-        selectedCollections: migrateImportCollections(payload),
+        selectedReleases: payload.selectedReleases ?? [],
+        selectedCollections: payload.selectedCollections ?? [],
         selectedPlayerId: null,
         modal: null,
         catastropheModal: null,
