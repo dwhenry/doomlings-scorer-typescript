@@ -1,7 +1,7 @@
 import { PlayerInput } from '../src/types';
 
 export const zeroPointColourlessCard = (): PlayerInput => ({ name: 'BINARY' });
-export const zeroPointBlueCard = (): PlayerInput => ({ name: 'AUTOMIMICRY' });
+export const zeroPointBlueCard = (): PlayerInput => ({ name: 'AUTOMIMICRY (kickstarter)' });
 export const zeroPointGreenCard = (): PlayerInput => ({
   name: 'COASTAL FORMATIONS'
 });

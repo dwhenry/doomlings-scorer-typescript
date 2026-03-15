@@ -1,6 +1,6 @@
 import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
-import { hasEffect } from './effect_cards';
+import { hasEffect, isDominant } from './effect_cards';
 import { filterCardsByCollection, filterCardsByType, playerCards } from './helpers';
 
 addBasicCard({ score: 1 }, { name: 'BAD', type: ['red'] });
@@ -59,13 +59,13 @@ addBasicCard({ score: 0 }, {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
-    playerCards.forEach((card) => {
-      if (hasEffect(card.card.name)) {
-        card.applyPoints(currentPlayer, 'B', 1, inst, 'this card has no effect');
-      }
-    });
-  }
+    if (typeof inst.metadata.effect_less_cards_in_hand !== 'number') {
+      throw new Error('invalid data for metadata field effect_less_cards_in_hand');
+    }
+
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.effect_less_cards_in_hand, inst, 'point for each effect less card in hand');
+  },
+  metadataRequired: [['effect_less_cards_in_hand', 'number', 'player']]
 });
 addBasicCard({ score: 0 }, {
   name: 'BRANCHES', type: ['green'],
@@ -95,6 +95,18 @@ addBasicCard({ score: 0 }, {
     // TODO: we need to queue this card for post-processing as card colours can change
   }
 });
-addBasicCard({ score: 2 }, { name: 'BRAVE', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'BRAVE', type: ['red'],
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    playerCards(allPlayerCards, currentPlayer).forEach((cardInst) => {
+      if (isDominant(cardInst.card.name)) {
+        cardInst.applyPoints(currentPlayer, 'B', 2, inst, 'for being a dominant trait');
+      }
+    })
+  }
+ });
 addBasicCard({ score: 4 }, { name: 'BRUTE STRENGTH', type: ['red'] });
 addBasicCard({ score: 1 }, { name: 'BULLHEADED', type: ['red', 'green'] });

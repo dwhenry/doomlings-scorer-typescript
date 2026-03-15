@@ -2,7 +2,7 @@ import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
-addBasicCard({ score: 2 }, {
+addBasicCard({ score: 1 }, {
   name: 'CAMOUFLAGE', type: ['red'],
   calcB: (
     inst: CardInstance,

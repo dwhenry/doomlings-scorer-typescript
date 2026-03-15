@@ -32,33 +32,20 @@ addBasicCard({ score: 2 }, { name: 'FINE MOTOR SKILLS', type: ['purple'] });
 addBasicCard({ score: 3 }, { name: 'FIRE SKIN', type: ['red'] });
 addBasicCard({ score: 3 }, { name: 'FLATULENCE', type: ['colourless'] });
 addBasicCard({ score: 2 }, { name: 'FLIGHT', type: ['blue'] });
-addBasicCard({ score: 1 }, {
+addBasicCard({ score: 0 }, {
   name: 'FORTUNATE', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    let greenSize = 0;
-    let colours: { [key: string]: number } = {};
-    playerCards(allPlayerCards, currentPlayer).forEach((inst) => {
-      inst.type.forEach((type) => {
-        if (type == 'green') {
-          greenSize += 1;
-        } else {
-          colours[type] = colours[type] ?? 0;
-          colours[type] += 1;
-        }
-      });
-    });
-    let maxSize = Math.max(...Object.values(colours));
-    // only when more green than others
-    if (maxSize < greenSize) {
-      inst.applyPoints(currentPlayer, 'B', 2, inst, 'more green than other colours');
-    } else {
-      inst.applyPoints(currentPlayer, 'B', 0, inst, 'less green than other colours');
+    if (typeof inst.metadata.cards_in_hand !== 'number') {
+      throw new Error('invalid data for metadata field card_in_hand');
     }
-  }
+    inst.applyPoints(currentPlayer, 'B', inst.metadata.cards_in_hand, inst, 'point for each card in hand');
+  },
+  metadataRequired: [['cards_in_hand', 'number', 'player']]
+
 });
 addBasicCard({ score: 2 }, {
   name: 'FREE WILL', type: ['colourless'],

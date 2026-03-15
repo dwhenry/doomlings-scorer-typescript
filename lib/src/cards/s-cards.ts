@@ -7,7 +7,18 @@ import { isDominant } from './effect_cards';
 import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
 addBasicCard({ score: 1 }, { name: 'SALIVA', type: ['blue'] });
-addBasicCard({ score: 2 }, { name: 'SAUDADE', type: ['colourless'] });
+addBasicCard({ score: 1 }, { name: 'SAUDADE', type: ['colourless'],
+  calcB: (
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    currentPlayer: number
+  ): void => {
+    const types = playerCards(allPlayerCards, currentPlayer).flatMap((cardInst) => cardInst.card.type)
+    const uniqueTypes = new Set(types)
+    uniqueTypes.delete('colourless')
+    inst.applyPoints(currentPlayer, 'B', uniqueTypes.size, inst, 'for each colour in your hand');
+  }
+ });
 addBasicCard({ score: 3 }, { name: 'SCUTES', type: ['blue'] });
 addBasicCard({ score: 0 }, { name: 'SELECTIVE MEMORY', type: ['blue'] });
 addBasicCard({ score: -1 }, { name: 'SELF-AWARENESS', type: ['colourless'] });

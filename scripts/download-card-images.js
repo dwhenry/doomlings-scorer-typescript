@@ -108,6 +108,10 @@ async function downloadOne(slug, outputName) {
 }
 
 async function main() {
+  let processKickstarter = true;
+  if (process.argv.includes('--non-kickstarter')) {
+    processKickstarter = false;
+  }
   const args = process.argv.slice(2);
   if (args.length >= 2) {
     const [slug, outputName] = args;
@@ -119,7 +123,14 @@ async function main() {
   let ok = 0;
   let fail = 0;
   for (const [slug, outputName] of all) {
-    const result = await downloadOne(slug, outputName);
+    let result
+    if (processKickstarter) {
+      result = await downloadOne(slug, outputName);
+    } else if(slug === 'brave-ks') {
+      result = await downloadOne(slug.replace('-ks', '-2'), outputName.replace(' (kickstarter)', ''));
+    } else {
+      result = await downloadOne(slug.replace('-ks', ''), outputName.replace(' (kickstarter)', ''));
+    }
     if (result) ok++;
     else fail++;
   }

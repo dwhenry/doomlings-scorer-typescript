@@ -42,8 +42,5 @@ addBasicCard({ score: 1 }, {
 });
 
 // ignore_next_catastrophe will then ignore based off position in the order.
-addBasicCard({ score: 4 }, {
-  name: 'DENIAL', type: ['colourless'],
-  metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
-});
+addBasicCard({ score: 4 }, { name: 'DENIAL', type: ['colourless']});
 addBasicCard({ score: 1 }, { name: 'DREAMER', type: ['purple'] });

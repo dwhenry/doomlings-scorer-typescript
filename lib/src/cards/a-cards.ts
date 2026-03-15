@@ -40,4 +40,4 @@ addBasicCard({ score: 4 }, {
   }
 })
 addBasicCard({ score: 3 }, { name: 'APPEALING', type: ['green'] });
-addBasicCard({ score: 0 }, { name: 'AUTOMIMICRY', type: ['blue'] });
+addBasicCard({ score: -1 }, { name: 'AUTOMIMICRY', type: ['blue'] });

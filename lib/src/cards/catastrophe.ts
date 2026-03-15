@@ -1,6 +1,7 @@
 import { CatastropheCardInput, CardInstance, CardType } from '../types';
 import { addCard } from '../cardContainer';
 import { filterCardsByType, forEachPlayerCards } from './helpers';
+import { isDominant } from './effect_cards';
 
 // --- Helpers ---
 
@@ -10,9 +11,11 @@ function activeCards(playerCards: CardInstance[]): CardInstance[] {
 }
 
 /** Soft-delete a card: marks it as discarded (scorer zeros its score) */
-function softDiscard(card: CardInstance, inst: CardInstance): void {
+function softDiscard(card: CardInstance, inst: CardInstance, currentPlayer: number): void {
+  card.applyPoints(currentPlayer, 'C', 0, inst, `discarded by catastrophe: ${inst.card.name}`);
   card.discarded = inst;
   card.attachedCards.forEach((c) => {
+    c.applyPoints(currentPlayer, 'C', 0, inst, `discarded by catastrophe: ${inst.card.name}`);
     c.discarded = inst;
   });
 }
@@ -78,7 +81,7 @@ function colourDiscard(
     const previousName = previousDiscard[position] as string | undefined;
     const target = selectCardByColour(playerCards, colour, previousName);
     if (target) {
-      softDiscard(target, inst);
+      softDiscard(target, inst, position);
       return target.card.name;
     }
     return '';
@@ -104,7 +107,10 @@ const aiTakeover: CatastropheCardInput = {
     colourlessCardsByPlayer.forEach((colourlessCards, currentPlayer) => {
       colourlessCards.forEach((c: CardInstance) => {
         c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
-        c.skipCalcB = true;
+        if (!isDominant(c.card.name)) {
+          c.applyPoints(currentPlayer, 'A', 0, inst, 'effect is removed as non-dominant trait');
+          c.skipCalcB = true;
+        }
       });
     })
   }
@@ -155,7 +161,7 @@ const bioPlague: CatastropheCardInput = {
           // if the colour of the previous selection is in the max colour list, use it,
           // other we need a new card to discard
           if (prev && !!maxColour.find((c) => prev.type.includes(c))) {
-            softDiscard(prev, inst);
+            softDiscard(prev, inst, position);
             return prev.card.name;
           }
         }
@@ -166,7 +172,7 @@ const bioPlague: CatastropheCardInput = {
           );
           if (targets.length > 0) {
             const target = deterministicPick(targets);
-            softDiscard(target, inst);
+            softDiscard(target, inst, position);
             return target.card.name;
           }
         }
@@ -200,9 +206,9 @@ const deusExMachina: CatastropheCardInput = {
         if (active.length > 0) {
           active[0].applyPoints(currentPlayer,
             'C',
-            parsedValue as number,
+            Math.min(parsedValue, 5),
             inst,
-            'for drawing a trait with face value of ' + faceValue
+            'for drawing a trait with face value of ' + faceValue + ' (max 5)'
           );
         }
       }
@@ -237,14 +243,14 @@ const eyesOpenFromBehindTheStars: CatastropheCardInput = {
         if (previousName) {
           const prev = active.find((c) => c.card.name === previousName);
           if (prev && prev.finalA === maxValue) {
-            softDiscard(prev, inst);
+            softDiscard(prev, inst, position);
             return prev.card.name;
           }
         }
 
         const tied = active.filter((c) => c.finalA === maxValue);
         const target = deterministicPick(tied);
-        softDiscard(target, inst);
+        softDiscard(target, inst, position);
         return target.card.name;
       }
     );
@@ -262,7 +268,8 @@ const glacialMeltdown: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'blue');
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(glacialMeltdown);
 
@@ -334,7 +341,8 @@ const massExtinction: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'green');
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(massExtinction);
 
@@ -345,7 +353,9 @@ const megaTsunami: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'red');
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(megaTsunami);
 
@@ -356,7 +366,8 @@ const nuclearWinter: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'colourless');
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(nuclearWinter);
 
@@ -391,7 +402,8 @@ const pulseEvent: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'purple');
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(pulseEvent);
 
@@ -487,47 +499,99 @@ const theFourHorsemen: CatastropheCardInput = {
         if (previousName) {
           const prev = candidates.find((c) => c.card.name === previousName);
           if (prev) {
-            softDiscard(prev, inst);
+            softDiscard(prev, inst, position);
             return prev.card.name;
           }
         }
 
         // Deterministically pick from candidates with face value >= 3
         const target = deterministicPick(candidates);
-        softDiscard(target, inst);
+        softDiscard(target, inst, position);
         return target.card.name;
       }
     );
 
     inst.generatedMetadata.discard = discardNames;
   },
-  metadataRequired: [['discard', 'card_per_person', 'internal']]
+  // TODO: allow card to discard to be selected
+  metadataRequired: [['discard', 'card_per_person', 'card']]
 };
 addCard(theFourHorsemen);
 
 // --- Kickstarter duplicate catastrophes (same as Classic, alternate art) ---
 
 const aiTakeoverKs: CatastropheCardInput = {
-  ...aiTakeover,
   name: 'AI TAKEOVER (kickstarter)',
+  type: ['catastrophe'],
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
+    const colourlessCardsByPlayer: Array<CardInstance[]> = allPlayerCards.map(
+      (playerCards) => activeCards(playerCards).filter(
+        (c: CardInstance) => c.type.includes('colourless')
+      )
+    )
+
+
+    colourlessCardsByPlayer.forEach((colourlessCards, currentPlayer) => {
+      colourlessCards.forEach((c: CardInstance) => {
+        c.applyPoints(currentPlayer, 'A', 2, inst, 'overwrite card face value to 2');
+        c.applyPoints(currentPlayer, 'A', 0, inst, 'effect is removed');
+        c.skipCalcB = true;
+      });
+    })
+  }
 };
 addCard(aiTakeoverKs);
 
 const deusExMachinaKs: CatastropheCardInput = {
-  ...deusExMachina,
   name: 'DEUS EX MACHINA (kickstarter)',
+  type: ['catastrophe'],
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
+    allPlayerCards.forEach((playerCards, currentPlayer) => {
+      const active = activeCards(playerCards);
+      if ((inst.metadata.drawn_face_values instanceof Array)) {
+        const faceValue = inst.metadata.drawn_face_values![currentPlayer];
+        // TODO: add number[] as a valid type - we currently only support number or string[]
+        const parsedValue = parseInt(faceValue);
+        if (typeof parsedValue !== 'number') {
+          throw new Error(
+            `no drawn face value specified for Player ${currentPlayer + 1}`
+          );
+        }
+        if (active.length > 0) {
+          active[0].applyPoints(currentPlayer,
+            'C',
+            parsedValue,
+            inst,
+            'for drawing a trait with face value of ' + faceValue
+          );
+        }
+      }
+    });
+
+    // TODO: would be nice if this allow selection by card name
+  },
+  metadataRequired: [['drawn_face_values', 'card_per_person', 'card']]
 };
 addCard(deusExMachinaKs);
 
 const glacialMeltdownKs: CatastropheCardInput = {
-  ...glacialMeltdown,
   name: 'GLACIAL MELTDOWN (kickstarter)',
+  type: ['catastrophe'],
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
+    colourDiscard(inst, allPlayerCards, 'blue');
+  },
+  metadataRequired: [['discard', 'card_per_person', 'internal']]
 };
 addCard(glacialMeltdownKs);
 
 const megaTsunamiKs: CatastropheCardInput = {
-  ...megaTsunami,
   name: 'MEGA TSUNAMI (kickstarter)',
+  type: ['catastrophe'],
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
+    colourDiscard(inst, allPlayerCards, 'red');
+  },
+
+  metadataRequired: [['discard', 'card_per_person', 'internal']]
 };
 addCard(megaTsunamiKs);
 

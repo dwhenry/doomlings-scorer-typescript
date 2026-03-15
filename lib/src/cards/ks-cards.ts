@@ -29,23 +29,8 @@ addBasicCard({ score: 2 }, {
 });
 addBasicCard({ score: 1 }, { name: 'TELEKINETIC (kickstarter)', type: ['purple'] });
 addBasicCard({ score: 2 }, { name: 'BRAVE (kickstarter)', type: ['red'] });
-addBasicCard({ score: 0 }, { name: 'TECTONIC SHIFT (kickstarter)', type: ['green'] });
-addBasicCard({ score: 0 }, {
-  name: 'BOREDOM (kickstarter)',
-  type: ['colourless'],
-  calcB: (
-    inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
-  ): void => {
-    const playerCardsList = allPlayerCards[currentPlayer];
-    playerCardsList.forEach((card) => {
-      if (hasEffect(card.card.name)) {
-        card.applyPoints(currentPlayer, 'B', 1, inst, 'this card has no effect');
-      }
-    });
-  }
-});
+// addBasicCard({ score: 0 }, { name: 'TECTONIC SHIFT (kickstarter)', type: ['green'] });
+addBasicCard({ score: 1 }, {name: 'BOREDOM (kickstarter)',type: ['colourless']});
 addBasicCard({ score: 4 }, {
   name: 'FAITH (kickstarter)', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
