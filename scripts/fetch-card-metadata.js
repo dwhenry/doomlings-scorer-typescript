@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Fetch Collection and Release for each card from worldofdoomlings.com.
- * Outputs JSON of card name -> { collection, release } and lists cards not found.
+ * Outputs JSON of card name -> { collection, release[] } and lists cards not found.
+ * release is an array (cards can have multiple editions). Multiple .collections .stat-pill-value cause an error.
  *
  * Prerequisite: npm run build (lib must be built)
  * Usage: node scripts/fetch-card-metadata.js
@@ -10,6 +11,7 @@
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const cheerio = require('cheerio');
 
 const NOT_FOUND_FILE = path.join(__dirname, '..', 'docs', 'cards-not-found.txt');
 
@@ -34,6 +36,10 @@ function fetchPage(url) {
       if (res.statusCode === 301 || res.statusCode === 302) {
         return fetchPage(res.headers.location).then(resolve).catch(reject);
       }
+      if (res.statusCode === 404) {
+        console.warn(`HTTP ${res.statusCode} for ${url}`);
+        return reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+      }
       const chunks = [];
       res.on('data', (chunk) => chunks.push(chunk));
       res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
@@ -42,14 +48,23 @@ function fetchPage(url) {
   });
 }
 
+/**
+ * Parse HTML and extract collection (single) and releases (multiple) using CSS selectors.
+ * @returns {{ collection?: string, release: string[] }}
+ * @throws {Error} If multiple `.collections .stat-pill-value` are found (exactly one expected).
+ */
 function extractCollectionAndRelease(html) {
-  const collectionMatch = html.match(/Collection:\s*\n\s*([^\n<]+)/);
-  const releaseMatch = html.match(/Release:\s*\n([\s\S]*?)(?=\n\n|\n[A-Z]|\n<|$)/);
-  const collection = collectionMatch ? collectionMatch[1].trim() : undefined;
-  let release = releaseMatch ? releaseMatch[1].trim() : undefined;
-  if (release && release.includes('\n')) {
-    release = release.split('\n').map((s) => s.trim()).filter(Boolean)[0] || release;
+  const $ = cheerio.load(html);
+
+  const collectionEls = $('.collections .stat-pill-value');
+  if (collectionEls.length > 1) {
+    throw new Error(`Multiple .collections .stat-pill-value found (${collectionEls.length})`);
   }
+  const collection = collectionEls.length === 1 ? collectionEls.first().text().trim() : undefined;
+
+  const releaseEls = $('.editions .stat-pill-value');
+  const release = releaseEls.map((_, el) => $(el).text().trim()).get().filter(Boolean);
+
   return { collection, release };
 }
 
@@ -60,15 +75,33 @@ async function main() {
   const notFound = [];
 
   for (const name of names) {
-    const slug = nameToSlug(name);
+    let slug
+    // this is a special case that makes no real sense... but deal with it...
+    if (name === 'BRAVE') {
+      slug = nameToSlug(`${name}-2`);
+    } else {
+      slug = nameToSlug(name);
+    }
     const url = BASE_URL + slug;
     try {
-      const html = await fetchPage(url);
+      let html
+      try {
+        console.warn(`Fetching ${url}`);
+        html = await fetchPage(url);
+      } catch (err) {
+        console.warn(`Fetching ${url}-ks`);
+        // try kicker starter version if not found
+        html = await fetchPage(`${url}-ks`);
+      }
       const { collection, release } = extractCollectionAndRelease(html);
-      if (collection || release) {
-        results[name] = { collection: collection || '', release: release || '' };
+      const hasData = collection || (release && release.length > 0);
+      if (hasData) {
+        results[name] = {
+          collection: collection || '',
+          release: Array.isArray(release) ? release : []
+        };
       } else {
-        notFound.push({ name, slug, url });
+        notFound.push({ name, slug, url, error: 'Lookup failed for ' + url });
       }
     } catch (err) {
       notFound.push({ name, slug, url, error: err.message });

@@ -1,7 +1,2 @@
 # Cards not found or failed to fetch (manual update)
 # Run: node scripts/fetch-card-metadata.js
-#
-# This file is overwritten when you run the script. Cards listed here
-# did not return Collection/Release from https://www.worldofdoomlings.com/cards/<slug>
-# or the fetch failed. Add collection and release to those card definitions in lib/src/cards/
-# if you want them in a specific release/collection group.
