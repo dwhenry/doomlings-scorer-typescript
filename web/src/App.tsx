@@ -2,7 +2,7 @@ import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import {
   getGroupedReleaseCollections,
-  getReleaseCollectionKey,
+  getReleaseCollectionKeys,
   getReleaseCollectionKeysForPacks
 } from '@scorer/releaseCollection';
 import '@scorer/cards';
@@ -723,7 +723,7 @@ export default function App() {
         cards={cardsMap}
         playerCount={state.playerCount}
         selectedReleaseCollections={state.selectedReleaseCollections}
-        getReleaseCollectionKey={getReleaseCollectionKey}
+        getReleaseCollectionKeys={getReleaseCollectionKeys}
         selectedPlayerId={state.selectedPlayerId}
         mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}

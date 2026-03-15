@@ -43,7 +43,7 @@ export const PACK_TYPES = [
 ] as const;
 export type PackType = (typeof PACK_TYPES)[number];
 
-/** Release (e.g. "Classic Game", "Classic Game (Kickstarter)") - from worldofdoomlings.com */
+/** Release name (e.g. "Classic Game", "Classic Game (Kickstarter)") - from worldofdoomlings.com */
 export type ReleaseType = string;
 /** Collection (e.g. "Classic", "Special Edition") - from worldofdoomlings.com */
 export type CollectionType = string;
@@ -79,8 +79,8 @@ export interface Card {
   pack: PackType;
   /** Collection from worldofdoomlings.com (e.g. "Classic", "Special Edition") */
   collection?: CollectionType;
-  /** Primary release from worldofdoomlings.com (e.g. "Classic Game", "Dinolings") */
-  release?: ReleaseType;
+  /** Releases from worldofdoomlings.com (e.g. ["Classic Game", "Deluxe Bundle"]) */
+  release?: ReleaseType[];
   effect?: string;
   calcA?(
     card: CardInstance,

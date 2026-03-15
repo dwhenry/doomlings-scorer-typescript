@@ -1,3 +1,4 @@
+import { CARD_COLLECTION_RELEASE } from './cards/cardCollectionRelease';
 import { filterCardsByType } from './cards/helpers';
 import {
   Card,
@@ -65,6 +66,11 @@ export function addCard(card: PlayerCard | CatastropheCard) {
     throw new Error(
       `Duplicate card name ${card.name} was attempted to be added`
     );
+  }
+  const meta = CARD_COLLECTION_RELEASE[card.name];
+  if (meta) {
+    card.collection = meta.collection;
+    card.release = meta.release;
   }
   cardsMap.set(card.name, card);
 }

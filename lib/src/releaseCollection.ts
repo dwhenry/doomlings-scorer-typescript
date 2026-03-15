@@ -8,7 +8,9 @@ export function getReleaseCollectionKeysForPacks(
   const set = new Set<string>();
   for (const card of cards.values()) {
     if (packs.includes(card.pack)) {
-      set.add(getReleaseCollectionKey(card));
+      for (const key of getReleaseCollectionKeys(card)) {
+        set.add(key);
+      }
     }
   }
   return [...set];
@@ -28,16 +30,27 @@ const PACK_DEFAULTS: Record<PackType, { release: string; collection: string }> =
 };
 
 export function getRelease(card: Card): string {
-  return card.release ?? PACK_DEFAULTS[card.pack].release;
+  const r = card.release;
+  if (r?.length) return r[0];
+  return PACK_DEFAULTS[card.pack].release;
 }
 
 export function getCollection(card: Card): string {
   return card.collection ?? PACK_DEFAULTS[card.pack].collection;
 }
 
-/** Unique key for filtering by release + collection */
+/** All release|collection keys for this card (one per release when card has multiple) */
+export function getReleaseCollectionKeys(card: Card): string[] {
+  const collection = getCollection(card);
+  const releases = card.release?.length
+    ? card.release
+    : [getRelease(card)];
+  return releases.map((release) => `${release}|${collection}`);
+}
+
+/** Single key for backward compat (first release + collection) */
 export function getReleaseCollectionKey(card: Card): string {
-  return `${getRelease(card)}|${getCollection(card)}`;
+  return getReleaseCollectionKeys(card)[0];
 }
 
 export interface ReleaseGroup {
@@ -49,12 +62,13 @@ export interface ReleaseGroup {
 export function getGroupedReleaseCollections(cards: Map<string, Card>): ReleaseGroup[] {
   const byRelease = new Map<string, Set<string>>();
   for (const card of cards.values()) {
-    const release = getRelease(card);
-    const collection = getCollection(card);
-    if (!byRelease.has(release)) {
-      byRelease.set(release, new Set());
+    for (const key of getReleaseCollectionKeys(card)) {
+      const [release, collection] = key.split('|');
+      if (!byRelease.has(release)) {
+        byRelease.set(release, new Set());
+      }
+      byRelease.get(release)!.add(collection);
     }
-    byRelease.get(release)!.add(collection);
   }
   const releases = [...byRelease.keys()].sort();
   return releases.map((release) => ({

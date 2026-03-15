@@ -13,7 +13,8 @@ interface PackDisplayProps {
   cards: Map<string, Card>;
   playerCount: number;
   selectedReleaseCollections: string[];
-  getReleaseCollectionKey: (card: Card) => string;
+  /** All release|collection keys for a card (used when card has multiple releases) */
+  getReleaseCollectionKeys: (card: Card) => string[];
   selectedPlayerId: number | null;
   mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
@@ -27,7 +28,7 @@ export default function PackDisplay({
   cards,
   playerCount,
   selectedReleaseCollections,
-  getReleaseCollectionKey,
+  getReleaseCollectionKeys,
   selectedPlayerId,
   mobileAddingForPlayer,
   onClickCard,
@@ -69,7 +70,9 @@ export default function PackDisplay({
 
   function isVisible(card: Card): boolean {
     if (selectedReleaseCollections.length === 0) return true;
-    return selectedReleaseCollections.includes(getReleaseCollectionKey(card));
+    return getReleaseCollectionKeys(card).some((key) =>
+      selectedReleaseCollections.includes(key)
+    );
   }
 
   const isSearching = searchQuery.length > 0;
