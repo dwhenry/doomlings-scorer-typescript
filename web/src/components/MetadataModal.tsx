@@ -15,6 +15,8 @@ interface MetadataModalProps {
   currentValues: CardEntry;
   onSave: (values: Record<string, string | number | string[]>) => void;
   onClose: () => void;
+  /** Called when the modal's error has been shown and should not appear again (e.g. on close or any user action) */
+  onClearError?: () => void;
 }
 
 const COLOR_OPTIONS = TRAIT_CARD_TYPES.map((c) => ({
@@ -45,12 +47,42 @@ export default function MetadataModal({
   internalValues,
   currentValues,
   onSave,
-  onClose
+  onClose,
+  onClearError
 }: MetadataModalProps) {
   const [values, setValues] = useState<Record<string, string | number>>({});
   const [arrayValues, setArrayValues] = useState<Record<string, string[]>>({});
+  const [displayError, setDisplayError] = useState<string | undefined>(() =>
+    typeof currentValues.error === 'string' ? currentValues.error : undefined
+  );
 
   const hasEditableFields = fields.length > 0;
+
+  useEffect(() => {
+    setDisplayError(
+      typeof currentValues.error === 'string' ? currentValues.error : undefined
+    );
+  }, [cardName, currentValues.error]);
+
+  function clearError() {
+    if (displayError) {
+      setDisplayError(undefined);
+      onClearError?.();
+    }
+  }
+
+  const setValuesAndClearError = (
+    updater: React.SetStateAction<Record<string, string | number>>
+  ) => {
+    clearError();
+    setValues(updater);
+  };
+  const setArrayValuesAndClearError = (
+    updater: React.SetStateAction<Record<string, string[]>>
+  ) => {
+    clearError();
+    setArrayValues(updater);
+  };
 
   useEffect(() => {
     const initial: Record<string, string | number> = {};
@@ -96,6 +128,7 @@ export default function MetadataModal({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    clearError();
     if (!hasEditableFields) {
       onClose();
       return;
@@ -129,6 +162,11 @@ export default function MetadataModal({
           />
           <h3>{cardName}</h3>
         </div>
+        {displayError && (
+          <div className="modal-error" role="alert">
+            {displayError}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           {fields.map((field) => (
             <div key={field.key} className="modal-field">
@@ -141,7 +179,10 @@ export default function MetadataModal({
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                    setValuesAndClearError((v) => ({
+                      ...v,
+                      [field.key]: e.target.value
+                    }))
                   }
                 >
                   <option value="">Select...</option>
@@ -161,7 +202,10 @@ export default function MetadataModal({
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                    setValuesAndClearError((v) => ({
+                      ...v,
+                      [field.key]: e.target.value
+                    }))
                   }
                 >
                   <option value="">Select...</option>
@@ -177,7 +221,10 @@ export default function MetadataModal({
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                    setValuesAndClearError((v) => ({
+                      ...v,
+                      [field.key]: e.target.value
+                    }))
                   }
                 >
                   <option value="">Select...</option>
@@ -199,7 +246,7 @@ export default function MetadataModal({
                   type="number"
                   value={values[field.key] ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({
+                    setValuesAndClearError((v) => ({
                       ...v,
                       [field.key]:
                         e.target.value === '' ? '' : Number(e.target.value)
@@ -212,7 +259,10 @@ export default function MetadataModal({
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                    setValuesAndClearError((v) => ({
+                      ...v,
+                      [field.key]: e.target.value
+                    }))
                   }
                 >
                   <option value="">Select...</option>
@@ -228,7 +278,10 @@ export default function MetadataModal({
                   id={`meta-${field.key}`}
                   value={(values[field.key] as string) ?? ''}
                   onChange={(e) =>
-                    setValues((v) => ({ ...v, [field.key]: e.target.value }))
+                    setValuesAndClearError((v) => ({
+                      ...v,
+                      [field.key]: e.target.value
+                    }))
                   }
                 >
                   <option value="">Select...</option>
@@ -251,7 +304,7 @@ export default function MetadataModal({
                           type="number"
                           value={arrayValues[field.key][pos] ?? ''}
                           onChange={(e) =>
-                            setArrayValues((v) => {
+                            setArrayValuesAndClearError((v) => {
                               const newValues = [...v[field.key]];
                               newValues[pos] = e.target.value;
                               return {
@@ -291,7 +344,14 @@ export default function MetadataModal({
           )}
 
           <div className="modal-actions">
-            <button type="button" className="modal-cancel" onClick={onClose}>
+            <button
+              type="button"
+              className="modal-cancel"
+              onClick={() => {
+                clearError();
+                onClose();
+              }}
+            >
               {hasEditableFields ? 'Cancel' : 'Close'}
             </button>
             {hasEditableFields && (

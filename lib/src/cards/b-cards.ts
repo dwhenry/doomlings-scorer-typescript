@@ -49,7 +49,6 @@ addBasicCard({ score: 4 }, {
 addBasicCard({ score: 2 }, { name: 'BONES', type: ['colourless'] });
 addBasicCard({ score: 2 }, { name: 'BONY PLATES', type: ['green'] });
 
-// TODO: Cards in hand is **not** played cards. This is buggy.
 addBasicCard({ score: 0 }, {
   name: 'BOREDOM',
   type: ['colourless'],

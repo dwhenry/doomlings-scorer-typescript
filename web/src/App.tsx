@@ -97,6 +97,15 @@ type Action =
       values: Record<string, string | number | string[]>;
     }
   | {
+      type: 'CLEAR_PLAYER_CARD_METADATA_ERROR';
+      playerId: number;
+      cardIndex: number;
+    }
+  | {
+      type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR';
+      cardName: string;
+    }
+  | {
       type: 'UPDATE_CATASTROPHE_METADATA';
       metadata: Record<string, Record<string, string | number | string[]>>;
     }
@@ -313,8 +322,47 @@ function reducer(state: AppState, action: Action): AppState {
           cardName: action.cardName
         }
       };
-    case 'CLOSE_MODAL':
-      return { ...state, modal: null, catastropheModal: null };
+    case 'CLOSE_MODAL': {
+      let next = { ...state, modal: null, catastropheModal: null };
+      if (state.modal) {
+        const player = state.players.find((p) => p.id === state.modal!.playerId);
+        const card = player?.cards[state.modal.cardIndex];
+        if (card?.error !== undefined) {
+          next = {
+            ...next,
+            players: next.players.map((p) => {
+              if (p.id !== state.modal!.playerId) return p;
+              return {
+                ...p,
+                cards: p.cards.map((c, i) => {
+                  if (i !== state.modal!.cardIndex) return c;
+                  const copy = { ...c };
+                  delete copy.error;
+                  return copy;
+                })
+              };
+            })
+          };
+        }
+      }
+      if (state.catastropheModal) {
+        const cat = state.selectedCatastrophes.find(
+          (c) => c.name === state.catastropheModal!.cardName
+        );
+        if (cat?.error !== undefined) {
+          next = {
+            ...next,
+            selectedCatastrophes: next.selectedCatastrophes.map((c) => {
+              if (c.name !== state.catastropheModal!.cardName) return c;
+              const copy = { ...c };
+              delete copy.error;
+              return copy;
+            })
+          };
+        }
+      }
+      return next;
+    }
     case 'UPDATE_CARD_METADATA': {
       return {
         ...state,
@@ -347,6 +395,34 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         selectedCatastrophes,
         catastropheModal: null
+      };
+    }
+    case 'CLEAR_PLAYER_CARD_METADATA_ERROR': {
+      return {
+        ...state,
+        players: state.players.map((p) => {
+          if (p.id !== action.playerId) return p;
+          return {
+            ...p,
+            cards: p.cards.map((c, i) => {
+              if (i !== action.cardIndex) return c;
+              const next = { ...c };
+              delete next.error;
+              return next;
+            })
+          };
+        })
+      };
+    }
+    case 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR': {
+      return {
+        ...state,
+        selectedCatastrophes: state.selectedCatastrophes.map((c) => {
+          if (c.name !== action.cardName) return c;
+          const next = { ...c };
+          delete next.error;
+          return next;
+        })
       };
     }
     case 'UPDATE_CATASTROPHE_METADATA':
@@ -708,6 +784,7 @@ export default function App() {
   const modalInternalFields = state.modal
     ? getInternalMetadataFields(state.modal.cardName)
     : [];
+
   const modalCard = state.modal
     ? state.players.find((p) => p.id === state.modal!.playerId)?.cards[
         state.modal.cardIndex
@@ -784,7 +861,11 @@ export default function App() {
   if (state.selectedPlayerId !== null) {
     const player = state.players.find((p) => p.id === state.modal?.playerId);
     if (player && player.cards.length > 0) {
-      player.cards.forEach((c) => playerCardNames.add(c.name));
+      player.cards.forEach((c) => {
+        if(c.name !== PLAYER_CARD_NAME) {
+          playerCardNames.add(c.name)
+        }
+      });
     }
   }
 
@@ -899,6 +980,13 @@ export default function App() {
             })
           }
           onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
+          onClearError={() =>
+            dispatch({
+              type: 'CLEAR_PLAYER_CARD_METADATA_ERROR',
+              playerId: state.modal!.playerId,
+              cardIndex: state.modal!.cardIndex
+            })
+          }
         />
       )}
 
@@ -921,6 +1009,12 @@ export default function App() {
             })
           }
           onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
+          onClearError={() =>
+            dispatch({
+              type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR',
+              cardName: state.catastropheModal!.cardName
+            })
+          }
         />
       )}
     </div>

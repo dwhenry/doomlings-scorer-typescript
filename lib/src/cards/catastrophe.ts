@@ -525,7 +525,6 @@ const deusExMachinaKs: CatastropheCardInput = {
       throw new Error('invalid data for metadata field drawn_face_values');
     }
     inst.metadata.drawn_face_values.forEach((faceValue, currentPlayer) => {
-      // TODO: add number[] as a valid type - we currently only support number or string[]
       const parsedValue = parseInt(faceValue);
       if (typeof parsedValue !== 'number') {
         throw new Error(

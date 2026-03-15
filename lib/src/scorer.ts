@@ -286,7 +286,6 @@ export class Scorer {
   }
 
   getPlayerCards(playerIndex: Player): CardInstance[] {
-    // TODO: Throw
     return this.allPlayerCards[playerIndex];
   }
 }

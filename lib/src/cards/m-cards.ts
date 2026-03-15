@@ -15,8 +15,16 @@ addBasicCard({ score: 2 }, {
     const attachedTo = playerCards(allPlayerCards, currentPlayer)
       .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
     // TODO: better feedback on why the attachment failed
-    if (!attachedTo || !isEffectless(attachedTo.card.name)) {
+    if (!attachedTo) {
       inst.generatedMetadata.attached_to = '';
+      if(inst.metadata.attached_to) {
+        inst.generatedMetadata.error = `Attempted to attach to ${inst.metadata.attached_to} but it was not found in the player's hand`;
+      }
+      return
+    }
+    if (!isEffectless(attachedTo.card.name)) {
+      inst.generatedMetadata.attached_to = '';
+      inst.generatedMetadata.error = `Attempted to attach to ${attachedTo.card.name} but it is not effectless`;
       return
     }
 
