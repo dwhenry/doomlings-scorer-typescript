@@ -1,19 +1,23 @@
 import { useState } from 'react';
-import MultiSelect from './MultiSelect';
+import GroupedMultiSelect, { type GroupOption } from './GroupedMultiSelect';
 
 interface HeaderProps {
-  packs: string[];
-  selectedPacks: string[];
-  onPacksChange: (packs: string[]) => void;
+  releaseGroups: GroupOption[];
+  selectedReleaseCollections: string[];
+  onReleaseCollectionsChange: (keys: string[]) => void;
   playerCount: number;
   onPlayerCountChange: (count: number) => void;
   children: React.ReactNode; // PlayerSection rendered inside header
 }
 
+function optionValue(release: string, collection: string): string {
+  return `${release}|${collection}`;
+}
+
 export default function Header({
-  packs,
-  selectedPacks,
-  onPacksChange,
+  releaseGroups,
+  selectedReleaseCollections,
+  onReleaseCollectionsChange,
   playerCount,
   onPlayerCountChange,
   children
@@ -34,11 +38,12 @@ export default function Header({
 
         <div className={`header-controls${showControls ? ' show' : ''}`}>
           <div className="pack-filter">
-            <label>Select Packs:</label>
-            <MultiSelect
-              options={packs}
-              selected={selectedPacks}
-              onChange={onPacksChange}
+            <GroupedMultiSelect
+              label="Select by release / collection:"
+              groups={releaseGroups}
+              selected={selectedReleaseCollections}
+              onChange={onReleaseCollectionsChange}
+              optionValue={optionValue}
             />
           </div>
           <div className="player-count">

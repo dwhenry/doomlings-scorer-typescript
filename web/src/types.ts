@@ -49,6 +49,9 @@ export interface GameStateExport {
     string,
     Record<string, string | number | string[]>
   >;
+  /** Release|collection keys for filter (e.g. "Classic Game|Classic") */
+  selectedReleaseCollections?: string[];
+  /** @deprecated Legacy; use selectedReleaseCollections. Kept for import compat. */
   selectedPacks?: string[];
 }
 

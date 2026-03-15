@@ -522,3 +522,42 @@ const theFourHorsemen: CatastropheCard = {
   metadataRequired: [['discard', 'card_per_person', 'internal']]
 };
 addCard(theFourHorsemen);
+
+// --- Kickstarter duplicate catastrophes (same as Classic, alternate art) ---
+
+const KS_PACK = 'Classic (Kickstarter)' as const;
+
+const aiTakeoverKs: CatastropheCard = {
+  ...aiTakeover,
+  name: 'AI TAKEOVER (kickstarter)',
+  pack: KS_PACK
+};
+addCard(aiTakeoverKs);
+
+const deusExMachinaKs: CatastropheCard = {
+  ...deusExMachina,
+  name: 'DEUS EX MACHINA (kickstarter)',
+  pack: KS_PACK
+};
+addCard(deusExMachinaKs);
+
+const glacialMeltdownKs: CatastropheCard = {
+  ...glacialMeltdown,
+  name: 'GLACIAL MELTDOWN (kickstarter)',
+  pack: KS_PACK
+};
+addCard(glacialMeltdownKs);
+
+const megaTsunamiKs: CatastropheCard = {
+  ...megaTsunami,
+  name: 'MEGA TSUNAMI (kickstarter)',
+  pack: KS_PACK
+};
+addCard(megaTsunamiKs);
+
+const nuclearWinterKs: CatastropheCard = {
+  ...nuclearWinter,
+  name: 'NUCLEAR WINTER (kickstarter)',
+  pack: KS_PACK
+};
+addCard(nuclearWinterKs);

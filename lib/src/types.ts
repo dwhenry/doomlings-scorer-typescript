@@ -31,6 +31,7 @@ export type CardType = (typeof CardTypes)[number];
 
 export const PACK_TYPES = [
   'Classic',
+  'Classic (Kickstarter)',
   'Special Edition',
   'multi-colour',
   'Dinolings',
@@ -41,6 +42,11 @@ export const PACK_TYPES = [
   'KSE'
 ] as const;
 export type PackType = (typeof PACK_TYPES)[number];
+
+/** Release (e.g. "Classic Game", "Classic Game (Kickstarter)") - from worldofdoomlings.com */
+export type ReleaseType = string;
+/** Collection (e.g. "Classic", "Special Edition") - from worldofdoomlings.com */
+export type CollectionType = string;
 
 const simpleMetaDataTypes = [
   'number',
@@ -71,6 +77,10 @@ export interface Card {
   name: string;
   type: CardType[];
   pack: PackType;
+  /** Collection from worldofdoomlings.com (e.g. "Classic", "Special Edition") */
+  collection?: CollectionType;
+  /** Primary release from worldofdoomlings.com (e.g. "Classic Game", "Dinolings") */
+  release?: ReleaseType;
   effect?: string;
   calcA?(
     card: CardInstance,

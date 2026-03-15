@@ -12,7 +12,8 @@ import { getCatastropheMetadataFields } from 'src/utils/cardMetadata';
 interface PackDisplayProps {
   cards: Map<string, Card>;
   playerCount: number;
-  selectedPacks: string[];
+  selectedReleaseCollections: string[];
+  getReleaseCollectionKey: (card: Card) => string;
   selectedPlayerId: number | null;
   mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
@@ -25,7 +26,8 @@ interface PackDisplayProps {
 export default function PackDisplay({
   cards,
   playerCount,
-  selectedPacks,
+  selectedReleaseCollections,
+  getReleaseCollectionKey,
   selectedPlayerId,
   mobileAddingForPlayer,
   onClickCard,
@@ -66,8 +68,8 @@ export default function PackDisplay({
   }, [cards]);
 
   function isVisible(card: Card): boolean {
-    if (selectedPacks.length === 0) return true;
-    return selectedPacks.includes(card.pack);
+    if (selectedReleaseCollections.length === 0) return true;
+    return selectedReleaseCollections.includes(getReleaseCollectionKey(card));
   }
 
   const isSearching = searchQuery.length > 0;
@@ -95,7 +97,7 @@ export default function PackDisplay({
 
     const group = colorGroups.get(activeTab as CardType) || [];
     return group.filter(isVisible).sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeTab, colorGroups, selectedPacks, searchQuery, isSearching]);
+  }, [activeTab, colorGroups, selectedReleaseCollections, searchQuery, isSearching]);
 
   const filteredCatastrophes = useMemo(() => {
     if (isSearching) {
@@ -113,7 +115,7 @@ export default function PackDisplay({
           isVisible(card)
       )
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeTab, catastropheCards, selectedPacks, searchQuery, isSearching]);
+  }, [activeTab, catastropheCards, selectedReleaseCollections, searchQuery, isSearching]);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent, cardName: string) => {

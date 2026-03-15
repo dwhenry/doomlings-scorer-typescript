@@ -1,6 +1,10 @@
 import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
 import { allCards } from '@scorer/cardContainer';
-import { PACK_TYPES } from '@scorer/types';
+import {
+  getGroupedReleaseCollections,
+  getReleaseCollectionKey,
+  getReleaseCollectionKeysForPacks
+} from '@scorer/releaseCollection';
 import '@scorer/cards';
 import type {
   Card,
@@ -16,6 +20,7 @@ import {
   getEditableMetadataFields,
   getInternalMetadataFields
 } from './utils/cardMetadata';
+import GroupedMultiSelect from './components/GroupedMultiSelect';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
@@ -28,7 +33,7 @@ import { CardScore } from '@scorer/scorer';
 interface AppState {
   players: PlayerState[];
   selectedPlayerId: number | null;
-  selectedPacks: string[];
+  selectedReleaseCollections: string[];
   playerCount: number;
   selectedCatastrophes: CardEntry[];
   catastropheMetadata: Record<
@@ -47,7 +52,7 @@ type Action =
   | { type: 'SELECT_PLAYER'; id: number }
   | { type: 'ADD_CARD'; playerId: number; cardName: string }
   | { type: 'REMOVE_CARD'; playerId: number; cardIndex: number }
-  | { type: 'SET_PACKS'; packs: string[] }
+  | { type: 'SET_RELEASE_COLLECTIONS'; keys: string[] }
   | { type: 'TOGGLE_CATASTROPHE'; cardName: string }
   | { type: 'SET_HOVERED'; cardName: string | null }
   | {
@@ -210,8 +215,8 @@ function reducer(state: AppState, action: Action): AppState {
             : state.modal
       };
     }
-    case 'SET_PACKS':
-      return { ...state, selectedPacks: action.packs };
+    case 'SET_RELEASE_COLLECTIONS':
+      return { ...state, selectedReleaseCollections: action.keys };
     case 'TOGGLE_CATASTROPHE': {
       const has = state.selectedCatastrophes.find(
         (c) => c.name === action.cardName
@@ -360,11 +365,11 @@ function reducer(state: AppState, action: Action): AppState {
           typeof payload.catastropheMetadata === 'object'
             ? payload.catastropheMetadata
             : {},
-        selectedPacks:
-          Array.isArray(payload.selectedPacks) &&
-          payload.selectedPacks.length > 0
-            ? payload.selectedPacks
-            : state.selectedPacks,
+        selectedReleaseCollections:
+          Array.isArray(payload.selectedReleaseCollections) &&
+          payload.selectedReleaseCollections.length > 0
+            ? payload.selectedReleaseCollections
+            : state.selectedReleaseCollections,
         selectedPlayerId: null,
         modal: null,
         catastropheModal: null,
@@ -380,7 +385,7 @@ function reducer(state: AppState, action: Action): AppState {
 const initialState: AppState = {
   players: createPlayers(2),
   selectedPlayerId: null,
-  selectedPacks: ['Classic'],
+  selectedReleaseCollections: [],
   playerCount: 2,
   selectedCatastrophes: [],
   catastropheMetadata: {},
@@ -688,9 +693,11 @@ export default function App() {
       <CardZoom cardName={state.hoveredCard} />
 
       <Header
-        packs={[...PACK_TYPES]}
-        selectedPacks={state.selectedPacks}
-        onPacksChange={(packs) => dispatch({ type: 'SET_PACKS', packs })}
+        releaseGroups={getGroupedReleaseCollections(cardsMap)}
+        selectedReleaseCollections={state.selectedReleaseCollections}
+        onReleaseCollectionsChange={(keys) =>
+          dispatch({ type: 'SET_RELEASE_COLLECTIONS', keys })
+        }
         playerCount={state.playerCount}
         onPlayerCountChange={(count) =>
           dispatch({ type: 'SET_PLAYER_COUNT', count })
@@ -715,7 +722,8 @@ export default function App() {
       <PackDisplay
         cards={cardsMap}
         playerCount={state.playerCount}
-        selectedPacks={state.selectedPacks}
+        selectedReleaseCollections={state.selectedReleaseCollections}
+        getReleaseCollectionKey={getReleaseCollectionKey}
         selectedPlayerId={state.selectedPlayerId}
         mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}
@@ -746,11 +754,26 @@ export default function App() {
           players={state.players}
           selectedCatastrophes={state.selectedCatastrophes}
           catastropheMetadata={state.catastropheMetadata}
-          selectedPacks={state.selectedPacks}
+          selectedReleaseCollections={state.selectedReleaseCollections}
           onClose={() => dispatch({ type: 'CLOSE_SCORING_LOGS' })}
-          onImport={(payload) =>
-            dispatch({ type: 'IMPORT_GAME_STATE', payload })
-          }
+          onImport={(payload) => {
+            let p = payload;
+            if (
+              Array.isArray(payload.selectedPacks) &&
+              payload.selectedPacks.length > 0 &&
+              cardsMap.size > 0 &&
+              !Array.isArray(payload.selectedReleaseCollections)
+            ) {
+              p = {
+                ...payload,
+                selectedReleaseCollections: getReleaseCollectionKeysForPacks(
+                  cardsMap,
+                  payload.selectedPacks
+                )
+              };
+            }
+            dispatch({ type: 'IMPORT_GAME_STATE', payload: p });
+          }}
         />
       )}
 

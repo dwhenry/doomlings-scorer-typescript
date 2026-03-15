@@ -1253,6 +1253,41 @@ body {
   font-weight: bold;
 }
 
+/* Grouped multiselect (release → collection) */
+.pack-filter-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.multiselect.grouped .grouped-options {
+  min-width: 220px;
+}
+
+.multiselect .option-group {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.multiselect .option-group:last-child {
+  border-bottom: none;
+}
+
+.multiselect .option-group-label {
+  padding: 8px 12px 4px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+  background: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.multiselect .option-group .option {
+  padding-left: 20px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-top {

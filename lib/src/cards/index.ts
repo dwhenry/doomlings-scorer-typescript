@@ -11,6 +11,7 @@ import './h-cards';
 import './i-cards';
 import './j-cards';
 import './k-cards';
+import './ks-cards';
 import './l-cards';
 import './m-cards';
 import './n-cards';
