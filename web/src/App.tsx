@@ -12,6 +12,22 @@ import type {
   ModalState
 } from './types';
 import type { PlayerState, CardEntry } from './types';
+import {
+  GAME_STATE_EXPORT_VERSION
+} from './types';
+
+const GAME_STATE_STORAGE_KEY = 'doomlings-scorer-game-state';
+
+function isValidPersistedState(data: unknown): data is GameStateExport {
+  if (!data || typeof data !== 'object') return false;
+  const o = data as Record<string, unknown>;
+  return (
+    typeof o.version === 'number' &&
+    Array.isArray(o.players) &&
+    (o.selectedReleases === undefined || Array.isArray(o.selectedReleases)) &&
+    (o.selectedCollections === undefined || Array.isArray(o.selectedCollections))
+  );
+}
 import { useScorer } from './hooks/useScorer';
 import {
   getCardMetadataFields,
@@ -91,7 +107,8 @@ type Action =
   | { type: 'STOP_ADDING' }
   | { type: 'OPEN_SCORING_LOGS' }
   | { type: 'CLOSE_SCORING_LOGS' }
-  | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport };
+  | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport }
+  | { type: 'NEW_GAME' };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -99,6 +116,35 @@ function createPlayers(count: number): PlayerState[] {
     name: `Player ${i + 1}`,
     cards: []
   }));
+}
+
+function getDefaultState(): AppState {
+  return {
+    players: createPlayers(2),
+    selectedPlayerId: null,
+    selectedReleases: [],
+    selectedCollections: [],
+    playerCount: 2,
+    selectedCatastrophes: [],
+    catastropheMetadata: {},
+    hoveredCard: null,
+    catastropheModal: null,
+    modal: null,
+    mobileAddingForPlayer: null,
+    scoringLogsModalOpen: false
+  };
+}
+
+function stateToExport(state: AppState): GameStateExport {
+  return {
+    version: GAME_STATE_EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    players: state.players,
+    selectedCatastrophes: state.selectedCatastrophes,
+    catastropheMetadata: state.catastropheMetadata,
+    selectedReleases: state.selectedReleases,
+    selectedCollections: state.selectedCollections
+  };
 }
 
 function applyMetadataByScope(
@@ -381,33 +427,68 @@ function reducer(state: AppState, action: Action): AppState {
         scoringLogsModalOpen: false
       };
     }
+    case 'NEW_GAME':
+      return getDefaultState();
     default:
       return state;
   }
 }
 
-const initialState: AppState = {
-  players: createPlayers(2),
-  selectedPlayerId: null,
-  selectedReleases: [],
-  selectedCollections: [],
-  playerCount: 2,
-  selectedCatastrophes: [],
-  catastropheMetadata: {},
-  hoveredCard: null,
-  catastropheModal: null,
-  modal: null,
-  mobileAddingForPlayer: null,
-  scoringLogsModalOpen: false
-};
+function getInitialState(): AppState {
+  try {
+    const raw = localStorage.getItem(GAME_STATE_STORAGE_KEY);
+    if (!raw) return getDefaultState();
+    const data = JSON.parse(raw) as unknown;
+    if (!isValidPersistedState(data)) return getDefaultState();
+    const players = data.players.map(
+      (p: PlayerState & { name?: string; cards?: CardEntry[] }, i: number) => ({
+        ...p,
+        id: i,
+        name: p.name ?? `Player ${i + 1}`,
+        cards: Array.isArray(p.cards) ? p.cards : []
+      })
+    );
+    const playerCount = players.length;
+    return {
+      ...getDefaultState(),
+      players,
+      playerCount,
+      selectedCatastrophes: Array.isArray(data.selectedCatastrophes)
+        ? data.selectedCatastrophes
+        : [],
+      catastropheMetadata:
+        data.catastropheMetadata &&
+        typeof data.catastropheMetadata === 'object'
+          ? data.catastropheMetadata
+          : {},
+      selectedReleases: data.selectedReleases ?? [],
+      selectedCollections: data.selectedCollections ?? []
+    };
+  } catch {
+    return getDefaultState();
+  }
+}
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
 
   useEffect(() => {
     setCardsMap(allCards());
   }, []);
+
+  // Persist game state so refresh restores it; only reset when user clicks "New Game"
+  useEffect(() => {
+    const payload = stateToExport(state);
+    localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(payload));
+  }, [
+    state.players,
+    state.playerCount,
+    state.selectedCatastrophes,
+    state.catastropheMetadata,
+    state.selectedReleases,
+    state.selectedCollections
+  ]);
 
   // Adjust padding for fixed header
   useEffect(() => {
@@ -568,6 +649,11 @@ export default function App() {
     dispatch({ type: 'SELECT_PLAYER', id });
   }, []);
 
+  const handleNewGame = useCallback(() => {
+    localStorage.removeItem(GAME_STATE_STORAGE_KEY);
+    dispatch({ type: 'NEW_GAME' });
+  }, []);
+
   const handleStartAdding = useCallback((playerId: number) => {
     dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
   }, []);
@@ -707,6 +793,7 @@ export default function App() {
         onPlayerCountChange={(count) =>
           dispatch({ type: 'SET_PLAYER_COUNT', count })
         }
+        onNewGame={handleNewGame}
       >
         <PlayerSection
           players={state.players}

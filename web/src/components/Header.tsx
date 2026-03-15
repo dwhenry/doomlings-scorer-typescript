@@ -7,6 +7,7 @@ interface HeaderProps {
   onReleaseCollectionFilterChange: (releases: string[], collections: string[]) => void;
   playerCount: number;
   onPlayerCountChange: (count: number) => void;
+  onNewGame: () => void;
   children: React.ReactNode; // PlayerSection rendered inside header
 }
 
@@ -16,6 +17,7 @@ export default function Header({
   onReleaseCollectionFilterChange,
   playerCount,
   onPlayerCountChange,
+  onNewGame,
   children
 }: HeaderProps) {
   const [showControls, setShowControls] = useState(false);
@@ -24,6 +26,15 @@ export default function Header({
     <header className="game-header">
       <div className="header-top">
         <h1>Doomlings Scorer</h1>
+
+        <button
+          type="button"
+          className="new-game-btn"
+          onClick={onNewGame}
+          title="Start a new game (clears current game)"
+        >
+          New Game
+        </button>
 
         <button
           className="config-toggle"

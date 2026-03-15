@@ -77,6 +77,22 @@ body {
   flex-shrink: 0;
 }
 
+.new-game-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.new-game-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .config-toggle {
   display: none;
   background: rgba(255, 255, 255, 0.2);
