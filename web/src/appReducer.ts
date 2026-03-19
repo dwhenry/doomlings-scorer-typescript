@@ -483,6 +483,7 @@ export function reducer(state: AppState, action: Action): AppState {
       };
     }
     case 'NEW_GAME':
+      localStorage.removeItem(GAME_STATE_STORAGE_KEY);
       return getDefaultState();
     default:
       return state;

@@ -1,5 +1,6 @@
+import { useCallback, type Dispatch } from 'react';
 import type { PlayerState, CardGroup, Card } from '../types';
-import type { AppState } from '../appReducer';
+import type { Action, AppState } from '../appReducer';
 import type { GameScore } from '@scorer/scorer';
 import { PLAYER_CARD_NAME } from '@scorer/types';
 import {
@@ -12,15 +13,9 @@ import PlayerCard from './PlayerCard';
 
 interface PlayerSectionProps {
   state: AppState;
-  onSelectPlayer: (id: number) => void;
-  onStartAdding: (playerId: number) => void;
-  onStopAdding: () => void;
-  onRemoveCard: (playerId: number, cardIndex: number) => void;
-  onOpenModal: (playerId: number, cardIndex: number, cardName: string) => void;
-  onHover: (cardName: string | null) => void;
+  dispatch: Dispatch<Action>;
   onDropCard: (playerId: number, cardName: string) => void;
   gameScore: GameScore | null;
-  cardsMap: Map<string, Card>;
 }
 
 function buildCardGroups(
@@ -75,7 +70,7 @@ function buildCardGroups(
       return;
     }
 
-    const key = `${card.name}-${isDiscarded ? 'discarded' : ''}`;
+    const key = `${card.name}-${isDiscarded ? `discarded-${cardIndex}` : ''}`;
     const existing = groups.get(key);
     if (existing) {
       existing.count++;
@@ -110,18 +105,16 @@ function buildCardGroups(
 
 export default function PlayerSection({
   state,
-  onSelectPlayer,
-  onStartAdding,
-  onStopAdding,
-  onRemoveCard,
-  onOpenModal,
-  onHover,
+  dispatch,
   onDropCard,
   gameScore,
-  cardsMap
 }: PlayerSectionProps) {
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
+
+  const onHover = useCallback((cardName: string | null) => {
+    dispatch({ type: 'SET_HOVERED', cardName })
+  }, []);
 
   // Mobile focused view: only show the player we're adding cards for
   if (isMobile && mobileAddingForPlayer !== null) {
@@ -138,7 +131,10 @@ export default function PlayerSection({
     return (
       <section className="players-section players-section--focused">
         <div className="focused-player-header">
-          <button className="focused-player-done" onClick={onStopAdding}>
+          <button
+            className="focused-player-done"
+            onClick={() => dispatch({ type: 'STOP_ADDING' })}
+          >
             Done
           </button>
           <span className="focused-player-name">{player.name}</span>
@@ -156,7 +152,12 @@ export default function PlayerSection({
                 onClick={(e) => {
                   e.stopPropagation();
                   if (group.hasMetadata) {
-                    onOpenModal(player.id, group.cardIndices[0], group.name);
+                    dispatch({
+                      type: 'OPEN_MODAL',
+                      playerId: player.id,
+                      cardIndex: group.cardIndices[0],
+                      cardName: group.name
+                    });
                   }
                 }}
               >
@@ -181,7 +182,11 @@ export default function PlayerSection({
                   className="remove-card remove-card--visible"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onRemoveCard(player.id, group.cardIndices[0]);
+                    dispatch({
+                      type: 'REMOVE_CARD',
+                      playerId: player.id,
+                      cardIndex: group.cardIndices[0]
+                    });
                   }}
                 >
                   &times;
@@ -207,15 +212,31 @@ export default function PlayerSection({
             key={player.id}
             player={player}
             isSelected={selectedPlayerId === player.id}
-            onSelect={isMobile ? onStartAdding : onSelectPlayer}
-            onRemoveCard={onRemoveCard}
-            onOpenModal={onOpenModal}
+            onSelect={
+              isMobile
+                ? (playerId) =>
+                    dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId })
+                : (id) => dispatch({ type: 'SELECT_PLAYER', id })
+            }
+            onRemoveCard={(playerId, cardIndex) =>
+              dispatch({ type: 'REMOVE_CARD', playerId, cardIndex })
+            }
+            onOpenModal={(playerId, cardIndex, cardName) =>
+              dispatch({
+                type: 'OPEN_MODAL',
+                playerId,
+                cardIndex,
+                cardName
+              })
+            }
             onHover={onHover}
             cardGroups={cardGroups}
             totalScore={totalScore}
             onDrop={onDropCard}
             showAddButton={isMobile}
-            onStartAdding={onStartAdding}
+            onStartAdding={(playerId) =>
+              dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId })
+            }
           />
         );
       })}

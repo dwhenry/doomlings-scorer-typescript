@@ -6,10 +6,6 @@ import {
   useRef
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
-import {
-  cardMatchesReleases,
-  cardMatchesCollections
-} from '@scorer/releaseCollection';
 import '@scorer/cards';
 import type { Card, GameStateExport } from './types';
 import { GAME_STATE_EXPORT_VERSION } from './types';
@@ -192,41 +188,6 @@ export default function App() {
     [state.players]
   );
 
-  const handleRemoveCard = useCallback(
-    (playerId: number, cardIndex: number) => {
-      dispatch({ type: 'REMOVE_CARD', playerId, cardIndex });
-    },
-    []
-  );
-
-  const handleOpenModal = useCallback(
-    (playerId: number, cardIndex: number, cardName: string) => {
-      dispatch({ type: 'OPEN_MODAL', playerId, cardIndex, cardName });
-    },
-    []
-  );
-
-  const handleSelectPlayer = useCallback((id: number) => {
-    dispatch({ type: 'SELECT_PLAYER', id });
-  }, []);
-
-  const handleNewGame = useCallback(() => {
-    localStorage.removeItem(GAME_STATE_STORAGE_KEY);
-    dispatch({ type: 'NEW_GAME' });
-  }, []);
-
-  const handleStartAdding = useCallback((playerId: number) => {
-    dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
-  }, []);
-
-  const handleStopAdding = useCallback(() => {
-    dispatch({ type: 'STOP_ADDING' });
-  }, []);
-
-  const handleHover = useCallback((cardName: string | null) => {
-    dispatch({ type: 'SET_HOVERED', cardName });
-  }, []);
-
   const handleClickCatastrophe = useCallback(
     (cardName: string) => {
       if (!state.selectedCatastrophes.find((c) => c.name === cardName)) {
@@ -250,44 +211,20 @@ export default function App() {
     <div className="game-container">
       <CardZoom cardName={state.hoveredCard} />
 
-      <Header
-        selectedReleases={state.selectedReleases}
-        selectedCollections={state.selectedCollections}
-        onReleaseCollectionFilterChange={(releases, collections) =>
-          dispatch({ type: 'SET_RELEASE_COLLECTION_FILTER', releases, collections })
-        }
-        playerCount={state.playerCount}
-        onPlayerCountChange={(count) =>
-          dispatch({ type: 'SET_PLAYER_COUNT', count })
-        }
-        onNewGame={handleNewGame}
-      >
+      <Header state={state} dispatch={dispatch}>
         <PlayerSection
           state={state}
-          onSelectPlayer={handleSelectPlayer}
-          onStartAdding={handleStartAdding}
-          onStopAdding={handleStopAdding}
-          onRemoveCard={handleRemoveCard}
-          onOpenModal={handleOpenModal}
-          onHover={handleHover}
+          dispatch={dispatch}
           onDropCard={handleDropCard}
           gameScore={gameScore}
-          cardsMap={cardsMap}
         />
       </Header>
 
       <PackDisplay
+        state={state}
+        dispatch={dispatch}
         cards={cardsMap}
-        playerCount={state.playerCount}
-        selectedReleases={state.selectedReleases}
-        selectedCollections={state.selectedCollections}
-        cardMatchesReleases={cardMatchesReleases}
-        cardMatchesCollections={cardMatchesCollections}
-        selectedPlayerId={state.selectedPlayerId}
-        mobileAddingForPlayer={state.mobileAddingForPlayer}
         onClickCard={handleClickCard}
-        onHover={handleHover}
-        selectedCatastrophes={state.selectedCatastrophes}
         onClickCatastrophe={handleClickCatastrophe}
         onDeselectCatastrophe={handleDeselectCatastrophe}
       />
@@ -309,17 +246,7 @@ export default function App() {
       </footer>
 
       {state.scoringLogsModalOpen && (
-        <ScoringLogsModal
-          players={state.players}
-          selectedCatastrophes={state.selectedCatastrophes}
-          catastropheMetadata={state.catastropheMetadata}
-          selectedReleases={state.selectedReleases}
-          selectedCollections={state.selectedCollections}
-          onClose={() => dispatch({ type: 'CLOSE_SCORING_LOGS' })}
-          onImport={(payload) =>
-            dispatch({ type: 'IMPORT_GAME_STATE', payload })
-          }
-        />
+        <ScoringLogsModal state={state} dispatch={dispatch} />
       )}
 
       <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} />

@@ -1,45 +1,44 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, type Dispatch } from 'react';
 import type { Card, CardEntry, CardType } from '../types';
 import { TRAIT_CARD_TYPES } from '@scorer/types';
+import type { Action, AppState } from '../appReducer';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useHeaderBottom } from '../hooks/useHeaderBottom';
 import ColorTabs, { type TabId } from './ColorTabs';
 import SearchBar from './SearchBar';
 import CardGrid from './CardGrid';
 import BottomDrawer from './BottomDrawer';
-import { getCatastropheMetadataFields } from 'src/utils/cardMetadata';
+import {
+  cardMatchesReleases,
+  cardMatchesCollections
+} from '@scorer/releaseCollection';
 
 interface PackDisplayProps {
+  state: AppState;
+  dispatch: Dispatch<Action>;
   cards: Map<string, Card>;
-  playerCount: number;
-  selectedReleases: string[];
-  selectedCollections: string[];
-  cardMatchesReleases: (card: Card, selectedReleases: string[]) => boolean;
-  cardMatchesCollections: (card: Card, selectedCollections: string[]) => boolean;
-  selectedPlayerId: number | null;
-  mobileAddingForPlayer: number | null;
   onClickCard: (cardName: string) => void;
-  onHover: (cardName: string | null) => void;
-  selectedCatastrophes: CardEntry[];
   onClickCatastrophe: (cardName: string) => void;
   onDeselectCatastrophe: (cardName: string) => void;
 }
 
 export default function PackDisplay({
+  state,
+  dispatch,
   cards,
-  playerCount,
-  selectedReleases,
-  selectedCollections,
-  cardMatchesReleases,
-  cardMatchesCollections,
-  selectedPlayerId,
-  mobileAddingForPlayer,
   onClickCard,
-  onHover,
-  selectedCatastrophes,
   onClickCatastrophe,
   onDeselectCatastrophe
 }: PackDisplayProps) {
+  const { selectedReleases, selectedCollections, playerCount, selectedPlayerId, mobileAddingForPlayer, selectedCatastrophes } =
+    state;
+
+  const setHovered = useCallback(
+    (cardName: string | null) => {
+      dispatch({ type: 'SET_HOVERED', cardName });
+    },
+    []
+  );
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const headerBottom = useHeaderBottom();
   const [activeTab, setActiveTab] = useState<TabId>('purple');
@@ -148,7 +147,7 @@ export default function PackDisplay({
             cards={filteredCards}
             selectedPlayerId={selectedPlayerId}
             onClickCard={onClickCard}
-            onHover={onHover}
+            onHover={setHovered}
             onDragStart={handleDragStart}
           />
           {filteredCatastrophes.length > 0 && (
@@ -158,7 +157,7 @@ export default function PackDisplay({
               selectedCatastrophes={selectedCatastrophes}
               clickCard={onClickCatastrophe}
               onDeselect={onDeselectCatastrophe}
-              onHover={onHover}
+              onHover={setHovered}
             />
           )}
         </>
@@ -169,14 +168,14 @@ export default function PackDisplay({
           selectedCatastrophes={selectedCatastrophes}
           clickCard={onClickCatastrophe}
           onDeselect={onDeselectCatastrophe}
-          onHover={onHover}
+          onHover={setHovered}
         />
       ) : (
         <CardGrid
           cards={filteredCards}
           selectedPlayerId={selectedPlayerId}
           onClickCard={onClickCard}
-          onHover={onHover}
+          onHover={setHovered}
           onDragStart={handleDragStart}
         />
       )}

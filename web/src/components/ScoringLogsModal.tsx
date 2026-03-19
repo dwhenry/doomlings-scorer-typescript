@@ -1,12 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type Dispatch } from 'react';
 import { Scorer } from '@scorer/scorer';
 import type { PlayerInput } from '@scorer/types';
 import { PLAYER_CARD_NAME } from '@scorer/types';
-import type {
-  CardEntry,
-  GameStateExport,
-  PlayerState
-} from '../types';
+import type { Action, AppState } from '../appReducer';
+import type { CardEntry, GameStateExport, PlayerState } from '../types';
 import { GAME_STATE_EXPORT_VERSION } from '../types';
 
 type LogView = 'byPlayer' | 'bySource';
@@ -35,16 +32,8 @@ interface FormattedPlayerLog {
 }
 
 interface ScoringLogsModalProps {
-  players: PlayerState[];
-  selectedCatastrophes: CardEntry[];
-  catastropheMetadata: Record<
-    string,
-    Record<string, string | number | string[]>
-  >;
-  selectedReleases: string[];
-  selectedCollections: string[];
-  onClose: () => void;
-  onImport: (state: GameStateExport) => void;
+  state: AppState;
+  dispatch: Dispatch<Action>;
 }
 
 function buildScorer(
@@ -91,14 +80,18 @@ function isValidGameStateExport(
 }
 
 export default function ScoringLogsModal({
-  players,
-  selectedCatastrophes,
-  catastropheMetadata,
-  selectedReleases,
-  selectedCollections,
-  onClose,
-  onImport
+  state,
+  dispatch
 }: ScoringLogsModalProps) {
+  const {
+    players,
+    selectedCatastrophes,
+    catastropheMetadata,
+    selectedReleases,
+    selectedCollections
+  } = state;
+
+  const close = () => dispatch({ type: 'CLOSE_SCORING_LOGS' });
   const [logView, setLogView] = useState<LogView>('byPlayer');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [importError, setImportError] = useState<string | null>(null);
@@ -148,8 +141,8 @@ export default function ScoringLogsModal({
           setImportError('Invalid game state file.');
           return;
         }
-        onImport(data);
-        onClose();
+        dispatch({ type: 'IMPORT_GAME_STATE', payload: data });
+        close();
       } catch {
         setImportError('Invalid JSON or file format.');
       }
@@ -184,7 +177,7 @@ export default function ScoringLogsModal({
   return (
     <div
       className="modal-overlay"
-      onClick={onClose}
+      onClick={close}
       role="dialog"
       aria-modal="true"
       aria-labelledby="scoring-logs-title"
@@ -365,7 +358,7 @@ export default function ScoringLogsModal({
           >
             Import game
           </button>
-          <button type="button" className="modal-cancel" onClick={onClose}>
+          <button type="button" className="modal-cancel" onClick={close}>
             Close
           </button>
         </div>

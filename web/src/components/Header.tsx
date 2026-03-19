@@ -1,25 +1,14 @@
-import { useState } from 'react';
+import { useState, type Dispatch } from 'react';
+import type { Action, AppState } from '../appReducer';
 import ReleaseCollectionSelect from './ReleaseCollectionSelect';
 
 interface HeaderProps {
-  selectedReleases: string[];
-  selectedCollections: string[];
-  onReleaseCollectionFilterChange: (releases: string[], collections: string[]) => void;
-  playerCount: number;
-  onPlayerCountChange: (count: number) => void;
-  onNewGame: () => void;
+  state: AppState;
+  dispatch: Dispatch<Action>;
   children: React.ReactNode; // PlayerSection rendered inside header
 }
 
-export default function Header({
-  selectedReleases,
-  selectedCollections,
-  onReleaseCollectionFilterChange,
-  playerCount,
-  onPlayerCountChange,
-  onNewGame,
-  children
-}: HeaderProps) {
+export default function Header({ state, dispatch, children }: HeaderProps) {
   const [showControls, setShowControls] = useState(false);
 
   return (
@@ -30,7 +19,7 @@ export default function Header({
         <button
           type="button"
           className="new-game-btn"
-          onClick={onNewGame}
+          onClick={() => dispatch({ type: 'NEW_GAME' })}
           title="Start a new game (clears current game)"
         >
           New Game
@@ -47,16 +36,20 @@ export default function Header({
           <div className="pack-filter">
             <ReleaseCollectionSelect
               label="Filter by release or collection:"
-              selectedReleases={selectedReleases}
-              selectedCollections={selectedCollections}
-              onChange={onReleaseCollectionFilterChange}
+              selectedReleases={state.selectedReleases}
+              selectedCollections={state.selectedCollections}
+              onChange={(releases, collections) =>
+                dispatch({ type: 'SET_RELEASE_COLLECTION_FILTER', releases, collections })
+              }
             />
           </div>
           <div className="player-count">
             <label>Number of Players:</label>
             <select
-              value={playerCount}
-              onChange={(e) => onPlayerCountChange(parseInt(e.target.value))}
+              value={state.playerCount}
+              onChange={(e) =>
+                dispatch({ type: 'SET_PLAYER_COUNT', count: parseInt(e.target.value, 10) })
+              }
             >
               <option value={2}>2 Players</option>
               <option value={3}>3 Players</option>
