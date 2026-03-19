@@ -2,14 +2,16 @@ import {
   useEffect,
   useMemo,
   useState,
+  type Dispatch,
   type FormEvent,
   type SetStateAction
 } from 'react';
-import type { MetadataField } from '../../utils/cardMetadata';
+import type { GameScore } from '@scorer/scorer';
+import type { Action, AppState } from '../../appReducer';
 import type { CardEntry } from '../../types';
+import type { MetadataField } from '../../utils/cardMetadata';
 import {
   buildMetadataModalViewModel,
-  type MetadataModalGameContext,
   type MetadataModalSelector,
   type MetadataSaveScope
 } from './buildViewModel';
@@ -32,40 +34,30 @@ export type MetadataModalSavePayload =
       values: Record<string, string | number | string[]>;
     };
 
-interface MetadataModalProps {
-  selector: MetadataModalSelector | null;
-  game: MetadataModalGameContext;
-  onSave: (payload: MetadataModalSavePayload) => void;
-  onClose: () => void;
-  onClearError?: () => void;
+interface MetadataModalPanelProps {
+  selector: MetadataModalSelector;
+  state: AppState;
+  gameScore: GameScore | null;
+  dispatch: Dispatch<Action>;
 }
 
-export default function MetadataModal({
+function MetadataModalPanel({
   selector,
-  game,
-  onSave,
-  onClose,
-  onClearError
-}: MetadataModalProps) {
+  state,
+  gameScore,
+  dispatch
+}: MetadataModalPanelProps) {
   const model = useMemo(
-    () => (selector ? buildMetadataModalViewModel(selector, game) : null),
-    [
-      selector,
-      game.players,
-      game.selectedCatastrophes,
-      game.playerCount,
-      game.selectedPlayerId,
-      game.catastropheMetadata,
-      game.gameScore
-    ]
+    () => buildMetadataModalViewModel(selector, { state, gameScore }),
+    [selector, state, gameScore]
   );
-
-  const [values, setValues] = useState<Record<string, string | number>>({});
-  const [arrayValues, setArrayValues] = useState<Record<string, string[]>>({});
 
   const currentValues: CardEntry | undefined = model?.currentValues;
   const fields: MetadataField[] = model?.fields ?? [];
   const cardName = model?.cardName ?? '';
+
+  const [values, setValues] = useState<Record<string, string | number>>({});
+  const [arrayValues, setArrayValues] = useState<Record<string, string[]>>({});
 
   const [displayError, setDisplayError] = useState<string | undefined>(() =>
     currentValues && typeof currentValues.error === 'string'
@@ -86,7 +78,17 @@ export default function MetadataModal({
   function clearError() {
     if (displayError) {
       setDisplayError(undefined);
-      onClearError?.();
+      if (state.modal) {
+        dispatch({
+          type: 'CLEAR_PLAYER_CARD_METADATA_ERROR',
+          modal: state.modal
+        });
+      } else if (state.catastropheModal) {
+        dispatch({
+          type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR',
+          catastropheModal: state.catastropheModal
+        });
+      }
     }
   }
 
@@ -153,7 +155,7 @@ export default function MetadataModal({
     clearError();
     if (!model) return;
     if (!hasEditableFields) {
-      onClose();
+      dispatch({ type: 'CLOSE_MODAL' });
       return;
     }
     if (!allValid) return;
@@ -171,22 +173,28 @@ export default function MetadataModal({
     });
 
     if (model.kind === 'player-card') {
-      onSave({
-        kind: 'player-card',
-        playerId: model.playerId,
-        cardIndex: model.cardIndex,
-        cardName: model.cardName,
-        scope: model.saveScope,
-        values: coerced
+      dispatch({
+        type: 'UPDATE_CARD_METADATA',
+        payload: {
+          playerId: model.playerId,
+          cardIndex: model.cardIndex,
+          cardName: model.cardName,
+          scope: model.saveScope,
+          values: coerced
+        }
       });
     } else {
-      onSave({
-        kind: 'catastrophe',
-        cardName: model.cardName,
-        values: coerced
+      dispatch({
+        type: 'UPDATE_CATASTROPHE_CARD_METADATA',
+        payload: {
+          cardName: model.cardName,
+          values: coerced
+        }
       });
     }
   }
+
+  const onClose = () => dispatch({ type: 'CLOSE_MODAL' });
 
   if (!model) return null;
 
@@ -248,5 +256,44 @@ export default function MetadataModal({
         </form>
       </div>
     </div>
+  );
+}
+
+interface MetadataModalProps {
+  state: AppState;
+  gameScore: GameScore | null;
+  dispatch: Dispatch<Action>;
+}
+
+export default function MetadataModal({
+  state,
+  gameScore,
+  dispatch
+}: MetadataModalProps) {
+  const selector: MetadataModalSelector | null = useMemo(
+    () =>
+      state.modal
+        ? { kind: 'player-card', ...state.modal }
+        : state.catastropheModal
+          ? { kind: 'catastrophe', cardName: state.catastropheModal.cardName }
+          : null,
+    [state.modal, state.catastropheModal]
+  );
+
+  if (!selector) return null;
+
+  const remountKey =
+    state.modal != null
+      ? `p-${state.modal.playerId}-${state.modal.cardIndex}`
+      : `c-${state.catastropheModal!.cardName}`;
+
+  return (
+    <MetadataModalPanel
+      key={remountKey}
+      selector={selector}
+      state={state}
+      gameScore={gameScore}
+      dispatch={dispatch}
+    />
   );
 }

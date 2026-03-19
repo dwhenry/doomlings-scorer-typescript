@@ -1,5 +1,6 @@
 import type { GameScore } from '@scorer/scorer';
 import { PLAYER_CARD_NAME } from '@scorer/types';
+import type { AppState } from '../../appReducer';
 import type { CardEntry, PlayerState } from '../../types';
 import type { MetadataField } from '../../utils/cardMetadata';
 import {
@@ -17,15 +18,9 @@ export type MetadataModalSelector =
     }
   | { kind: 'catastrophe'; cardName: string };
 
+/** Full app state plus scorer instance for generated/internal metadata in the modal. */
 export interface MetadataModalGameContext {
-  players: PlayerState[];
-  selectedCatastrophes: CardEntry[];
-  playerCount: number;
-  selectedPlayerId: number | null;
-  catastropheMetadata: Record<
-    string,
-    Record<string, string | number | string[]>
-  >;
+  state: AppState;
   gameScore: GameScore | null;
 }
 
@@ -138,9 +133,9 @@ export function buildMetadataModalViewModel(
     selectedCatastrophes,
     playerCount,
     selectedPlayerId,
-    catastropheMetadata,
-    gameScore
-  } = ctx;
+    catastropheMetadata
+  } = ctx.state;
+  const { gameScore } = ctx;
 
   if (selector.kind === 'player-card') {
     const { playerId, cardIndex, cardName } = selector;
@@ -209,12 +204,4 @@ export function buildMetadataModalViewModel(
     playerCount,
     selectedCatastrophes: []
   };
-}
-
-/** True when the modal should mount (editable or internal metadata exists). */
-export function hasMetadataModalContent(
-  selector: MetadataModalSelector,
-  ctx: MetadataModalGameContext
-): boolean {
-  return buildMetadataModalViewModel(selector, ctx) !== null;
 }

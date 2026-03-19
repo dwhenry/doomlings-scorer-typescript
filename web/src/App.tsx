@@ -3,8 +3,7 @@ import {
   useEffect,
   useState,
   useCallback,
-  useRef,
-  useMemo
+  useRef
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import {
@@ -21,12 +20,7 @@ import {
   type AppState
 } from './appReducer';
 import { useScorer } from './hooks/useScorer';
-import { getCardMetadataFields, getEditableMetadataFields } from './utils/cardMetadata';
-import {
-  hasMetadataModalContent,
-  type MetadataModalGameContext,
-  type MetadataModalSelector
-} from './components/metadata-modal/buildViewModel';
+import { getEditableMetadataFields } from './utils/cardMetadata';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
@@ -252,40 +246,6 @@ export default function App() {
     [state.selectedCatastrophes]
   );
 
-  const metadataModalSelector: MetadataModalSelector | null = state.modal
-    ? {
-        kind: 'player-card',
-        playerId: state.modal.playerId,
-        cardIndex: state.modal.cardIndex,
-        cardName: state.modal.cardName
-      }
-    : state.catastropheModal
-      ? { kind: 'catastrophe', cardName: state.catastropheModal.cardName }
-      : null;
-
-  const metadataGame = useMemo<MetadataModalGameContext>(
-    () => ({
-      players: state.players,
-      selectedCatastrophes: state.selectedCatastrophes,
-      playerCount: state.playerCount,
-      selectedPlayerId: state.selectedPlayerId,
-      catastropheMetadata: state.catastropheMetadata,
-      gameScore
-    }),
-    [
-      state.players,
-      state.selectedCatastrophes,
-      state.playerCount,
-      state.selectedPlayerId,
-      state.catastropheMetadata,
-      gameScore
-    ]
-  );
-
-  const showMetadataModal =
-    metadataModalSelector !== null &&
-    hasMetadataModalContent(metadataModalSelector, metadataGame);
-
   return (
     <div className="game-container">
       <CardZoom cardName={state.hoveredCard} />
@@ -303,9 +263,7 @@ export default function App() {
         onNewGame={handleNewGame}
       >
         <PlayerSection
-          players={state.players}
-          selectedPlayerId={state.selectedPlayerId}
-          mobileAddingForPlayer={state.mobileAddingForPlayer}
+          state={state}
           onSelectPlayer={handleSelectPlayer}
           onStartAdding={handleStartAdding}
           onStopAdding={handleStopAdding}
@@ -364,50 +322,7 @@ export default function App() {
         />
       )}
 
-      {showMetadataModal && metadataModalSelector && (
-        <MetadataModal
-          key={
-            metadataModalSelector.kind === 'player-card'
-              ? `p-${metadataModalSelector.playerId}-${metadataModalSelector.cardIndex}`
-              : `c-${metadataModalSelector.cardName}`
-          }
-          selector={metadataModalSelector}
-          game={metadataGame}
-          onSave={(payload) => {
-            if (payload.kind === 'player-card') {
-              dispatch({
-                type: 'UPDATE_CARD_METADATA',
-                playerId: payload.playerId,
-                cardIndex: payload.cardIndex,
-                cardName: payload.cardName,
-                values: payload.values,
-                scope: payload.scope
-              });
-            } else {
-              dispatch({
-                type: 'UPDATE_CATASTROPHE_CARD_METADATA',
-                cardName: payload.cardName,
-                values: payload.values
-              });
-            }
-          }}
-          onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
-          onClearError={() => {
-            if (state.modal) {
-              dispatch({
-                type: 'CLEAR_PLAYER_CARD_METADATA_ERROR',
-                playerId: state.modal.playerId,
-                cardIndex: state.modal.cardIndex
-              });
-            } else if (state.catastropheModal) {
-              dispatch({
-                type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR',
-                cardName: state.catastropheModal.cardName
-              });
-            }
-          }}
-        />
-      )}
+      <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { PlayerState, CardGroup, Card } from '../types';
+import type { AppState } from '../appReducer';
 import type { GameScore } from '@scorer/scorer';
 import { PLAYER_CARD_NAME } from '@scorer/types';
 import {
@@ -10,9 +11,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import PlayerCard from './PlayerCard';
 
 interface PlayerSectionProps {
-  players: PlayerState[];
-  selectedPlayerId: number | null;
-  mobileAddingForPlayer: number | null;
+  state: AppState;
   onSelectPlayer: (id: number) => void;
   onStartAdding: (playerId: number) => void;
   onStopAdding: () => void;
@@ -110,9 +109,7 @@ function buildCardGroups(
 }
 
 export default function PlayerSection({
-  players,
-  selectedPlayerId,
-  mobileAddingForPlayer,
+  state,
   onSelectPlayer,
   onStartAdding,
   onStopAdding,
@@ -123,6 +120,7 @@ export default function PlayerSection({
   gameScore,
   cardsMap
 }: PlayerSectionProps) {
+  const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
 
   // Mobile focused view: only show the player we're adding cards for

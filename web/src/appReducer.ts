@@ -62,25 +62,25 @@ export type Action =
   | { type: 'CLOSE_MODAL' }
   | {
       type: 'UPDATE_CARD_METADATA';
-      playerId: number;
-      cardIndex: number;
-      cardName: string;
-      values: Record<string, string | number | string[]>;
-      scope: string;
+      payload: {
+        playerId: number;
+        cardIndex: number;
+        cardName: string;
+        values: Record<string, string | number | string[]>;
+        scope: string;
+      };
     }
   | {
       type: 'UPDATE_CATASTROPHE_CARD_METADATA';
-      cardName: string;
-      values: Record<string, string | number | string[]>;
+      payload: {
+        cardName: string;
+        values: Record<string, string | number | string[]>;
+      };
     }
-  | {
-      type: 'CLEAR_PLAYER_CARD_METADATA_ERROR';
-      playerId: number;
-      cardIndex: number;
-    }
+  | { type: 'CLEAR_PLAYER_CARD_METADATA_ERROR'; modal: ModalState }
   | {
       type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR';
-      cardName: string;
+      catastropheModal: CatastropheModalState;
     }
   | {
       type: 'UPDATE_CATASTROPHE_METADATA';
@@ -331,27 +331,28 @@ export function reducer(state: AppState, action: Action): AppState {
       return next;
     }
     case 'UPDATE_CARD_METADATA': {
+      const { playerId, cardIndex, cardName, values, scope } = action.payload;
       return {
         ...state,
         players: applyMetadataByScope(
           state.players,
-          action.playerId,
-          action.cardIndex,
-          action.cardName,
-          action.values,
-          action.scope
+          playerId,
+          cardIndex,
+          cardName,
+          values,
+          scope
         ),
         modal: null
       };
     }
     case 'UPDATE_CATASTROPHE_CARD_METADATA': {
-      // catastrophe card
+      const { cardName, values } = action.payload;
       const selectedCatastrophes = state.selectedCatastrophes.map(
         (selectedCatastrophe) => {
-          if (selectedCatastrophe.name === action.cardName) {
+          if (selectedCatastrophe.name === cardName) {
             return {
               ...selectedCatastrophe,
-              ...action.values
+              ...values
             };
           }
           return selectedCatastrophe;
@@ -365,14 +366,15 @@ export function reducer(state: AppState, action: Action): AppState {
       };
     }
     case 'CLEAR_PLAYER_CARD_METADATA_ERROR': {
+      const { playerId, cardIndex } = action.modal;
       return {
         ...state,
         players: state.players.map((p) => {
-          if (p.id !== action.playerId) return p;
+          if (p.id !== playerId) return p;
           return {
             ...p,
             cards: p.cards.map((c, i) => {
-              if (i !== action.cardIndex) return c;
+              if (i !== cardIndex) return c;
               const next = { ...c };
               delete next.error;
               return next;
@@ -382,10 +384,11 @@ export function reducer(state: AppState, action: Action): AppState {
       };
     }
     case 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR': {
+      const { cardName } = action.catastropheModal;
       return {
         ...state,
         selectedCatastrophes: state.selectedCatastrophes.map((c) => {
-          if (c.name !== action.cardName) return c;
+          if (c.name !== cardName) return c;
           const next = { ...c };
           delete next.error;
           return next;
