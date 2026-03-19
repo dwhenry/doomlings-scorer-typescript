@@ -97,7 +97,7 @@ addBasicCard({ score: 3 }, {
     currentPlayerCards.forEach((c) => {
       if (c.type.length === 1) {
         c.type.forEach((type) => {
-          if (type !== 'colourless' && type !== 'catastrophe' && type !== 'none') {
+          if (type !== 'colourless' && type !== 'catastrophe') {
             colourCounts[type] = (colourCounts[type] || 0) + 1;
           }
         });

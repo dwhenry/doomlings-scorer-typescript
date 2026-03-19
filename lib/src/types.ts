@@ -81,7 +81,10 @@ export const META_DATA_SCOPES = [
 ] as const;
 export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 
-type MetaData = [string, MetaDataType, MetaDataScope];
+type MetaData =
+| [string, MetaDataType, MetaDataScope]
+| [string, MetaDataType, MetaDataScope, 'player' | 'deck']
+| [string, MetaDataType, MetaDataScope, 'player' | 'deck', (typeof TRAIT_CARD_TYPES)[number]];
 
 export interface Card {
   name: string;

@@ -309,6 +309,8 @@ function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_MODAL':
       return {
         ...state,
+        selectedPlayerId:
+          state.selectedPlayerId === null ? action.playerId : state.selectedPlayerId,
         modal: {
           playerId: action.playerId,
           cardIndex: action.cardIndex,

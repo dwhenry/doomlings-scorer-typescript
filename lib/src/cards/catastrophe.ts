@@ -203,7 +203,7 @@ const deusExMachina: CatastropheCardInput = {
 
     // TODO: would be nice if this allow selection by card name
   },
-  metadataRequired: [['drawn_face_values', 'card_per_person', 'card']]
+  metadataRequired: [['drawn_face_values', 'card_per_person', 'card', 'deck']]
 };
 addCard(deusExMachina);
 
@@ -254,8 +254,7 @@ const glacialMeltdown: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'blue');
   },
-  // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'blue']]
 };
 addCard(glacialMeltdown);
 
@@ -324,15 +323,13 @@ const impactEvent: CatastropheCardInput = {
 };
 addCard(impactEvent);
 
-// World's End: Discard 1 green trait from your trait pile at random
 const massExtinction: CatastropheCardInput = {
   name: 'MASS EXTINCTION',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'green');
   },
-  // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'green']]
 };
 addCard(massExtinction);
 
@@ -344,8 +341,7 @@ const megaTsunami: CatastropheCardInput = {
     colourDiscard(inst, allPlayerCards, 'red');
   },
 
-  // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'red']]
 };
 addCard(megaTsunami);
 
@@ -357,7 +353,7 @@ const nuclearWinter: CatastropheCardInput = {
     colourDiscard(inst, allPlayerCards, 'colourless');
   },
   // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'colourless']]
 };
 addCard(nuclearWinter);
 
@@ -396,8 +392,7 @@ const pulseEvent: CatastropheCardInput = {
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
     colourDiscard(inst, allPlayerCards, 'purple');
   },
-  // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'purple']]
 };
 addCard(pulseEvent);
 
@@ -491,8 +486,7 @@ const theFourHorsemen: CatastropheCardInput = {
 
     inst.generatedMetadata.discard = discardNames;
   },
-  // TODO: allow card to discard to be selected
-  metadataRequired: [['discard', 'card_per_person', 'card']]
+  metadataRequired: [['discard', 'card_per_person', 'card', 'player']]
 };
 addCard(theFourHorsemen);
 
@@ -536,7 +530,7 @@ const deusExMachinaKs: CatastropheCardInput = {
 
     // TODO: would be nice if this allow selection by card name
   },
-  metadataRequired: [['drawn_face_values', 'card_per_person', 'card']]
+  metadataRequired: [['drawn_face_values', 'card_per_person', 'card', 'deck']]
 };
 addCard(deusExMachinaKs);
 
