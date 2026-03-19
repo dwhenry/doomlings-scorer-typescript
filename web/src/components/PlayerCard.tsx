@@ -1,31 +1,70 @@
+import type { Dispatch } from 'react';
+import type { Action } from '../appReducer';
 import type { PlayerState, CardGroup } from '../types';
 
+function selectOrStartAddingPlayer(
+  dispatch: Dispatch<Action>,
+  isMobile: boolean,
+  playerId: number
+): void {
+  if (isMobile) {
+    dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
+  } else {
+    dispatch({ type: 'SELECT_PLAYER', id: playerId });
+  }
+}
+
+export function removePlayerCard(
+  dispatch: Dispatch<Action>,
+  playerId: number,
+  cardIndex: number
+): void {
+  dispatch({ type: 'REMOVE_CARD', playerId, cardIndex });
+}
+
+function openCardMetadataModal(
+  dispatch: Dispatch<Action>,
+  playerId: number,
+  cardIndex: number,
+  cardName: string
+): void {
+  dispatch({ type: 'OPEN_MODAL', playerId, cardIndex, cardName });
+}
+
+function setHoveredCard(
+  dispatch: Dispatch<Action>,
+  cardName: string | null
+): void {
+  dispatch({ type: 'SET_HOVERED', cardName });
+}
+
+function startAddingForPlayer(
+  dispatch: Dispatch<Action>,
+  playerId: number
+): void {
+  dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
+}
+
 interface PlayerCardProps {
+  dispatch: Dispatch<Action>;
   player: PlayerState;
   isSelected: boolean;
-  onSelect: (id: number) => void;
-  onRemoveCard: (playerId: number, cardIndex: number) => void;
-  onOpenModal: (playerId: number, cardIndex: number, cardName: string) => void;
-  onHover: (cardName: string | null) => void;
+  isMobile: boolean;
   cardGroups: CardGroup[];
   totalScore: number;
   onDrop: (playerId: number, cardName: string) => void;
   showAddButton?: boolean;
-  onStartAdding?: (playerId: number) => void;
 }
 
 export default function PlayerCard({
+  dispatch,
   player,
   isSelected,
-  onSelect,
-  onRemoveCard,
-  onOpenModal,
-  onHover,
+  isMobile,
   cardGroups,
   totalScore,
   onDrop,
-  showAddButton,
-  onStartAdding
+  showAddButton
 }: PlayerCardProps) {
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -54,7 +93,7 @@ export default function PlayerCard({
     <div
       className={`player${isSelected ? ' selected' : ''}`}
       data-player-id={player.id}
-      onClick={() => onSelect(player.id)}
+      onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
     >
       <div className="player-header">
         <h3>{player.name}</h3>
@@ -80,12 +119,19 @@ export default function PlayerCard({
               <div
                 key={`${group.name}-${group.cardIndices[0]}`}
                 className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() => onHover(group.name)}
-                onMouseLeave={() => onHover(null)}
+                onMouseEnter={() =>
+                  setHoveredCard(dispatch, group.name)
+                }
+                onMouseLeave={() => setHoveredCard(dispatch, null)}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (group.hasMetadata) {
-                    onOpenModal(player.id, group.cardIndices[0], group.name);
+                    openCardMetadataModal(
+                      dispatch,
+                      player.id,
+                      group.cardIndices[0],
+                      group.name
+                    );
                   }
                 }}
               >
@@ -110,7 +156,11 @@ export default function PlayerCard({
                   className="remove-card remove-card--visible"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onRemoveCard(player.id, group.cardIndices[0]);
+                    removePlayerCard(
+                      dispatch,
+                      player.id,
+                      group.cardIndices[0]
+                    );
                   }}
                 >
                   &times;
@@ -120,12 +170,12 @@ export default function PlayerCard({
           })
         )}
       </div>
-      {showAddButton && onStartAdding && (
+      {showAddButton && (
         <button
           className="add-cards-btn"
           onClick={(e) => {
             e.stopPropagation();
-            onStartAdding(player.id);
+            startAddingForPlayer(dispatch, player.id);
           }}
         >
           + Add cards

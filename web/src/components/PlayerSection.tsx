@@ -1,4 +1,4 @@
-import { useCallback, type Dispatch } from 'react';
+import type { Dispatch } from 'react';
 import type { PlayerState, CardGroup, Card } from '../types';
 import type { Action, AppState } from '../appReducer';
 import type { GameScore } from '@scorer/scorer';
@@ -112,10 +112,6 @@ export default function PlayerSection({
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
 
-  const onHover = useCallback((cardName: string | null) => {
-    dispatch({ type: 'SET_HOVERED', cardName })
-  }, []);
-
   // Mobile focused view: only show the player we're adding cards for
   if (isMobile && mobileAddingForPlayer !== null) {
     const playerIndex = players.findIndex(
@@ -147,8 +143,12 @@ export default function PlayerSection({
               <div
                 key={`${group.name}-${group.cardIndices[0]}`}
                 className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() => onHover(group.name)}
-                onMouseLeave={() => onHover(null)}
+                onMouseEnter={() =>
+                  dispatch({ type: 'SET_HOVERED', cardName: group.name })
+                }
+                onMouseLeave={() =>
+                  dispatch({ type: 'SET_HOVERED', cardName: null })
+                }
                 onClick={(e) => {
                   e.stopPropagation();
                   if (group.hasMetadata) {
@@ -210,33 +210,14 @@ export default function PlayerSection({
         return (
           <PlayerCard
             key={player.id}
+            dispatch={dispatch}
             player={player}
             isSelected={selectedPlayerId === player.id}
-            onSelect={
-              isMobile
-                ? (playerId) =>
-                    dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId })
-                : (id) => dispatch({ type: 'SELECT_PLAYER', id })
-            }
-            onRemoveCard={(playerId, cardIndex) =>
-              dispatch({ type: 'REMOVE_CARD', playerId, cardIndex })
-            }
-            onOpenModal={(playerId, cardIndex, cardName) =>
-              dispatch({
-                type: 'OPEN_MODAL',
-                playerId,
-                cardIndex,
-                cardName
-              })
-            }
-            onHover={onHover}
+            isMobile={isMobile}
             cardGroups={cardGroups}
             totalScore={totalScore}
             onDrop={onDropCard}
             showAddButton={isMobile}
-            onStartAdding={(playerId) =>
-              dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId })
-            }
           />
         );
       })}
