@@ -1,4 +1,11 @@
-import { useReducer, useEffect, useState, useCallback, useRef } from 'react';
+import {
+  useReducer,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useMemo
+} from 'react';
 import { allCards } from '@scorer/cardContainer';
 import {
   cardMatchesReleases,
@@ -29,12 +36,12 @@ function isValidPersistedState(data: unknown): data is GameStateExport {
   );
 }
 import { useScorer } from './hooks/useScorer';
+import { getCardMetadataFields, getEditableMetadataFields } from './utils/cardMetadata';
 import {
-  getCardMetadataFields,
-  getCatastropheMetadataFields,
-  getEditableMetadataFields,
-  getInternalMetadataFields
-} from './utils/cardMetadata';
+  hasMetadataModalContent,
+  type MetadataModalGameContext,
+  type MetadataModalSelector
+} from './components/metadata-modal/buildViewModel';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
@@ -779,104 +786,39 @@ export default function App() {
     [state.selectedCatastrophes]
   );
 
-  // Modal data - separate editable fields from internal
-  const modalEditableFields = state.modal
-    ? getEditableMetadataFields(state.modal.cardName)
-    : [];
-  const modalInternalFields = state.modal
-    ? getInternalMetadataFields(state.modal.cardName)
-    : [];
-
-  const modalCard = state.modal
-    ? state.players.find((p) => p.id === state.modal!.playerId)?.cards[
-        state.modal.cardIndex
-      ]
-    : null;
-
-  // Modal data - separate editable fields from internal
-  const catName = state.catastropheModal?.cardName;
-  const catModalEditableFields = state.catastropheModal
-    ? getEditableMetadataFields(catName!)
-    : [];
-  const catModalInternalFields = state.catastropheModal
-    ? getCatastropheMetadataFields(state.catastropheMetadata[catName!])
-    : [];
-  const catModalCard = state.catastropheModal
-    ? state.selectedCatastrophes.find((c) => c.name === catName)
-    : null;
-
-  // Build internal values from generated metadata in game score
-  const modalInternalValues: Record<string, string | number | string[]> = {};
-  if (state.modal && gameScore && modalInternalFields.length > 0) {
-    try {
-      const playerIndex = state.players.findIndex(
-        (p) => p.id === state.modal!.playerId
-      );
-      const genMeta = gameScore
-        .getPlayerScore(playerIndex)
-        .getGeneratedMetadata(state.modal.cardIndex);
-      if (genMeta) {
-        Object.assign(modalInternalValues, genMeta);
+  const metadataModalSelector: MetadataModalSelector | null = state.modal
+    ? {
+        kind: 'player-card',
+        playerId: state.modal.playerId,
+        cardIndex: state.modal.cardIndex,
+        cardName: state.modal.cardName
       }
-    } catch {
-      // Card may not have generated metadata
-    }
-  }
+    : state.catastropheModal
+      ? { kind: 'catastrophe', cardName: state.catastropheModal.cardName }
+      : null;
 
-  // Build internal values from generated metadata in game score
-  const catModalInternalValues: Record<string, string | number | string[]> = {};
-  if (
-    state.catastropheModal &&
-    gameScore &&
-    catModalInternalFields.length > 0
-  ) {
-    try {
-      const catIndex = state.selectedCatastrophes.findIndex(
-        (c) => c.name === state.catastropheModal!.cardName
-      );
-      const metadata = gameScore.getCatastropheGeneratedMetadata()[catIndex];
-      if (metadata) {
-        Object.assign(catModalInternalValues, metadata);
-      }
-    } catch {
-      // Catastrophe may not have generated metadata
-    }
-  }
+  const metadataGame = useMemo<MetadataModalGameContext>(
+    () => ({
+      players: state.players,
+      selectedCatastrophes: state.selectedCatastrophes,
+      playerCount: state.playerCount,
+      selectedPlayerId: state.selectedPlayerId,
+      catastropheMetadata: state.catastropheMetadata,
+      gameScore
+    }),
+    [
+      state.players,
+      state.selectedCatastrophes,
+      state.playerCount,
+      state.selectedPlayerId,
+      state.catastropheMetadata,
+      gameScore
+    ]
+  );
 
-  // Determine the dominant scope for save propagation (only from editable fields)
-  const modalScope =
-    modalEditableFields.length > 0
-      ? modalEditableFields.some((f) => f.scope === 'global')
-        ? 'global'
-        : modalEditableFields.some((f) => f.scope === 'player')
-          ? 'player'
-          : 'card'
-      : 'card';
-
-  // Show modal if there are any fields (editable or internal)
-  const hasAnyModalFields =
-    modalEditableFields.length > 0 || modalInternalFields.length > 0;
-
-  const hasAnyCatModalFields =
-    catModalEditableFields.length > 0 || catModalInternalFields.length > 0;
-  let playerCardNames: Set<string> = new Set();
-  if (state.selectedPlayerId !== null) {
-    const player = state.players.find((p) => p.id === state.modal?.playerId);
-    if (player && player.cards.length > 0) {
-      player.cards.forEach((c) => {
-        if(c.name !== PLAYER_CARD_NAME) {
-          playerCardNames.add(c.name)
-        }
-      });
-    }
-  }
-
-  const allPlayerCardNames: Set<[string, string]> = new Set();
-  state.players.forEach((player, playerIndex) => {
-    player.cards.forEach((card) => {
-      allPlayerCardNames.add([playerIndex.toString(), card.name]);
-    });
-  });
+  const showMetadataModal =
+    metadataModalSelector !== null &&
+    hasMetadataModalContent(metadataModalSelector, metadataGame);
 
   return (
     <div className="game-container">
@@ -956,67 +898,48 @@ export default function App() {
         />
       )}
 
-      {state.modal && modalCard && hasAnyModalFields && (
+      {showMetadataModal && metadataModalSelector && (
         <MetadataModal
-          cardName={state.modal.cardName}
-          playerCardNames={[...playerCardNames].sort((a, b) =>
-            a.localeCompare(b)
-          )}
-          allPlayerCardNames={[...allPlayerCardNames].sort(
-            (a, b) => a[0].localeCompare(b[0]) * 2 + a[1].localeCompare(b[1])
-          )}
-          playerCount={state.playerCount}
-          selectedCatastrophes={state.selectedCatastrophes}
-          fields={modalEditableFields}
-          internalFields={modalInternalFields}
-          internalValues={modalInternalValues}
-          currentValues={modalCard}
-          onSave={(values) =>
-            dispatch({
-              type: 'UPDATE_CARD_METADATA',
-              playerId: state.modal!.playerId,
-              cardIndex: state.modal!.cardIndex,
-              cardName: state.modal!.cardName,
-              values,
-              scope: modalScope
-            })
+          key={
+            metadataModalSelector.kind === 'player-card'
+              ? `p-${metadataModalSelector.playerId}-${metadataModalSelector.cardIndex}`
+              : `c-${metadataModalSelector.cardName}`
           }
+          selector={metadataModalSelector}
+          game={metadataGame}
+          onSave={(payload) => {
+            if (payload.kind === 'player-card') {
+              dispatch({
+                type: 'UPDATE_CARD_METADATA',
+                playerId: payload.playerId,
+                cardIndex: payload.cardIndex,
+                cardName: payload.cardName,
+                values: payload.values,
+                scope: payload.scope
+              });
+            } else {
+              dispatch({
+                type: 'UPDATE_CATASTROPHE_CARD_METADATA',
+                cardName: payload.cardName,
+                values: payload.values
+              });
+            }
+          }}
           onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
-          onClearError={() =>
-            dispatch({
-              type: 'CLEAR_PLAYER_CARD_METADATA_ERROR',
-              playerId: state.modal!.playerId,
-              cardIndex: state.modal!.cardIndex
-            })
-          }
-        />
-      )}
-
-      {state.catastropheModal && catModalCard && hasAnyCatModalFields && (
-        <MetadataModal
-          cardName={state.catastropheModal.cardName}
-          playerCardNames={[]}
-          allPlayerCardNames={[]}
-          playerCount={state.playerCount}
-          selectedCatastrophes={[]}
-          fields={catModalEditableFields}
-          internalFields={catModalInternalFields}
-          internalValues={catModalInternalValues}
-          currentValues={catModalCard}
-          onSave={(values) =>
-            dispatch({
-              type: 'UPDATE_CATASTROPHE_CARD_METADATA',
-              cardName: state.catastropheModal!.cardName,
-              values
-            })
-          }
-          onClose={() => dispatch({ type: 'CLOSE_MODAL' })}
-          onClearError={() =>
-            dispatch({
-              type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR',
-              cardName: state.catastropheModal!.cardName
-            })
-          }
+          onClearError={() => {
+            if (state.modal) {
+              dispatch({
+                type: 'CLEAR_PLAYER_CARD_METADATA_ERROR',
+                playerId: state.modal.playerId,
+                cardIndex: state.modal.cardIndex
+              });
+            } else if (state.catastropheModal) {
+              dispatch({
+                type: 'CLEAR_CATASTROPHE_CARD_METADATA_ERROR',
+                cardName: state.catastropheModal.cardName
+              });
+            }
+          }}
         />
       )}
     </div>
