@@ -1,6 +1,6 @@
-import { CatastropheCardInput, CardInstance, CardType, PLAYER_CARD_NAME } from '../types';
+import { CatastropheCardInput, CardInstance, CardType, PLAYER_CARD_NAME, Card, PlayerCard } from '../types';
 import { addCard } from '../cardContainer';
-import { filterCardsByType, forEachPlayerCards, getPlayerCard } from './helpers';
+import { filterCardsByType, forEachPlayerCards, getPlayerCard, playerCards } from './helpers';
 import { isDominant } from './effect_cards';
 
 // --- Helpers ---
@@ -183,27 +183,33 @@ addCard(bioPlague);
 const deusExMachina: CatastropheCardInput = {
   name: 'DEUS EX MACHINA',
   type: ['catastrophe'],
-  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    if (!(inst.metadata.drawn_face_values instanceof Array)) {
-      throw new Error('invalid data for metadata field drawn_face_values');
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>, cards: Map<string, Card>) => {
+    if (!(inst.metadata.drawn_face_cards instanceof Array)) {
+      throw new Error('invalid data for metadata field drawn_face_cards');
     }
-    if (inst.metadata.drawn_face_values.filter(v => v === '').length != allPlayerCards.length) {
-      throw new Error('invalid data for metadata field drawn_face_values');
+    if (inst.metadata.drawn_face_cards.filter(v => v === '').length != allPlayerCards.length) {
+      throw new Error('invalid data for metadata field drawn_face_cards');
     }
-    inst.metadata.drawn_face_values.forEach((faceValue, currentPlayer) => {
+    inst.metadata.drawn_face_cards.forEach((faceCard, currentPlayer) => {
+
       // TODO: add number[] as a valid type - we currently only support number or string[]
-      const parsedValue = parseInt(faceValue);
+      const parsedValue = cards.get(faceCard)?.calcA;
       if (typeof parsedValue !== 'number') {
         throw new Error(
           `no drawn face value specified for Player ${currentPlayer + 1}`
         );
       }
-      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(currentPlayer, 'C', Math.min(parsedValue, 5), inst, 'for drawing a trait with face value of ' + faceValue + ' (max 5)');
+      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(
+        currentPlayer,
+        'C',
+        Math.min(parsedValue, 5),
+        inst,
+        'for drawing a trait ' + faceCard + ' (max 5)');
     })
 
     // TODO: would be nice if this allow selection by card name
   },
-  metadataRequired: [['drawn_face_values', 'card_per_person', 'card', 'deck']]
+  metadataRequired: [['drawn_face_cards', 'card_per_person', 'card', 'deck']]
 };
 addCard(deusExMachina);
 
@@ -327,7 +333,23 @@ const massExtinction: CatastropheCardInput = {
   name: 'MASS EXTINCTION',
   type: ['catastrophe'],
   calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-    colourDiscard(inst, allPlayerCards, 'green');
+    const discards =
+      inst.metadata.discard instanceof Array
+        ? (inst.metadata.discard as string[])
+        : [];
+
+    forEachPlayerCards(allPlayerCards, (playerCards, currentPlayer) => {
+      const cardToRemove = discards[currentPlayer];
+      if (!cardToRemove)
+        return
+
+      const card = playerCards.find((c) => c.card.name === cardToRemove);
+      if (!card)
+        throw new Error('card ' + cardToRemove + ' not found for player ' + currentPlayer);
+
+      softDiscard(card, inst, currentPlayer);
+
+    });
   },
   metadataRequired: [['discard', 'card_per_person', 'card', 'player', 'green']]
 };
@@ -511,26 +533,38 @@ addCard(aiTakeoverKs);
 const deusExMachinaKs: CatastropheCardInput = {
   name: 'DEUS EX MACHINA (kickstarter)',
   type: ['catastrophe'],
-  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>) => {
-   if (!(inst.metadata.drawn_face_values instanceof Array)) {
-      throw new Error('invalid data for metadata field drawn_face_values');
+  calcC: (inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>, cards: Map<string, Card>) => {
+    if (!(inst.metadata.drawn_face_cards instanceof Array)) {
+      throw new Error('invalid data for metadata field drawn_face_cards');
     }
-    if (inst.metadata.drawn_face_values.filter(v => v === '').length != allPlayerCards.length) {
-      throw new Error('invalid data for metadata field drawn_face_values');
+    if (inst.metadata.drawn_face_cards.filter(v => !!v).length !== allPlayerCards.length) {
+      throw new Error('invalid data for metadata field drawn_face_cards');
     }
-    inst.metadata.drawn_face_values.forEach((faceValue, currentPlayer) => {
-      const parsedValue = parseInt(faceValue);
-      if (typeof parsedValue !== 'number') {
-        throw new Error(
-          `no drawn face value specified for Player ${currentPlayer + 1}`
-        );
-      }
-      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(currentPlayer, 'C', parsedValue, 5, inst, 'for drawing a trait with face value of ' + faceValue);
-    })
+    const errors: string[] = [];
+    inst.metadata.drawn_face_cards.forEach((faceCard, currentPlayer) => {
 
-    // TODO: would be nice if this allow selection by card name
+      // TODO: add number[] as a valid type - we currently only support number or string[]
+      const card = cards.get(faceCard)! as PlayerCard;
+      if(!card) {
+        errors.push('Player ' + (currentPlayer + 1) + ': card ' + faceCard + ' not found');
+        return
+      }
+      const cardInst = new CardInstance(card, {});
+      card.calcA(cardInst, [], currentPlayer);
+      const parsedValue = cardInst.finalA;
+      if (typeof parsedValue !== 'number') {
+        errors.push('Player ' + (currentPlayer + 1) + ': card ' + faceCard + ' has no value');
+        return;
+      }
+      getPlayerCard(allPlayerCards, currentPlayer)?.applyPoints(
+        currentPlayer,
+        'C',
+        parsedValue,
+        inst,
+        'for drawing a trait ' + faceCard);
+    })
   },
-  metadataRequired: [['drawn_face_values', 'card_per_person', 'card', 'deck']]
+  metadataRequired: [['drawn_face_cards', 'card_per_person', 'card', 'deck']]
 };
 addCard(deusExMachinaKs);
 

@@ -99,21 +99,32 @@ export interface Card {
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
-  calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  calcC?(
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    cards: Map<string, Card>
+  ): void;
   metadataRequired?: Array<MetaData>;
 }
 
 export interface CatastropheCard extends Card {
-  calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  calcC(
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    cards: Map<string, Card>
+  ): void;
   calcB?(
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
+    currentPlayer: number,
+    cards: Map<string, Card>
   ): void;
 }
 
 /** Catastrophe card without collection/release (set by addCard from CARD_COLLECTION_RELEASE) */
-export type CatastropheCardInput = Omit<CatastropheCard, 'collection' | 'release'> & Partial<Pick<CatastropheCard, 'collection' | 'release'>>;
+export type CatastropheCardInput =
+  Omit<CatastropheCard, 'collection' | 'release'> &
+  Partial<Pick<CatastropheCard, 'collection' | 'release'>>;
 
 export interface PlayerCard extends Card {
   calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];

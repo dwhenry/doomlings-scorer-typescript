@@ -1,5 +1,5 @@
 import type { MetadataField } from '../../utils/cardMetadata';
-import type { CardEntry } from '../../types';
+import type { Card, CardEntry } from '../../types';
 import { formatMetadataLabel } from './formatters';
 import { AnyPlayerCardSelectField } from './fields/AnyPlayerCardSelectField';
 import { CatastropheSelectField } from './fields/CatastropheSelectField';
@@ -10,6 +10,7 @@ import { TraitColorSelectField } from './fields/TraitColorSelectField';
 
 interface EditableMetadataFieldProps {
   field: MetadataField;
+  cards: Map<string, Card>;
   scalarValues: Record<string, string | number>;
   arrayValues: Record<string, string[]>;
   playerCount: number;
@@ -22,6 +23,7 @@ interface EditableMetadataFieldProps {
 
 export function EditableMetadataField({
   field,
+  cards,
   scalarValues,
   arrayValues,
   playerCount,
@@ -92,7 +94,9 @@ export function EditableMetadataField({
       )}
       {field.type === 'card_per_person' && (
         <CardPerPersonFields
-          fieldKey={field.key}
+          field={field}
+          allPlayerCardNames={allPlayerCardNames}
+          cards={cards}
           playerCount={playerCount}
           values={arrayValues[field.key] ?? []}
           onSlotChange={onArraySlotChange}

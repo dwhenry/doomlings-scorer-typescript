@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Scorer, GameScore } from '@scorer/scorer';
 import type { CardEntry, PlayerState } from '../types';
-import type { PlayerInput } from '@scorer/types';
+import type { Card, PlayerInput } from '@scorer/types';
 
 export interface CatastropheState {
   name: string;
@@ -14,7 +14,8 @@ export function useScorer(
   catastropheMetadata: Record<
     string,
     Record<string, string | number | string[]>
-  >
+  >,
+  cards: Map<string, Card>
 ): GameScore | null {
   return useMemo(() => {
     // Need at least one player with cards to score
@@ -23,7 +24,7 @@ export function useScorer(
 
     try {
       const playerCards = players.map((p) => p.cards.map((c) => ({ ...c })));
-      const scorer = new Scorer(...playerCards);
+      const scorer = new Scorer(cards, ...playerCards);
 
       if (selectedCatastrophes.length > 0) {
         const catastropheInputs: PlayerInput[] = selectedCatastrophes.map(

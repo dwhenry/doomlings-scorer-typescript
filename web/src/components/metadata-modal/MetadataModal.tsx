@@ -8,7 +8,7 @@ import {
 } from 'react';
 import type { GameScore } from '@scorer/scorer';
 import type { Action, AppState } from '../../appReducer';
-import type { CardEntry } from '../../types';
+import type { Card, CardEntry } from '../../types';
 import type { MetadataField } from '../../utils/cardMetadata';
 import {
   buildMetadataModalViewModel,
@@ -37,12 +37,14 @@ export type MetadataModalSavePayload =
 interface MetadataModalPanelProps {
   selector: MetadataModalSelector;
   state: AppState;
+  cards: Map<string, Card>;
   gameScore: GameScore | null;
   dispatch: Dispatch<Action>;
 }
 
 function MetadataModalPanel({
   selector,
+  cards,
   state,
   gameScore,
   dispatch
@@ -212,6 +214,7 @@ function MetadataModalPanel({
             <EditableMetadataField
               key={field.key}
               field={field}
+              cards={cards}
               scalarValues={values}
               arrayValues={arrayValues}
               playerCount={model.playerCount}
@@ -262,12 +265,14 @@ function MetadataModalPanel({
 interface MetadataModalProps {
   state: AppState;
   gameScore: GameScore | null;
+  cards: Map<string, Card>;
   dispatch: Dispatch<Action>;
 }
 
 export default function MetadataModal({
   state,
   gameScore,
+  cards,
   dispatch
 }: MetadataModalProps) {
   const selector: MetadataModalSelector | null = useMemo(
@@ -292,6 +297,7 @@ export default function MetadataModal({
       key={remountKey}
       selector={selector}
       state={state}
+      cards={cards}
       gameScore={gameScore}
       dispatch={dispatch}
     />

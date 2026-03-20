@@ -82,7 +82,8 @@ export default function App() {
   const gameScore = useScorer(
     state.players,
     state.selectedCatastrophes,
-    state.catastropheMetadata
+    state.catastropheMetadata,
+    cardsMap
   );
 
   // Merge catastrophe generated metadata back into state
@@ -249,7 +250,7 @@ export default function App() {
         <ScoringLogsModal state={state} dispatch={dispatch} />
       )}
 
-      <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} />
+      <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
     </div>
   );
 }

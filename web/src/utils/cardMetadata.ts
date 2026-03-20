@@ -1,21 +1,25 @@
 import { allCards } from '@scorer/cardContainer';
-import type { MetaDataType, MetaDataScope } from '@scorer/types';
+import type { MetaDataType, MetaDataScope, TRAIT_CARD_TYPES } from '@scorer/types';
 import type { CardEntry } from '../types';
 
 export interface MetadataField {
   key: string;
   type: MetaDataType;
   scope: MetaDataScope;
+  source?: 'player' | 'deck',
+  trait?: (typeof TRAIT_CARD_TYPES)[number]
 }
 
 /** Returns all metadata fields for a card (both user-editable and internal) */
 export function getCardMetadataFields(cardName: string): MetadataField[] {
   const card = allCards().get(cardName);
   if (!card?.metadataRequired) return [];
-  return card.metadataRequired.map(([key, type, scope]) => ({
+  return card.metadataRequired.map(([key, type, scope, source, trait]) => ({
     key,
     type,
-    scope
+    scope,
+    source,
+    trait
   }));
 }
 

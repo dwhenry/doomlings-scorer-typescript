@@ -200,7 +200,7 @@ export function buildMetadataModalViewModel(
     internalFields,
     internalValues,
     playerCardNames: [],
-    allPlayerCardNames: [],
+    allPlayerCardNames: buildAllPlayerCardPairs(players),
     playerCount,
     selectedCatastrophes: []
   };
