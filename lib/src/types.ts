@@ -84,7 +84,8 @@ export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 type MetaData =
 | [string, MetaDataType, MetaDataScope]
 | [string, MetaDataType, MetaDataScope, 'player' | 'deck']
-| [string, MetaDataType, MetaDataScope, 'player' | 'deck', (typeof TRAIT_CARD_TYPES)[number]];
+| [string, MetaDataType, MetaDataScope, 'player' | 'deck', (typeof TRAIT_CARD_TYPES)[number]]
+| [string, MetaDataType, MetaDataScope, 'custom', 'player_highest_value' | 'player_value_over_4'];
 
 export interface Card {
   name: string;

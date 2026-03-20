@@ -1,3 +1,5 @@
+import { PLAYER_CARD_NAME } from "@scorer/types";
+
 interface PlayerCardSelectFieldProps {
   id: string;
   fieldKey: string;
@@ -21,9 +23,10 @@ export function PlayerCardSelectField({
     >
       <option value="">Select...</option>
       {options.map((name, position) => (
-        <option key={`card-${position}`} value={name}>
+        name !== PLAYER_CARD_NAME &&
+        (<option key={`card-${position}`} value={name}>
           {name}
-        </option>
+        </option>)
       ))}
     </select>
   );

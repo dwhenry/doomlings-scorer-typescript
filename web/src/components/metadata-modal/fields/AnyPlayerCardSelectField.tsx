@@ -1,3 +1,5 @@
+import { PLAYER_CARD_NAME } from "@scorer/types";
+
 interface AnyPlayerCardSelectFieldProps {
   id: string;
   fieldKey: string;
@@ -21,13 +23,14 @@ export function AnyPlayerCardSelectField({
     >
       <option value="">Select...</option>
       {options.map(([playerIndex, cardName], position) => (
-        <option
+        cardName !== PLAYER_CARD_NAME &&
+        (<option
           key={`card-${position}`}
           // HTML option values are strings; tuple matches how this metadata is stored at runtime.
           value={[playerIndex, cardName] as unknown as string}
         >
           Player {Number(playerIndex) + 1}: {cardName}
-        </option>
+        </option>)
       ))}
     </select>
   );

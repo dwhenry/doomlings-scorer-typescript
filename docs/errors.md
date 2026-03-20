@@ -1,4 +1,4 @@
-- [ ] Glacial meltdown
+- [X] Glacial meltdown
   - should be able to select the blue card
   - should mark card as discards in logs
 - [X] fortunate

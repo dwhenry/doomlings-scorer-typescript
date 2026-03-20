@@ -6,8 +6,8 @@ export interface MetadataField {
   key: string;
   type: MetaDataType;
   scope: MetaDataScope;
-  source?: 'player' | 'deck',
-  trait?: (typeof TRAIT_CARD_TYPES)[number]
+  source?: 'player' | 'deck' | 'custom',
+  trait?: (typeof TRAIT_CARD_TYPES)[number] | 'player_highest_value' | 'player_value_over_4'
 }
 
 /** Returns all metadata fields for a card (both user-editable and internal) */
