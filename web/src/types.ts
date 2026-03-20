@@ -1,4 +1,4 @@
-import type { Card, CardType, PackType } from '@scorer/types';
+import type { Card, CardType } from '@scorer/types';
 
 export interface PlayerState {
   id: number;
@@ -49,7 +49,10 @@ export interface GameStateExport {
     string,
     Record<string, string | number | string[]>
   >;
-  selectedPacks?: string[];
+  /** Filter by release names (mutually exclusive with selectedCollections) */
+  selectedReleases?: string[];
+  /** Filter by collection names (mutually exclusive with selectedReleases) */
+  selectedCollections?: string[];
 }
 
-export type { Card, CardType, PackType };
+export type { Card, CardType };

@@ -6,17 +6,17 @@ import {
 import { isEffectless, hasAction, isDominant } from './effect_cards';
 import { filterCardsByType, forEachPlayerCards, playerCards } from './helpers';
 
-addBasicCard({ score: 2 }, { name: 'TALONS', type: ['purple'], pack: 'Dinolings' });
-addBasicCard({ score: 1 }, { name: 'TEETH', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'TELEKINETIC', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'TENTACLES', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'TERRITORIAL', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 3 }, { name: 'TERROR BEAK', type: ['blue'], pack: 'Dinolings' });
+addBasicCard({ score: 2 }, { name: 'TALONS', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'TEETH', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'TELEKINETIC', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'TENTACLES', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'TERRITORIAL', type: ['red'] });
+addBasicCard({ score: 3 }, { name: 'TERROR BEAK', type: ['blue'] });
 addCardThatPointsByColour(
   { score: 4, colour: 'purple', pointsPerCard: -1 },
-  { name: 'TETRACHROMATIC', type: ['purple'], pack: 'multi-colour' }
+  { name: 'TETRACHROMATIC', type: ['purple'] }
 );
-addBasicCard({ score: 1 }, { name: 'THAGOMIZER', type: ['green'], pack: 'Dinolings' });
+addBasicCard({ score: 1 }, { name: 'THAGOMIZER', type: ['green'] });
 
 // --- Sign Cards (Meaning of Life) ---
 
@@ -24,7 +24,6 @@ addBasicCard({ score: 1 }, { name: 'THAGOMIZER', type: ['green'], pack: 'Dinolin
 addBasicCard({ score: 0 }, {
   name: 'THE BILBIES',
   type: ['colourless'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -47,7 +46,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE CABOCHON',
   type: ['red'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -72,11 +70,10 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE COSMIC JINX',
   type: ['purple'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
-    allPlayerCards: Array<Array<CardInstance>>,
+    _allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
     if (typeof inst.metadata.gene_pool_size !== 'number') {
@@ -98,7 +95,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE DANCER',
   type: ['colourless'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.PRE_MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -126,7 +122,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE FELLMONGER',
   type: ['red'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -151,7 +146,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE JELLYFISH',
   type: ['purple'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -176,7 +170,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE LOGICIAN',
   type: ['colourless'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -205,7 +198,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE LUMBERJACK',
   type: ['green'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -230,7 +222,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE MAGICIAN',
   type: ['colourless'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -255,7 +246,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE MAVEN',
   type: ['blue'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -277,7 +267,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE SOOTHSAYER',
   type: ['blue'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -302,7 +291,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE SPIRIT GARDENER',
   type: ['green'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -331,14 +319,12 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE THIRD EYE',
   type: ['colourless'],
-  pack: 'Classic',
 });
 
 // +3 if you have 3-5 traits with actions. +6 if you have 6 or more.
 addBasicCard({ score: 0 }, {
   name: 'THE TIGRIS',
   type: ['red'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -362,7 +348,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE VAGRANT',
   type: ['red'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -412,7 +397,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE VIXEN',
   type: ['blue'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -437,7 +421,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE WARBLER',
   type: ['green'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -462,7 +445,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE WARRIOR',
   type: ['red'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
@@ -487,21 +469,19 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 0 }, {
   name: 'THE WEAVER',
   type: ['purple'],
-  pack: 'Meaning of Life',
   calcBRunPhase: CALC_B_PHASES.MEANING_OF_LIFE,
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
-    const playerCards = allPlayerCards[currentPlayer];
     const colourCounts: { [key: string]: number } = {
       red: 0,
       green: 0,
       blue: 0,
       purple: 0
     };
-    playerCards.forEach((c) => {
+    playerCards(allPlayerCards, currentPlayer).forEach((c) => {
       c.type.forEach((type) => {
         if (type in colourCounts) {
           colourCounts[type]++;
@@ -516,8 +496,6 @@ addBasicCard({ score: 0 }, {
       inst,
       'for having ' + completeSets + ' complete sets of all 4 colours'
     );
-
-    // TODO: should we be counting multi-colour cards in a different way
   }
 });
 
@@ -525,7 +503,6 @@ addBasicCard({ score: 0 }, {
 addBasicCard({ score: 17 }, {
   name: 'TINY',
   type: ['blue'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -545,7 +522,6 @@ addBasicCard({ score: 17 }, {
 addBasicCard({ score: -1 }, {
   name: 'TINY ARMS',
   type: ['red'],
-  pack: 'Dinolings',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -559,11 +535,10 @@ addBasicCard({ score: -1 }, {
   metadataRequired: [['dinolings_in_discard', 'number', 'global']]
 });
 
-addBasicCard({ score: 1 }, { name: 'TINY LITTLE MELONS', type: ['green'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'TINY LITTLE MELONS', type: ['green'] });
 addBasicCard({ score: 1 }, {
   name: 'TRANSGENIC MODIFICATION',
   type: ['green'],
-  pack: 'Techlings',
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -586,10 +561,8 @@ addBasicCard({ score: 1 }, {
 addBasicCard({ score: 1 }, {
   name: 'TRUNK',
   type: ['green'],
-  pack: 'Classic',
 });
 addBasicCard({ score: 2 }, {
   name: 'TUBE FEET',
   type: ['blue'],
-  pack: 'KSE',
 });

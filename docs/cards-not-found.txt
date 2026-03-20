@@ -1,0 +1,2 @@
+# Cards not found or failed to fetch (manual update)
+# Run: node scripts/fetch-card-metadata.js

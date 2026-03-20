@@ -2,14 +2,13 @@ import { CardInstance, CardType } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { forEachPlayerCards } from './helpers';
 
-addBasicCard({ score: 3 }, { name: 'VAMPIRISM', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: -2 }, { name: 'VENOMOUS', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 3 }, { name: 'VAMPIRISM', type: ['purple'] });
+addBasicCard({ score: -2 }, { name: 'VENOMOUS', type: ['purple'] });
 
 // At World's End: Choose a color. Opponents receive -1 for each trait of that color in their trait pile.
 addBasicCard({ score: 2 }, {
   name: 'VIRAL',
   type: ['purple'],
-  pack: 'Classic',
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -38,4 +37,4 @@ addBasicCard({ score: 2 }, {
   metadataRequired: [['colour', 'card_type', 'card']]
 });
 
-addBasicCard({ score: 2 }, { name: 'VORACIOUS', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'VORACIOUS', type: ['red'] });

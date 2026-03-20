@@ -1,11 +1,11 @@
 import { CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
-import { forEachPlayerCards } from './helpers';
+import { forEachPlayerCards, playerCards } from './helpers';
 
-addBasicCard({ score: 2 }, { name: 'ACROBATIC', type: ['purple', 'green'], pack: 'multi-colour' });
-addBasicCard({ score: 4 }, { name: 'ADORABLE', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'ACROBATIC', type: ['purple', 'green'] });
+addBasicCard({ score: 4 }, { name: 'ADORABLE', type: ['purple'] });
 addBasicCard({ score: 0 }, {
-  name: 'ALTRUISTIC', type: ['colourless'], pack: 'Classic',
+  name: 'ALTRUISTIC', type: ['colourless'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -18,20 +18,20 @@ addBasicCard({ score: 0 }, {
   },
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 })
-addBasicCard({ score: 2 }, { name: 'ANCIENT', type: ['red'], pack: 'Mythlings' });
-addBasicCard({ score: 3 }, { name: 'ANTLERS', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'ANCIENT', type: ['red'] });
+addBasicCard({ score: 3 }, { name: 'ANTLERS', type: ['red'] });
 addBasicCard({ score: 4 }, {
-  name: 'APEX PREDATOR', type: ['red'], pack: 'Classic',
+  name: 'APEX PREDATOR', type: ['red'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void => {
     let points: number = 4;
-    const myCount: number = allPlayerCards[currentPlayer].length;
+    const myCount: number = playerCards(allPlayerCards, currentPlayer).length;
 
-    forEachPlayerCards(allPlayerCards, (playerCards, i) => {
-      if (i !== currentPlayer && playerCards.length >= myCount) {
+    forEachPlayerCards(allPlayerCards, (traitCards, i) => {
+      if (i !== currentPlayer && traitCards.length >= myCount) {
         points = 0;
       }
     });
@@ -39,5 +39,5 @@ addBasicCard({ score: 4 }, {
     inst.applyPoints(currentPlayer, 'B', points, inst, 'has the most traits');
   }
 })
-addBasicCard({ score: 3 }, { name: 'APPEALING', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 0 }, { name: 'AUTOMIMICRY', type: ['blue'], pack: 'Classic' });
+addBasicCard({ score: 3 }, { name: 'APPEALING', type: ['green'] });
+addBasicCard({ score: -1 }, { name: 'AUTOMIMICRY', type: ['blue'] });

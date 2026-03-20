@@ -1,11 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type Dispatch } from 'react';
 import { Scorer } from '@scorer/scorer';
-import type { PlayerInput } from '@scorer/types';
-import type {
-  CardEntry,
-  GameStateExport,
-  PlayerState
-} from '../types';
+import type { Card, PlayerInput } from '@scorer/types';
+import { PLAYER_CARD_NAME } from '@scorer/types';
+import type { Action, AppState } from '../appReducer';
+import type { CardEntry, GameStateExport, PlayerState } from '../types';
 import { GAME_STATE_EXPORT_VERSION } from '../types';
 
 type LogView = 'byPlayer' | 'bySource';
@@ -34,18 +32,13 @@ interface FormattedPlayerLog {
 }
 
 interface ScoringLogsModalProps {
-  players: PlayerState[];
-  selectedCatastrophes: CardEntry[];
-  catastropheMetadata: Record<
-    string,
-    Record<string, string | number | string[]>
-  >;
-  selectedPacks?: string[];
-  onClose: () => void;
-  onImport: (state: GameStateExport) => void;
+  cards: Map<string, Card>;
+  state: AppState;
+  dispatch: Dispatch<Action>;
 }
 
 function buildScorer(
+  cards: Map<string, Card>,
   players: PlayerState[],
   selectedCatastrophes: CardEntry[],
   catastropheMetadata: Record<
@@ -59,7 +52,7 @@ function buildScorer(
     const playerCards = players.map((p) =>
       p.cards.map((c) => ({ ...c }) as PlayerInput)
     );
-    const scorer = new Scorer(...playerCards);
+    const scorer = new Scorer(cards, ...playerCards);
     if (selectedCatastrophes.length > 0) {
       const catastropheInputs: PlayerInput[] = selectedCatastrophes.map(
         (cat) => ({
@@ -83,18 +76,25 @@ function isValidGameStateExport(
   return (
     typeof o.version === 'number' &&
     Array.isArray(o.players) &&
-    (o.selectedPacks === undefined || Array.isArray(o.selectedPacks))
+    (o.selectedReleases === undefined || Array.isArray(o.selectedReleases)) &&
+    (o.selectedCollections === undefined || Array.isArray(o.selectedCollections))
   );
 }
 
 export default function ScoringLogsModal({
-  players,
-  selectedCatastrophes,
-  catastropheMetadata,
-  selectedPacks = ['Classic'],
-  onClose,
-  onImport
+  state,
+  cards,
+  dispatch
 }: ScoringLogsModalProps) {
+  const {
+    players,
+    selectedCatastrophes,
+    catastropheMetadata,
+    selectedReleases,
+    selectedCollections,
+  } = state;
+
+  const close = () => dispatch({ type: 'CLOSE_SCORING_LOGS' });
   const [logView, setLogView] = useState<LogView>('byPlayer');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [importError, setImportError] = useState<string | null>(null);
@@ -107,7 +107,8 @@ export default function ScoringLogsModal({
       players,
       selectedCatastrophes,
       catastropheMetadata,
-      selectedPacks
+      selectedReleases,
+      selectedCollections
     };
     const blob = new Blob([JSON.stringify(state, null, 2)], {
       type: 'application/json'
@@ -143,8 +144,8 @@ export default function ScoringLogsModal({
           setImportError('Invalid game state file.');
           return;
         }
-        onImport(data);
-        onClose();
+        dispatch({ type: 'IMPORT_GAME_STATE', payload: data });
+        close();
       } catch {
         setImportError('Invalid JSON or file format.');
       }
@@ -162,7 +163,7 @@ export default function ScoringLogsModal({
   };
 
   const scorer = useMemo(
-    () => buildScorer(players, selectedCatastrophes, catastropheMetadata),
+    () => buildScorer(cards, players, selectedCatastrophes, catastropheMetadata),
     [players, selectedCatastrophes, catastropheMetadata]
   );
 
@@ -179,7 +180,7 @@ export default function ScoringLogsModal({
   return (
     <div
       className="modal-overlay"
-      onClick={onClose}
+      onClick={close}
       role="dialog"
       aria-modal="true"
       aria-labelledby="scoring-logs-title"
@@ -282,7 +283,9 @@ export default function ScoringLogsModal({
                             <span className="scoring-logs-card-chevron" aria-hidden>
                               {isExpanded ? '▼' : '▶'}
                             </span>
-                            {card.name}
+                            {card.name === PLAYER_CARD_NAME
+                              ? 'Player (catastrophe points)'
+                              : card.name}
                           </span>
                           <span className="scoring-logs-score-total">
                             {card.phaseB !== undefined
@@ -358,7 +361,7 @@ export default function ScoringLogsModal({
           >
             Import game
           </button>
-          <button type="button" className="modal-cancel" onClick={onClose}>
+          <button type="button" className="modal-cancel" onClick={close}>
             Close
           </button>
         </div>

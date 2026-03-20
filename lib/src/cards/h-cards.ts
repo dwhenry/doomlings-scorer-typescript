@@ -4,13 +4,13 @@ import {
 } from '../cardContainer';
 import { CardInstance } from '../types';
 
-addBasicCard({ score: 1 }, { name: 'HAND-WING', type: ['red', 'purple'], pack: 'multi-colour' });
-addCardThatPointsByColour({ score: -1, colour: 'red', pointsPerCard: 1 }, { name: 'HEAT VISION', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 7 }, { name: 'HEROIC', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'HOT TEMPER', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 4 }, { name: 'HYPER-INTELLIGENCE', type: ['red'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'HAND-WING', type: ['red', 'purple'] });
+addCardThatPointsByColour({ score: -1, colour: 'red', pointsPerCard: 1 }, { name: 'HEAT VISION', type: ['red'] });
+addBasicCard({ score: 7 }, { name: 'HEROIC', type: ['green'] });
+addBasicCard({ score: 2 }, { name: 'HOT TEMPER', type: ['red'] });
+addBasicCard({ score: 4 }, { name: 'HYPER-INTELLIGENCE', type: ['red'] });
 addBasicCard({ score: 0 }, {
-  name: 'HYPER-MYELINATION', type: ['purple'], pack: 'Techlings',
+  name: 'HYPER-MYELINATION', type: ['purple'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

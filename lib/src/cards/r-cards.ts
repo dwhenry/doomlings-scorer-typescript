@@ -2,11 +2,11 @@ import { CALC_B_PHASES, CardInstance } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
-addBasicCard({ score: 2 }, { name: 'RAINBOW HORN', type: ['colourless'], pack: 'Mythlings' });
+addBasicCard({ score: 2 }, { name: 'RAINBOW HORN', type: ['colourless'] });
 
 // Value is equal to the size of your Gene Pool
 addBasicCard({ score: 0 }, {
-  name: 'RANDOM FERTILIZATION', type: ['green'], pack: 'Classic',
+  name: 'RANDOM FERTILIZATION', type: ['green'],
   calcB: (
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -20,12 +20,12 @@ addBasicCard({ score: 0 }, {
   metadataRequired: [['gene_pool_size', 'number', 'player']]
 })
 
-addBasicCard({ score: 3 }, { name: 'RECKLESS', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 0 }, { name: 'REGENERATIVE TISSUE', type: ['blue'], pack: 'Classic' });
-addBasicCard({ score: 5 }, { name: 'RETRACTABLE CLAWS', type: ['red'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'RIGHTEOUS', type: ['blue'], pack: 'Mythlings' });
+addBasicCard({ score: 3 }, { name: 'RECKLESS', type: ['red'] });
+addBasicCard({ score: 0 }, { name: 'REGENERATIVE TISSUE', type: ['blue'] });
+addBasicCard({ score: 5 }, { name: 'RETRACTABLE CLAWS', type: ['red'] });
+addBasicCard({ score: 1 }, { name: 'RIGHTEOUS', type: ['blue'] });
 addBasicCard({ score: 4 }, {
-  name: 'RUGGEDIZED', type: ['colourless'], pack: 'Techlings',
+  name: 'RUGGEDIZED', type: ['colourless'],
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,

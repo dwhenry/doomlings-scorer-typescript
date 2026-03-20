@@ -1,3 +1,4 @@
+import { CARD_COLLECTION_RELEASE } from './cards/cardCollectionRelease';
 import { filterCardsByType } from './cards/helpers';
 import {
   Card,
@@ -7,7 +8,11 @@ import {
   PlayerInput,
   CALC_B_PHASES,
   CatastropheCard,
-  PlayerCardWithOptionalInputs
+  PlayerCardWithOptionalInputs,
+  COLLECTION_TYPES,
+  RELEASE_TYPES,
+  type CollectionType,
+  type ReleaseType
 } from './types';
 
 const cardsMap: Map<string, PlayerCard | CatastropheCard> = new Map();
@@ -20,13 +25,13 @@ function findCard(name: string): PlayerCard | CatastropheCard {
   return card;
 }
 
-export function addBasicCard(custom: { score: number }, card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA'>) {
+export function addBasicCard(custom: { score: number }, card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA' | 'collection' | 'release'>) {
   addCard({
     calcBRunPhase: CALC_B_PHASES.POST_CATASTROPHE,
     blocksDiscarding: false,
     calcA: (
       inst: CardInstance,
-      allPlayerCards: Array<Array<CardInstance>>,
+      _allPlayerCards: Array<Array<CardInstance>>,
       currentPlayer: number
     ): void => {
       inst.applyPoints(currentPlayer, 'A', custom.score, inst, 'face card value')
@@ -37,7 +42,7 @@ export function addBasicCard(custom: { score: number }, card: PlayerCardWithOpti
 
 export function addCardThatPointsByColour(
   custom: { score: number, colour: CardType, pointsPerCard: number },
-  card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA'>
+  card: PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA' | 'collection' | 'release'>
 ) {
   addBasicCard({ score: custom.score }, {
     calcB: (
@@ -60,13 +65,25 @@ export function addCardThatPointsByColour(
   })
 }
 
-export function addCard(card: PlayerCard | CatastropheCard) {
+type CardInput =
+  | (Omit<PlayerCard, 'collection' | 'release'> & Partial<Pick<PlayerCard, 'collection' | 'release'>>)
+  | (Omit<CatastropheCard, 'collection' | 'release'> & Partial<Pick<CatastropheCard, 'collection' | 'release'>>);
+
+export function addCard(card: CardInput) {
   if (cardsMap.has(card.name)) {
     throw new Error(
       `Duplicate card name ${card.name} was attempted to be added`
     );
   }
-  cardsMap.set(card.name, card);
+  const meta = CARD_COLLECTION_RELEASE[card.name];
+  if (meta) {
+    card.collection = meta.collection as CollectionType;
+    card.release = [...meta.release] as ReleaseType[];
+  } else {
+    card.collection = COLLECTION_TYPES[0];
+    card.release = [RELEASE_TYPES[0]];
+  }
+  cardsMap.set(card.name, card as PlayerCard | CatastropheCard);
 }
 
 export function allCards(): Map<string, Card> {

@@ -1,13 +1,12 @@
-import { PlayerCard, CardInstance } from '../types';
+import { CardInstance, PlayerCardWithOptionalInputs } from '../types';
 import { addBasicCard } from '../cardContainer';
 import { playerCards } from './helpers';
 
 // Value is equal to the number of Kidneys in your trait pile (including this one)
-function createKidney(name: string): [{ score: number }, PlayerCard] {
+function createKidney(name: string): [{ score: number }, PlayerCardWithOptionalInputs<'calcBRunPhase' | 'blocksDiscarding' | 'calcA' | 'collection' | 'release'>] {
   return [{ score: 0 }, {
     name,
     type: ['red'],
-    pack: 'Classic',
     calcB: (
       inst: CardInstance,
       allPlayerCards: Array<Array<CardInstance>>,
@@ -19,7 +18,7 @@ function createKidney(name: string): [{ score: number }, PlayerCard] {
         }
       });
     }
-  } as PlayerCard];
+  }];
 }
 
 addBasicCard(...createKidney('KIDNEY (1)'));

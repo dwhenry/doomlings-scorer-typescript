@@ -19,11 +19,12 @@ describe('Using ACROBATIC card', () => {
     expect(scores.getPlayerScore(Player.Two)).toMatchObject({ total: 4 });
     expect(scores.getPlayerScore(Player.Three)).toMatchObject({ total: 2 });
 
-    // Every Acrobatic card is worth 2
+    // Every Acrobatic card is worth 2 (excluding the per-player placeholder card)
     for (const player of [Player.One, Player.Two, Player.Three]) {
       scores
         .getPlayerScore(player)
         .getCardScores()
+        .filter((c) => (c.total ?? 0) !== 0 || (c.finalA ?? 0) !== 0)
         .forEach((c) =>
           expect(c).toMatchObject({ total: 2, finalA: 2, finalB: 0 })
         );
@@ -106,12 +107,12 @@ describe('Using ALTRUISTIC card', () => {
 });
 
 describe('Using AUTOMIMICRY card', () => {
-  test('card with 0 score has finalB of 0, not undefined', () => {
+  test('card with negative base score has finalB of 0, not undefined', () => {
     const scores = new Scorer([{ name: 'AUTOMIMICRY' }]).scores();
     const cardScore = scores.getPlayerScore(Player.One).getCardScoreByIndex(0);
-    expect(cardScore.finalA).toBe(0);
+    expect(cardScore.finalA).toBe(-1);
     expect(cardScore.finalB).toBe(0);
-    expect(cardScore.total).toBe(0);
+    expect(cardScore.total).toBe(-1);
   });
 });
 
@@ -133,20 +134,19 @@ describe('Using APEX PREDATOR card', () => {
       [apexPredator, apexPredator, apexPredator]
     ).scores();
 
-    // Only the last player's cards should score more than 4
+    // Only the last player's cards should score more than 4 (exclude player card)
+    const onlyTraitScores = (cards: { total?: number; finalA?: number }[]) =>
+      cards.filter((c) => (c.total ?? 0) !== 0 || (c.finalA ?? 0) !== 0);
     for (const player of [Player.One, Player.Two, Player.Three]) {
-      const cards = scores.getPlayerScore(player).getCardScores();
-
-      cards.forEach((c) => {
-        expect(c).toMatchObject({ total: 4, finalB: 0, finalA: 4 });
-      });
+      onlyTraitScores(scores.getPlayerScore(player).getCardScores()).forEach(
+        (c) => expect(c).toMatchObject({ total: 4, finalB: 0, finalA: 4 })
+      );
     }
 
     // Player Four has the most cards
-    const playerFour = scores.getPlayerScore(Player.Four);
-    playerFour.getCardScores().forEach((card) => {
-      expect(card).toMatchObject({ total: 8, finalB: 4, finalA: 4 });
-    });
+    onlyTraitScores(scores.getPlayerScore(Player.Four).getCardScores()).forEach(
+      (card) => expect(card).toMatchObject({ total: 8, finalB: 4, finalA: 4 })
+    );
     expect(scores.getPlayerScore(Player.Four).total).toBe(24);
   });
 });

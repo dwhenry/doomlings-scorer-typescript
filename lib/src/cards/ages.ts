@@ -31,6 +31,7 @@
 // oldAddbasicCard('REFORESTATION', 'green', 'Classic', 0);
 // oldAddbasicCard('SEA KINGDOMS', 'blue', 'Classic', 0);
 // oldAddbasicCard('TECTONIC SHIFT', 'green', 'Classic', 0);
+// addBasicCard({ score: 0 }, { name: 'TECTONIC SHIFT (kickstarter)', type: ['green'] });
 // oldAddbasicCard('TEMPORAL SANDS', 'red', 'Classic', 0);
 // oldAddbasicCard('THE BIRTH OF LIFE', 'colourless', 'Classic', 0);
 // oldAddbasicCard('THE MESSIAH', 'red', 'Classic', 0);

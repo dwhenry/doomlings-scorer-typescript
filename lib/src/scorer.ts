@@ -1,4 +1,4 @@
-import { CALC_B_PHASES, CardInstance, PlayerInput, PointsLog, SCORING_PHASES } from './types';
+import { CALC_B_PHASES, CardInstance, PlayerInput, PointsLog, PLAYER_CARD_NAME, SCORING_PHASES, Card } from './types';
 import { getCard } from './cardContainer';
 import './cards';
 import { groupByCardByFromCard } from './helpers';
@@ -16,10 +16,14 @@ export class Scorer {
   private allPlayerCards: Array<Array<CardInstance>>;
   private catastopheCards: Array<CardInstance> = [];
   private scoringRun: boolean = false;
+  private cards: Map<string, Card>;
 
-  constructor(...cardsInput: Array<Array<PlayerInput>>) {
+  constructor(cards: Map<string, Card>, ...cardsInput: Array<Array<PlayerInput>>) {
+    this.cards = cards;
     this.allPlayerCards = cardsInput.map((playerCards) => {
-      return playerCards.map(
+      const hasPlayerCard = playerCards.some((c: PlayerInput) => c.name === PLAYER_CARD_NAME);
+      const normalized = hasPlayerCard ? playerCards : [...playerCards, { name: PLAYER_CARD_NAME }];
+      return normalized.map(
         (playerInput: PlayerInput): CardInstance =>
           getCard(playerInput.name, playerInput)
       );
@@ -58,14 +62,14 @@ export class Scorer {
           if (!inst.metadataComplete) {
             inst.finalB = undefined;
           } else {
-            inst.card.calcB?.(inst, this.allPlayerCards, i);
+            inst.card.calcB?.(inst, this.allPlayerCards, i, this.cards);
           }
         }
         if (calcBRunPhase === inst.card.calcBRunPhase2) {
           if (!inst.metadataComplete) {
             inst.finalB = undefined;
           } else {
-            inst.card.calcB2?.(inst, this.allPlayerCards, i);
+            inst.card.calcB2?.(inst, this.allPlayerCards, i, this.cards);
           }
         }
       });
@@ -115,7 +119,7 @@ export class Scorer {
         applyPosFilter.includes(pos) ? [] : playerCards
       );
 
-      inst.card.calcC?.(inst, filteredPlayerCards);
+      inst.card.calcC?.(inst, filteredPlayerCards, this.cards);
     });
   }
 
@@ -284,7 +288,6 @@ export class Scorer {
   }
 
   getPlayerCards(playerIndex: Player): CardInstance[] {
-    // TODO: Throw
     return this.allPlayerCards[playerIndex];
   }
 }

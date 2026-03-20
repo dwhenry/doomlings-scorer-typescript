@@ -1,0 +1,13 @@
+- [X] Glacial meltdown
+  - should be able to select the blue card
+  - should mark card as discards in logs
+- [X] fortunate
+  - two different cards on site. Coded for the wrong card? ()
+- [X] denial
+  - should not block catastophe at end of world
+- [ ] click on drop down arrow does not expand
+- [X] saudade
+  - two different cards on site. Coded for the wrong card? ()
+- [X] overpoopulation
+  - applied to first card, but that card is discarded. Make a player card that it is possible to apply player level points (no visible in UI, but does appear in logs)
+

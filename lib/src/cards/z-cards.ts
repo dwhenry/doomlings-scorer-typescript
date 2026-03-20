@@ -1,3 +1,3 @@
 import { addBasicCard } from '../cardContainer';
 
-addBasicCard({ score: -2 }, { name: 'ZOMBIFIED', type: ['purple'], pack: 'Mythlings' });
+addBasicCard({ score: -2 }, { name: 'ZOMBIFIED', type: ['purple'] });

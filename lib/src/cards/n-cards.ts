@@ -6,7 +6,6 @@ import { forEachPlayerCards } from './helpers';
 addBasicCard({ score: 0 }, {
   name: 'NANO',
   type: ['green'],
-  pack: 'Techlings',
   calcBRunPhase: CALC_B_PHASES.PRE_CATASTROPHE,
   calcB: (inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
@@ -36,7 +35,7 @@ addBasicCard({ score: 0 }, {
   },
   metadataRequired: [['attached_to', 'any_player_card', 'card']]
 });
-addBasicCard({ score: 1 }, { name: 'NECROMANTIC', type: ['purple'], pack: 'Mythlings' });
-addBasicCard({ score: 2 }, { name: 'NEURAL LINK', type: ['blue'], pack: 'Techlings' });
-addBasicCard({ score: 3 }, { name: 'NOCTURNAL', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 1 }, { name: 'NOSY', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 1 }, { name: 'NECROMANTIC', type: ['purple'] });
+addBasicCard({ score: 2 }, { name: 'NEURAL LINK', type: ['blue'] });
+addBasicCard({ score: 3 }, { name: 'NOCTURNAL', type: ['purple'] });
+addBasicCard({ score: 1 }, { name: 'NOSY', type: ['purple'] });

@@ -29,18 +29,34 @@ const CardTypes = [
 ] as const;
 export type CardType = (typeof CardTypes)[number];
 
-export const PACK_TYPES = [
-  'Classic',
+/** Known release names (display order). From worldofdoomlings.com */
+export const RELEASE_TYPES = [
+  'Classic Game',
+  'Classic Game (Kickstarter)',
+  'Black Box (Kickstarter)',
+  'Gold Box (Kickstarter)',
+  'Deluxe Bundle',
+  'Upgrade Pack',
   'Special Edition',
-  'multi-colour',
+  'Overlush'
+] as const;
+export type ReleaseType = (typeof RELEASE_TYPES)[number];
+
+/** Known collection names (display order). From worldofdoomlings.com */
+export const COLLECTION_TYPES = [
+  'Classic',
   'Dinolings',
   'Mythlings',
   'Techlings',
+  'Multi-Color',
+  'Special Edition',
   'Meaning of Life',
-  'Overlush',
-  'KSE'
+  'Overlush'
 ] as const;
-export type PackType = (typeof PACK_TYPES)[number];
+export type CollectionType = (typeof COLLECTION_TYPES)[number];
+
+/** Name of the special per-player card used for catastrophe player-level points. Not visible in UI; cannot be removed. */
+export const PLAYER_CARD_NAME = '__PLAYER__';
 
 const simpleMetaDataTypes = [
   'number',
@@ -65,30 +81,51 @@ export const META_DATA_SCOPES = [
 ] as const;
 export type MetaDataScope = (typeof META_DATA_SCOPES)[number];
 
-type MetaData = [string, MetaDataType, MetaDataScope];
+type MetaData =
+| [string, MetaDataType, MetaDataScope]
+| [string, MetaDataType, MetaDataScope, 'player' | 'deck']
+| [string, MetaDataType, MetaDataScope, 'player' | 'deck', (typeof TRAIT_CARD_TYPES)[number]]
+| [string, MetaDataType, MetaDataScope, 'custom', 'player_highest_value' | 'player_value_over_4'];
 
 export interface Card {
   name: string;
   type: CardType[];
-  pack: PackType;
+  /** Collection from worldofdoomlings.com (e.g. "Classic", "Special Edition") */
+  collection: CollectionType;
+  /** Releases from worldofdoomlings.com (e.g. ["Classic Game", "Deluxe Bundle"]) */
+  release: ReleaseType[];
   effect?: string;
   calcA?(
     card: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
     currentPlayer: number
   ): void;
-  calcC?(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  calcC?(
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    cards: Map<string, Card>
+  ): void;
   metadataRequired?: Array<MetaData>;
 }
 
 export interface CatastropheCard extends Card {
-  calcC(inst: CardInstance, allPlayerCards: Array<Array<CardInstance>>): void;
+  calcC(
+    inst: CardInstance,
+    allPlayerCards: Array<Array<CardInstance>>,
+    cards: Map<string, Card>
+  ): void;
   calcB?(
     inst: CardInstance,
     allPlayerCards: Array<Array<CardInstance>>,
-    currentPlayer: number
+    currentPlayer: number,
+    cards: Map<string, Card>
   ): void;
 }
+
+/** Catastrophe card without collection/release (set by addCard from CARD_COLLECTION_RELEASE) */
+export type CatastropheCardInput =
+  Omit<CatastropheCard, 'collection' | 'release'> &
+  Partial<Pick<CatastropheCard, 'collection' | 'release'>>;
 
 export interface PlayerCard extends Card {
   calcBRunPhase: typeof CALC_B_PHASES[keyof typeof CALC_B_PHASES];

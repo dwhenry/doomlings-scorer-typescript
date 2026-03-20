@@ -2,16 +2,16 @@ import { addBasicCard } from '../cardContainer';
 import { CardInstance, CardType } from '../types';
 import { playerCards } from './helpers';
 
-addBasicCard({ score: 2 }, { name: 'DEEP ROOTS', type: ['green'], pack: 'Classic' });
-addBasicCard({ score: 4 }, { name: 'DELICIOUS', type: ['colourless'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'DERMAL ARMOR', type: ['colourless'], pack: 'Dinolings' });
-addBasicCard({ score: 4 }, { name: 'DESTINED', type: ['colourless'], pack: 'Mythlings' });
-addBasicCard({ score: -1 }, { name: 'DIAPHANOUS WINGS', type: ['blue'], pack: 'Mythlings' });
-addBasicCard({ score: 1 }, { name: 'DIRECTLY REGISTER', type: ['purple'], pack: 'Classic' });
-addBasicCard({ score: 2 }, { name: 'DOTING', type: ['colourless'], pack: 'Classic' });
+addBasicCard({ score: 2 }, { name: 'DEEP ROOTS', type: ['green'] });
+addBasicCard({ score: 4 }, { name: 'DELICIOUS', type: ['colourless'] });
+addBasicCard({ score: 2 }, { name: 'DERMAL ARMOR', type: ['colourless'] });
+addBasicCard({ score: 4 }, { name: 'DESTINED', type: ['colourless'] });
+addBasicCard({ score: -1 }, { name: 'DIAPHANOUS WINGS', type: ['blue'] });
+addBasicCard({ score: 1 }, { name: 'DIRECTLY REGISTER', type: ['purple'] });
+addBasicCard({ score: 2 }, { name: 'DOTING', type: ['colourless'] });
 // Bonus 4 points if "all 4 colours" are present
 addBasicCard({ score: 1 }, {
-  name: 'DRAGON HEART', type: ['red'], pack: 'Mythlings',
+  name: 'DRAGON HEART', type: ['red'],
   calcB: function (
     card: CardInstance,
     allPlayerCards,
@@ -42,8 +42,5 @@ addBasicCard({ score: 1 }, {
 });
 
 // ignore_next_catastrophe will then ignore based off position in the order.
-addBasicCard({ score: 4 }, {
-  name: 'DENIAL', type: ['colourless'], pack: 'Classic',
-  metadataRequired: [['ignore_next_catastrophe', 'catastrophe', 'card']]
-});
-addBasicCard({ score: 1 }, { name: 'DREAMER', type: ['purple'], pack: 'Classic' });
+addBasicCard({ score: 4 }, { name: 'DENIAL', type: ['colourless']});
+addBasicCard({ score: 1 }, { name: 'DREAMER', type: ['purple'] });
