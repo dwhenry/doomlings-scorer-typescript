@@ -247,7 +247,7 @@ export default function App() {
       </footer>
 
       {state.scoringLogsModalOpen && (
-        <ScoringLogsModal state={state} dispatch={dispatch} />
+        <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />
       )}
 
       <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>

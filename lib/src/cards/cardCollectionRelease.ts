@@ -920,6 +920,10 @@ export const CARD_COLLECTION_RELEASE: Record<
     collection: 'Techlings',
     release: ['Deluxe Bundle', 'Upgrade Pack'],
   },
+  'MECHA (kickstarter)': {
+    collection: 'Techlings',
+    release: ['Gold Box (Kickstarter)'],
+  },
   'MEGA TSUNAMI': {
     collection: 'Classic',
     release: ['Classic Game', 'Deluxe Bundle'],

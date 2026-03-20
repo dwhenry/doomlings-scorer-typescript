@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type Dispatch } from 'react';
 import { Scorer } from '@scorer/scorer';
-import type { PlayerInput } from '@scorer/types';
+import type { Card, PlayerInput } from '@scorer/types';
 import { PLAYER_CARD_NAME } from '@scorer/types';
 import type { Action, AppState } from '../appReducer';
 import type { CardEntry, GameStateExport, PlayerState } from '../types';
@@ -32,11 +32,13 @@ interface FormattedPlayerLog {
 }
 
 interface ScoringLogsModalProps {
+  cards: Map<string, Card>;
   state: AppState;
   dispatch: Dispatch<Action>;
 }
 
 function buildScorer(
+  cards: Map<string, Card>,
   players: PlayerState[],
   selectedCatastrophes: CardEntry[],
   catastropheMetadata: Record<
@@ -50,7 +52,7 @@ function buildScorer(
     const playerCards = players.map((p) =>
       p.cards.map((c) => ({ ...c }) as PlayerInput)
     );
-    const scorer = new Scorer(...playerCards);
+    const scorer = new Scorer(cards, ...playerCards);
     if (selectedCatastrophes.length > 0) {
       const catastropheInputs: PlayerInput[] = selectedCatastrophes.map(
         (cat) => ({
@@ -81,6 +83,7 @@ function isValidGameStateExport(
 
 export default function ScoringLogsModal({
   state,
+  cards,
   dispatch
 }: ScoringLogsModalProps) {
   const {
@@ -88,7 +91,7 @@ export default function ScoringLogsModal({
     selectedCatastrophes,
     catastropheMetadata,
     selectedReleases,
-    selectedCollections
+    selectedCollections,
   } = state;
 
   const close = () => dispatch({ type: 'CLOSE_SCORING_LOGS' });
@@ -160,7 +163,7 @@ export default function ScoringLogsModal({
   };
 
   const scorer = useMemo(
-    () => buildScorer(players, selectedCatastrophes, catastropheMetadata),
+    () => buildScorer(cards, players, selectedCatastrophes, catastropheMetadata),
     [players, selectedCatastrophes, catastropheMetadata]
   );
 

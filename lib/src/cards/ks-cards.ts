@@ -83,6 +83,7 @@ addBasicCard({ score: 1 }, {
     }
   }
 });
+addBasicCard({ score: 2 }, {name: 'MECHA (kickstarter)', type: ['blue']})
 addBasicCard({ score: 3 }, {
   name: 'PACK BEHAVIOR (kickstarter)',
   type: ['green'],
