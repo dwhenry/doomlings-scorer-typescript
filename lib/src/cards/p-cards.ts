@@ -59,8 +59,6 @@ addBasicCard({ score: 3 }, {
       inst,
       'point for each pair of colours'
     );
-
-    // TODO: we need to rescore this after any colour changes
   }
 });
 

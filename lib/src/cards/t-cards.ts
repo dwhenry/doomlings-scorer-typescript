@@ -496,8 +496,6 @@ addBasicCard({ score: 0 }, {
       inst,
       'for having ' + completeSets + ' complete sets of all 4 colours'
     );
-
-    // TODO: should we be counting multi-colour cards in a different way
   }
 });
 

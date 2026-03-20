@@ -14,7 +14,6 @@ addBasicCard({ score: 2 }, {
   ): void => {
     const attachedTo = playerCards(allPlayerCards, currentPlayer)
       .find((cardInst) => cardInst.card.name === inst.metadata.attached_to)
-    // TODO: better feedback on why the attachment failed
     if (!attachedTo) {
       inst.generatedMetadata.attached_to = '';
       if(inst.metadata.attached_to) {

@@ -38,7 +38,6 @@ export function CardPerPersonFields({
   onSlotChange
 }: CardPerPersonFieldsProps) {
   const fieldKey = field.key;
-  // TODO: filter by trait if present
   const playerCardNames  = (pos: number) => {
     const cardNames = allPlayerCardNames
       .filter(([playerIndex, cardName]) => {

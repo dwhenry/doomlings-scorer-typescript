@@ -87,8 +87,6 @@ addBasicCard({ score: 0 }, {
       inst,
       'point for each pair of green card in opponents hands'
     );
-
-    // TODO: we need to queue this card for post-processing as card colours can change
   }
 });
 addBasicCard({ score: 1 }, { name: 'BRAVE', type: ['red'],
