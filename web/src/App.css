@@ -336,6 +336,14 @@ body {
   background: #555;
 }
 
+/* Desktop: keep horizontal scrollbar visible and reserve gutter */
+@media (min-width: 768px) {
+  .player-hand {
+    overflow-x: scroll;
+    scrollbar-gutter: stable;
+  }
+}
+
 .player-hand.drag-over {
   background: linear-gradient(135deg, #e3f2fd 0%, #dbeafe 100%);
   border-color: #2196f3;

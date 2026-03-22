@@ -1,4 +1,4 @@
-import type { Dispatch } from 'react';
+import { useLayoutEffect, useRef, type Dispatch } from 'react';
 import type { Action } from '../appReducer';
 import type { PlayerState, CardGroup } from '../types';
 
@@ -66,6 +66,32 @@ export default function PlayerCard({
   onDrop,
   showAddButton
 }: PlayerCardProps) {
+  const prevCardCountRef = useRef(player.cards.length);
+  const scrollTargetRef = useRef<HTMLDivElement | null>(null);
+
+  const lastCardIndex = player.cards.length > 0 ? player.cards.length - 1 : -1;
+
+  useLayoutEffect(() => {
+    if (isMobile) {
+      prevCardCountRef.current = player.cards.length;
+      return;
+    }
+    if (
+      player.cards.length > prevCardCountRef.current &&
+      scrollTargetRef.current
+    ) {
+      const reduceMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollTargetRef.current.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+    prevCardCountRef.current = player.cards.length;
+  }, [player.cards.length, isMobile]);
+
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -115,9 +141,15 @@ export default function PlayerCard({
         ) : (
           cardGroups.map((group) => {
             const allDiscarded = group.discardedIndices.length === group.count;
+            const refLastAdded =
+              lastCardIndex >= 0 &&
+              group.cardIndices.includes(lastCardIndex)
+                ? scrollTargetRef
+                : undefined;
             return (
               <div
                 key={`${group.name}-${group.cardIndices[0]}`}
+                ref={refLastAdded}
                 className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
                 onMouseEnter={() =>
                   setHoveredCard(dispatch, group.name)
