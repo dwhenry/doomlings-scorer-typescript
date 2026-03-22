@@ -275,6 +275,7 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_MODAL':
       return {
         ...state,
+        hoveredCard: null,
         selectedPlayerId:
           state.selectedPlayerId === null ? action.playerId : state.selectedPlayerId,
         modal: {
@@ -286,6 +287,7 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_CATASTROPHE_MODAL':
       return {
         ...state,
+        hoveredCard: null,
         catastropheModal: {
           cardName: action.cardName
         }
@@ -442,10 +444,11 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         selectedPlayerId: null,
-        mobileAddingForPlayer: null
+        mobileAddingForPlayer: null,
+        hoveredCard: null
       };
     case 'OPEN_SCORING_LOGS':
-      return { ...state, scoringLogsModalOpen: true };
+      return { ...state, scoringLogsModalOpen: true, hoveredCard: null };
     case 'CLOSE_SCORING_LOGS':
       return { ...state, scoringLogsModalOpen: false };
     case 'IMPORT_GAME_STATE': {
@@ -480,7 +483,8 @@ export function reducer(state: AppState, action: Action): AppState {
         modal: null,
         catastropheModal: null,
         mobileAddingForPlayer: null,
-        scoringLogsModalOpen: false
+        scoringLogsModalOpen: false,
+        hoveredCard: null
       };
     }
     case 'NEW_GAME':

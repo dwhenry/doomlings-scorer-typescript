@@ -37,7 +37,7 @@ export default function PackDisplay({
     (cardName: string | null) => {
       dispatch({ type: 'SET_HOVERED', cardName });
     },
-    []
+    [dispatch]
   );
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const headerBottom = useHeaderBottom();
