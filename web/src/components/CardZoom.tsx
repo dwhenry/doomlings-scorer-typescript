@@ -3,18 +3,28 @@ interface CardZoomProps {
 }
 
 export default function CardZoom({ cardName }: CardZoomProps) {
-  if (!cardName) return null;
-
   return (
-    <div className="card-zoom active">
-      <img
-        src={`/cards/${encodeURIComponent(cardName)}.png`}
-        alt={cardName}
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = 'none';
-        }}
-      />
-      <div className="card-zoom-name">{cardName}</div>
-    </div>
+    <aside
+      className={`card-zoom-dock${cardName ? ' card-zoom-dock--has-card' : ''}`}
+      aria-label="Card preview"
+    >
+      {cardName ? (
+        <>
+          <img
+            className="card-zoom-dock__img"
+            src={`/cards/${encodeURIComponent(cardName)}.png`}
+            alt={cardName}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+          <div className="card-zoom-dock__name">{cardName}</div>
+        </>
+      ) : (
+        <p className="card-zoom-dock__placeholder">
+          Hover a card for a larger preview
+        </p>
+      )}
+    </aside>
   );
 }

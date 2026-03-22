@@ -59,6 +59,12 @@ export default function App() {
       const container = document.querySelector(
         '.game-container'
       ) as HTMLElement | null;
+      if (shell) {
+        document.documentElement.style.setProperty(
+          '--desk-sticky-top',
+          `${shell.offsetHeight + 12}px`
+        );
+      }
       if (shell && container) {
         container.style.paddingTop = `${shell.offsetHeight + 20}px`;
       }
@@ -203,8 +209,6 @@ export default function App() {
 
   return (
     <div className="game-container">
-      <CardZoom cardName={state.hoveredCard} />
-
       <div className="site-top-fixed">
         <BetaBanner />
         <Header state={state} dispatch={dispatch}>
@@ -217,14 +221,17 @@ export default function App() {
         </Header>
       </div>
 
-      <PackDisplay
-        state={state}
-        dispatch={dispatch}
-        cards={cardsMap}
-        onClickCard={handleClickCard}
-        onClickCatastrophe={handleClickCatastrophe}
-        onDeselectCatastrophe={handleDeselectCatastrophe}
-      />
+      <div className="desk-row">
+        <PackDisplay
+          state={state}
+          dispatch={dispatch}
+          cards={cardsMap}
+          onClickCard={handleClickCard}
+          onClickCatastrophe={handleClickCatastrophe}
+          onDeselectCatastrophe={handleDeselectCatastrophe}
+        />
+        <CardZoom cardName={state.hoveredCard} />
+      </div>
 
       <AppFooter
         onOpenScoringLogs={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
