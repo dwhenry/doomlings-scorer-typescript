@@ -45,6 +45,8 @@ function startAddingForPlayer(
   dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
 }
 
+export type PlayerCardLayoutVariant = 'default' | 'compact' | 'featured';
+
 interface PlayerCardProps {
   dispatch: Dispatch<Action>;
   player: PlayerState;
@@ -54,6 +56,8 @@ interface PlayerCardProps {
   totalScore: number;
   onDrop: (playerId: number, cardName: string) => void;
   showAddButton?: boolean;
+  /** Desktop: narrow name+score when another player is selected */
+  layoutVariant?: PlayerCardLayoutVariant;
 }
 
 export default function PlayerCard({
@@ -64,15 +68,17 @@ export default function PlayerCard({
   cardGroups,
   totalScore,
   onDrop,
-  showAddButton
+  showAddButton,
+  layoutVariant = 'default'
 }: PlayerCardProps) {
   const prevCardCountRef = useRef(player.cards.length);
   const scrollTargetRef = useRef<HTMLDivElement | null>(null);
 
   const lastCardIndex = player.cards.length > 0 ? player.cards.length - 1 : -1;
+  const isCompact = layoutVariant === 'compact';
 
   useLayoutEffect(() => {
-    if (isMobile) {
+    if (isMobile || isCompact) {
       prevCardCountRef.current = player.cards.length;
       return;
     }
@@ -90,7 +96,7 @@ export default function PlayerCard({
       });
     }
     prevCardCountRef.current = player.cards.length;
-  }, [player.cards.length, isMobile]);
+  }, [player.cards.length, isMobile, isCompact]);
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -115,9 +121,37 @@ export default function PlayerCard({
     }
   }
 
+  const layoutClass =
+    layoutVariant === 'featured'
+      ? ' player--featured'
+      : isCompact
+        ? ' player--compact'
+        : '';
+
+  if (isCompact) {
+    return (
+      <div
+        className={`player player--compact${isSelected ? ' selected' : ''}`}
+        data-player-id={player.id}
+        onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="player-header">
+          <h3>{player.name}</h3>
+          <div className="player-score">
+            <span className="total-score">{totalScore}</span> pts
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`player${isSelected ? ' selected' : ''}`}
+      className={`player${isSelected ? ' selected' : ''}${layoutClass}`}
       data-player-id={player.id}
       onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
     >

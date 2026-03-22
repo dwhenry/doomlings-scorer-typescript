@@ -9,7 +9,7 @@ import {
   hasCardScopedMetadata
 } from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import PlayerCard from './PlayerCard';
+import PlayerCard, { type PlayerCardLayoutVariant } from './PlayerCard';
 
 interface PlayerSectionProps {
   state: AppState;
@@ -199,28 +199,73 @@ export default function PlayerSection({
     );
   }
 
-  return (
-    <section className="players-section">
-      {players.map((player, index) => {
-        const cardGroups = buildCardGroups(player, gameScore, index);
-        const totalScore = gameScore
-          ? gameScore.getPlayerScore(index).total
-          : 0;
+  const desktopHasSelection = !isMobile && selectedPlayerId !== null;
 
-        return (
-          <PlayerCard
-            key={player.id}
-            dispatch={dispatch}
-            player={player}
-            isSelected={selectedPlayerId === player.id}
-            isMobile={isMobile}
-            cardGroups={cardGroups}
-            totalScore={totalScore}
-            onDrop={onDropCard}
-            showAddButton={isMobile}
-          />
-        );
-      })}
+  const sectionClass = `players-section${
+    isMobile
+      ? ''
+      : desktopHasSelection
+        ? ' players-section--has-selection'
+        : ' players-section--grid-desktop-2'
+  }`;
+
+  function playerCardFor(
+    player: PlayerState,
+    playerIndex: number,
+    layoutVariant: PlayerCardLayoutVariant
+  ) {
+    const cardGroups = buildCardGroups(player, gameScore, playerIndex);
+    const totalScore = gameScore
+      ? gameScore.getPlayerScore(playerIndex).total
+      : 0;
+
+    return (
+      <PlayerCard
+        key={player.id}
+        dispatch={dispatch}
+        player={player}
+        isSelected={selectedPlayerId === player.id}
+        isMobile={isMobile}
+        cardGroups={cardGroups}
+        totalScore={totalScore}
+        onDrop={onDropCard}
+        showAddButton={isMobile}
+        layoutVariant={layoutVariant}
+      />
+    );
+  }
+
+  if (desktopHasSelection) {
+    const selected = players.find((p) => p.id === selectedPlayerId);
+    if (!selected) {
+      return (
+        <section className={sectionClass}>
+          {players.map((player, index) =>
+            playerCardFor(player, index, 'default')
+          )}
+        </section>
+      );
+    }
+    const selectedIndex = players.findIndex((p) => p.id === selected.id);
+    const others = players.filter((p) => p.id !== selectedPlayerId);
+
+    return (
+      <section className={sectionClass}>
+        {playerCardFor(selected, selectedIndex, 'featured')}
+        <div className="players-section__others" aria-label="Other players">
+          {others.map((p) =>
+            playerCardFor(p, players.findIndex((x) => x.id === p.id), 'compact')
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className={sectionClass}>
+      {players.map((player, index) =>
+        playerCardFor(player, index, 'default')
+      )}
     </section>
   );
 }
