@@ -15,12 +15,8 @@ body {
   min-height: 100vh;
 }
 
-/* Game Container */
-.game-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  padding-bottom: 72px;
+/* Root layout: top bar is full viewport width; main content stays in .game-container */
+.app-root {
   font-family:
     'Inter',
     -apple-system,
@@ -28,6 +24,18 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
+}
+
+.app-top-full-width {
+  width: 100%;
+}
+
+/* Game Container */
+.game-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-bottom: 72px;
   padding-top: 20px;
 }
 

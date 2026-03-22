@@ -211,57 +211,61 @@ export default function App() {
   );
 
   return (
-    <div className="game-container">
-      <BetaBanner />
-      <Header state={state} dispatch={dispatch} />
-      <div className="players-strip-sticky">
-        <PlayerSection
-          state={state}
-          dispatch={dispatch}
-          onDropCard={handleDropCard}
-          gameScore={gameScore}
-        />
+    <div className="app-root">
+      <div className="app-top-full-width">
+        <BetaBanner />
+        <Header state={state} dispatch={dispatch} />
       </div>
+      <div className="game-container">
+        <div className="players-strip-sticky">
+          <PlayerSection
+            state={state}
+            dispatch={dispatch}
+            onDropCard={handleDropCard}
+            gameScore={gameScore}
+          />
+        </div>
 
-      <div className="desk-row">
-        <PackDisplay
-          state={state}
-          dispatch={dispatch}
-          cards={cardsMap}
-          onClickCard={handleClickCard}
-          onClickCatastrophe={handleClickCatastrophe}
-          onDeselectCatastrophe={handleDeselectCatastrophe}
+        <div className="desk-row">
+          <PackDisplay
+            state={state}
+            dispatch={dispatch}
+            cards={cardsMap}
+            onClickCard={handleClickCard}
+            onClickCatastrophe={handleClickCatastrophe}
+            onDeselectCatastrophe={handleDeselectCatastrophe}
+          />
+          <CardZoom cardName={state.hoveredCard} />
+        </div>
+
+        <AppFooter
+          onOpenScoringLogs={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
+          scoringLogsDisabled={!gameScore}
+          scoringLogsTitle={
+            gameScore
+              ? 'View detailed scoring logs'
+              : 'Add cards to see scoring logs'
+          }
+          onOpenContact={() => setContactModalOpen(true)}
+          onOpenLicense={() => setLicenseModalOpen(true)}
         />
-        <CardZoom cardName={state.hoveredCard} />
+
+        {contactModalOpen && (
+          <EmailContactModal
+            mode="contact"
+            onClose={() => setContactModalOpen(false)}
+          />
+        )}
+        {licenseModalOpen && (
+          <LicenseModal onClose={() => setLicenseModalOpen(false)} />
+        )}
+
+        {state.scoringLogsModalOpen && (
+          <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />
+        )}
+
+        <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
       </div>
-
-      <AppFooter
-        onOpenScoringLogs={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
-        scoringLogsDisabled={!gameScore}
-        scoringLogsTitle={
-          gameScore
-            ? 'View detailed scoring logs'
-            : 'Add cards to see scoring logs'
-        }
-        onOpenContact={() => setContactModalOpen(true)}
-        onOpenLicense={() => setLicenseModalOpen(true)}
-      />
-
-      {contactModalOpen && (
-        <EmailContactModal
-          mode="contact"
-          onClose={() => setContactModalOpen(false)}
-        />
-      )}
-      {licenseModalOpen && (
-        <LicenseModal onClose={() => setLicenseModalOpen(false)} />
-      )}
-
-      {state.scoringLogsModalOpen && (
-        <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />
-      )}
-
-      <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
     </div>
   );
 }
