@@ -7,14 +7,13 @@ import {
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import '@scorer/cards';
-import type { Card, GameStateExport } from './types';
-import { GAME_STATE_EXPORT_VERSION } from './types';
+import type { Card } from './types';
 import {
   GAME_STATE_STORAGE_KEY,
   getInitialState,
-  reducer,
-  type AppState
+  reducer
 } from './appReducer';
+import { gameStateToExport } from './utils/gameStateExport';
 import { useScorer } from './hooks/useScorer';
 import { getEditableMetadataFields } from './utils/cardMetadata';
 import Header from './components/Header';
@@ -23,21 +22,14 @@ import PackDisplay from './components/PackDisplay';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
 import ScoringLogsModal from './components/ScoringLogsModal';
-
-function stateToExport(state: AppState): GameStateExport {
-  return {
-    version: GAME_STATE_EXPORT_VERSION,
-    exportedAt: new Date().toISOString(),
-    players: state.players,
-    selectedCatastrophes: state.selectedCatastrophes,
-    catastropheMetadata: state.catastropheMetadata,
-    selectedReleases: state.selectedReleases,
-    selectedCollections: state.selectedCollections
-  };
-}
+import AppFooter from './components/AppFooter';
+import EmailContactModal from './components/EmailContactModal';
+import LicenseModal from './components/LicenseModal';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false);
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
 
   useEffect(() => {
@@ -46,7 +38,7 @@ export default function App() {
 
   // Persist game state so refresh restores it; only reset when user clicks "New Game"
   useEffect(() => {
-    const payload = stateToExport(state);
+    const payload = gameStateToExport(state);
     localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(payload));
   }, [
     state.players,
@@ -230,21 +222,27 @@ export default function App() {
         onDeselectCatastrophe={handleDeselectCatastrophe}
       />
 
-      <footer className="scoring-logs-footer">
-        <button
-          type="button"
-          className="scoring-logs-footer-btn"
-          onClick={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
-          disabled={!gameScore}
-          title={
-            gameScore
-              ? 'View detailed scoring logs'
-              : 'Add cards to see scoring logs'
-          }
-        >
-          View scoring logs
-        </button>
-      </footer>
+      <AppFooter
+        onOpenScoringLogs={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
+        scoringLogsDisabled={!gameScore}
+        scoringLogsTitle={
+          gameScore
+            ? 'View detailed scoring logs'
+            : 'Add cards to see scoring logs'
+        }
+        onOpenContact={() => setContactModalOpen(true)}
+        onOpenLicense={() => setLicenseModalOpen(true)}
+      />
+
+      {contactModalOpen && (
+        <EmailContactModal
+          mode="contact"
+          onClose={() => setContactModalOpen(false)}
+        />
+      )}
+      {licenseModalOpen && (
+        <LicenseModal onClose={() => setLicenseModalOpen(false)} />
+      )}
 
       {state.scoringLogsModalOpen && (
         <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />

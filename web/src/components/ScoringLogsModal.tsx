@@ -1,10 +1,17 @@
-import { useMemo, useRef, useState, type Dispatch } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type Dispatch
+} from 'react';
 import { Scorer } from '@scorer/scorer';
 import type { Card, PlayerInput } from '@scorer/types';
 import { PLAYER_CARD_NAME } from '@scorer/types';
 import type { Action, AppState } from '../appReducer';
+import EmailContactModal from './EmailContactModal';
 import type { CardEntry, GameStateExport, PlayerState } from '../types';
-import { GAME_STATE_EXPORT_VERSION } from '../types';
+import { gameStateToExport } from '../utils/gameStateExport';
 
 type LogView = 'byPlayer' | 'bySource';
 
@@ -98,19 +105,12 @@ export default function ScoringLogsModal({
   const [logView, setLogView] = useState<LogView>('byPlayer');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [importError, setImportError] = useState<string | null>(null);
+  const [bugReportOpen, setBugReportOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
-    const state: GameStateExport = {
-      version: GAME_STATE_EXPORT_VERSION,
-      exportedAt: new Date().toISOString(),
-      players,
-      selectedCatastrophes,
-      catastropheMetadata,
-      selectedReleases,
-      selectedCollections
-    };
-    const blob = new Blob([JSON.stringify(state, null, 2)], {
+    const payload = gameStateToExport(state);
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json'
     });
     const url = URL.createObjectURL(blob);
@@ -126,7 +126,7 @@ export default function ScoringLogsModal({
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -177,7 +177,13 @@ export default function ScoringLogsModal({
     logsData &&
     logsData.some((p) => p.cards.some((c) => c.pointsLog.length > 0));
 
+  const bugReportGameJson = useMemo(
+    () => JSON.stringify(gameStateToExport(state), null, 2),
+    [state]
+  );
+
   return (
+    <>
     <div
       className="modal-overlay"
       onClick={close}
@@ -338,7 +344,7 @@ export default function ScoringLogsModal({
             {importError}
           </p>
         )}
-        <div className="modal-actions">
+        <div className="modal-actions scoring-logs-modal-actions">
           <input
             ref={fileInputRef}
             type="file"
@@ -347,6 +353,13 @@ export default function ScoringLogsModal({
             className="scoring-logs-file-input"
             aria-hidden
           />
+          <button
+            type="button"
+            className="scoring-logs-report-bug-btn"
+            onClick={() => setBugReportOpen(true)}
+          >
+            Report scoring bug
+          </button>
           <button
             type="button"
             className="scoring-logs-export-btn"
@@ -367,5 +380,13 @@ export default function ScoringLogsModal({
         </div>
       </div>
     </div>
+    {bugReportOpen && (
+      <EmailContactModal
+        mode="bug"
+        gameStateJson={bugReportGameJson}
+        onClose={() => setBugReportOpen(false)}
+      />
+    )}
+    </>
   );
 }
