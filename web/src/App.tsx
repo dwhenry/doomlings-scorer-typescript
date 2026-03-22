@@ -23,6 +23,7 @@ import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
 import ScoringLogsModal from './components/ScoringLogsModal';
 import AppFooter from './components/AppFooter';
+import BetaBanner from './components/BetaBanner';
 import EmailContactModal from './components/EmailContactModal';
 import LicenseModal from './components/LicenseModal';
 
@@ -49,17 +50,17 @@ export default function App() {
     state.selectedCollections
   ]);
 
-  // Adjust padding for fixed header
+  // Adjust padding for fixed top (beta banner + header)
   useEffect(() => {
     function adjustPadding() {
-      const header = document.querySelector(
-        '.game-header'
+      const shell = document.querySelector(
+        '.site-top-fixed'
       ) as HTMLElement | null;
       const container = document.querySelector(
         '.game-container'
       ) as HTMLElement | null;
-      if (header && container) {
-        container.style.paddingTop = `${header.offsetHeight + 20}px`;
+      if (shell && container) {
+        container.style.paddingTop = `${shell.offsetHeight + 20}px`;
       }
     }
     adjustPadding();
@@ -204,14 +205,17 @@ export default function App() {
     <div className="game-container">
       <CardZoom cardName={state.hoveredCard} />
 
-      <Header state={state} dispatch={dispatch}>
-        <PlayerSection
-          state={state}
-          dispatch={dispatch}
-          onDropCard={handleDropCard}
-          gameScore={gameScore}
-        />
-      </Header>
+      <div className="site-top-fixed">
+        <BetaBanner />
+        <Header state={state} dispatch={dispatch}>
+          <PlayerSection
+            state={state}
+            dispatch={dispatch}
+            onDropCard={handleDropCard}
+            gameScore={gameScore}
+          />
+        </Header>
+      </div>
 
       <PackDisplay
         state={state}
