@@ -28,16 +28,7 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  padding-top: 200px;
-}
-
-/* Fixed top: beta notice + main header */
-.site-top-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+  padding-top: 20px;
 }
 
 .beta-banner {
@@ -56,8 +47,9 @@ body {
   max-width: 56rem;
 }
 
-/* Header */
+/* Header (title + game options — scrolls with page) */
 .game-header {
+  position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
   background-size: 200% 100%;
   animation: headerGradient 8s ease infinite;
@@ -214,6 +206,17 @@ body {
   overflow: visible;
 }
 
+/* Sticky strip: player hands (banner + game header scroll away above) */
+.players-strip-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.players-strip-sticky .players-section:not(.players-section--focused) {
+  margin-top: 0;
+}
+
 /* Players Section */
 .players-section {
   display: grid;
@@ -222,7 +225,6 @@ body {
   padding: 15px 20px;
   background: white;
   border-bottom: 3px solid #dee2e6;
-  z-index: 998;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-top: 15px;
 }

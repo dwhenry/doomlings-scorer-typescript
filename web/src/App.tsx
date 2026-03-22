@@ -50,31 +50,34 @@ export default function App() {
     state.selectedCollections
   ]);
 
-  // Adjust padding for fixed top (beta banner + header)
+  // Sticky player strip height → card preview dock offset when scrolling
   useEffect(() => {
-    function adjustPadding() {
-      const shell = document.querySelector(
-        '.site-top-fixed'
-      ) as HTMLElement | null;
-      const container = document.querySelector(
-        '.game-container'
-      ) as HTMLElement | null;
-      if (shell) {
-        document.documentElement.style.setProperty(
-          '--desk-sticky-top',
-          `${shell.offsetHeight + 12}px`
-        );
-      }
-      if (shell && container) {
-        container.style.paddingTop = `${shell.offsetHeight + 20}px`;
-      }
+    const strip = document.querySelector(
+      '.players-strip-sticky'
+    ) as HTMLElement | null;
+
+    function setPreviewStickyTop() {
+      if (!strip) return;
+      document.documentElement.style.setProperty(
+        '--desk-sticky-top',
+        `${strip.offsetHeight + 12}px`
+      );
     }
-    adjustPadding();
-    window.addEventListener('resize', adjustPadding);
-    const timer = setTimeout(adjustPadding, 100);
+
+    setPreviewStickyTop();
+    window.addEventListener('resize', setPreviewStickyTop);
+    const timer = setTimeout(setPreviewStickyTop, 100);
+
+    let observer: ResizeObserver | undefined;
+    if (strip && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(setPreviewStickyTop);
+      observer.observe(strip);
+    }
+
     return () => {
-      window.removeEventListener('resize', adjustPadding);
+      window.removeEventListener('resize', setPreviewStickyTop);
       clearTimeout(timer);
+      observer?.disconnect();
     };
   }, [state.players, state.selectedPlayerId, state.playerCount]);
 
@@ -209,16 +212,15 @@ export default function App() {
 
   return (
     <div className="game-container">
-      <div className="site-top-fixed">
-        <BetaBanner />
-        <Header state={state} dispatch={dispatch}>
-          <PlayerSection
-            state={state}
-            dispatch={dispatch}
-            onDropCard={handleDropCard}
-            gameScore={gameScore}
-          />
-        </Header>
+      <BetaBanner />
+      <Header state={state} dispatch={dispatch} />
+      <div className="players-strip-sticky">
+        <PlayerSection
+          state={state}
+          dispatch={dispatch}
+          onDropCard={handleDropCard}
+          gameScore={gameScore}
+        />
       </div>
 
       <div className="desk-row">

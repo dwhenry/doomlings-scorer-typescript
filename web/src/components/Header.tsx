@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type ReactNode
-} from 'react';
+import { useCallback, useEffect, useMemo, useState, type Dispatch } from 'react';
 import type { Action, AppState } from '../appReducer';
 import ReleaseCollectionSelect from './ReleaseCollectionSelect';
 import MobileHeaderMenu from './MobileHeaderMenu';
@@ -17,7 +10,6 @@ import { shareOrDownloadGameState } from '../utils/shareGameState';
 interface HeaderProps {
   state: AppState;
   dispatch: Dispatch<Action>;
-  children: ReactNode;
 }
 
 function useIsMobile(): boolean {
@@ -32,7 +24,7 @@ function useIsMobile(): boolean {
   return isMobile;
 }
 
-export default function Header({ state, dispatch, children }: HeaderProps) {
+export default function Header({ state, dispatch }: HeaderProps) {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [deckModalOpen, setDeckModalOpen] = useState(false);
@@ -107,8 +99,6 @@ export default function Header({ state, dispatch, children }: HeaderProps) {
           </div>
         )}
       </div>
-
-      {children}
 
       {isMobile && (
         <MobileHeaderMenu
