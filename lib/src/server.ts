@@ -27,20 +27,6 @@ app.get(
   }
 );
 
-app.get(
-  '/api/score',
-  async (req: Request, res: Response): Promise<Response> => {
-    const scorer = new Scorer([{ name: 'ACROBATIC' }]);
-    const scores = scorer.scores();
-    let message = '';
-    for (const p of scores.getPlayerScores()) {
-      message = `${message}Player ${p}: ${p.total}\n`;
-    }
-
-    return res.status(200).send({ message });
-  }
-);
-
 // Fallback: serve index.html for client-side routing
 app.get('*', (req: Request, res: Response): void => {
   res.sendFile(path.join(webDistPath, 'index.html'));
