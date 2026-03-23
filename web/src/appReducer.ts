@@ -95,7 +95,8 @@ export type Action =
   | { type: 'OPEN_SCORING_LOGS' }
   | { type: 'CLOSE_SCORING_LOGS' }
   | { type: 'IMPORT_GAME_STATE'; payload: GameStateExport }
-  | { type: 'NEW_GAME' };
+  | { type: 'NEW_GAME' }
+  | { type: 'NEW_GAME_WITH_PLAYER_COUNT'; count: 2 | 3 | 4 };
 
 function createPlayers(count: number): PlayerState[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -274,6 +275,7 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_MODAL':
       return {
         ...state,
+        hoveredCard: null,
         selectedPlayerId:
           state.selectedPlayerId === null ? action.playerId : state.selectedPlayerId,
         modal: {
@@ -285,6 +287,7 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'OPEN_CATASTROPHE_MODAL':
       return {
         ...state,
+        hoveredCard: null,
         catastropheModal: {
           cardName: action.cardName
         }
@@ -441,10 +444,11 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         selectedPlayerId: null,
-        mobileAddingForPlayer: null
+        mobileAddingForPlayer: null,
+        hoveredCard: null
       };
     case 'OPEN_SCORING_LOGS':
-      return { ...state, scoringLogsModalOpen: true };
+      return { ...state, scoringLogsModalOpen: true, hoveredCard: null };
     case 'CLOSE_SCORING_LOGS':
       return { ...state, scoringLogsModalOpen: false };
     case 'IMPORT_GAME_STATE': {
@@ -479,12 +483,22 @@ export function reducer(state: AppState, action: Action): AppState {
         modal: null,
         catastropheModal: null,
         mobileAddingForPlayer: null,
-        scoringLogsModalOpen: false
+        scoringLogsModalOpen: false,
+        hoveredCard: null
       };
     }
     case 'NEW_GAME':
       localStorage.removeItem(GAME_STATE_STORAGE_KEY);
       return getDefaultState();
+    case 'NEW_GAME_WITH_PLAYER_COUNT': {
+      localStorage.removeItem(GAME_STATE_STORAGE_KEY);
+      const count = action.count;
+      return {
+        ...getDefaultState(),
+        playerCount: count,
+        players: createPlayers(count)
+      };
+    }
     default:
       return state;
   }

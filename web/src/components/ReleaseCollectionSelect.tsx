@@ -9,18 +9,23 @@ interface ReleaseCollectionSelectProps {
   selectedCollections: string[];
   onChange: (releases: string[], collections: string[]) => void;
   label?: string;
+  /** Always-expanded list for use inside a modal (no dropdown chrome). */
+  variant?: 'dropdown' | 'inline';
 }
 
 export default function ReleaseCollectionSelect({
   selectedReleases,
   selectedCollections,
   onChange,
-  label
+  label,
+  variant = 'dropdown'
 }: ReleaseCollectionSelectProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const isInline = variant === 'inline';
 
   useEffect(() => {
+    if (isInline) return;
     function handleClickOutside(e: MouseEvent) {
       if (
         wrapperRef.current &&
@@ -31,7 +36,7 @@ export default function ReleaseCollectionSelect({
     }
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+  }, [isInline]);
 
   const hasSelection = selectedReleases.length > 0 || selectedCollections.length > 0;
 
@@ -68,28 +73,30 @@ export default function ReleaseCollectionSelect({
   return (
     <div
       ref={wrapperRef}
-      className={`multiselect grouped${open ? ' active' : ''}${hasSelection ? ' selection' : ''}`}
+      className={`multiselect grouped${open || isInline ? ' active' : ''}${hasSelection ? ' selection' : ''}${isInline ? ' multiselect-inline' : ''}`}
     >
       {label && (
         <label className="pack-filter-label">{label}</label>
       )}
-      <div className="title" onClick={() => setOpen(!open)}>
-        <span className="text" title={displayText()}>
-          {displayText()}
-        </span>
-        {hasSelection && (
-          <span
-            className="close-icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              onChange([], []);
-            }}
-          >
-            &times;
+      {!isInline && (
+        <div className="title" onClick={() => setOpen(!open)}>
+          <span className="text" title={displayText()}>
+            {displayText()}
           </span>
-        )}
-        <span className="expand-icon">&#9660;</span>
-      </div>
+          {hasSelection && (
+            <span
+              className="close-icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange([], []);
+              }}
+            >
+              &times;
+            </span>
+          )}
+          <span className="expand-icon">&#9660;</span>
+        </div>
+      )}
       <div className="options grouped-options">
         <div className="option-group">
           <div className="option-group-label">Releases</div>

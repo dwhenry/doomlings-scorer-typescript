@@ -7,37 +7,34 @@ import {
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import '@scorer/cards';
-import type { Card, GameStateExport } from './types';
-import { GAME_STATE_EXPORT_VERSION } from './types';
+import type { Card } from './types';
 import {
   GAME_STATE_STORAGE_KEY,
   getInitialState,
-  reducer,
-  type AppState
+  reducer
 } from './appReducer';
+import { gameStateToExport } from './utils/gameStateExport';
 import { useScorer } from './hooks/useScorer';
 import { getEditableMetadataFields } from './utils/cardMetadata';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
+import CardPreviewModal from './components/CardPreviewModal';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
 import ScoringLogsModal from './components/ScoringLogsModal';
-
-function stateToExport(state: AppState): GameStateExport {
-  return {
-    version: GAME_STATE_EXPORT_VERSION,
-    exportedAt: new Date().toISOString(),
-    players: state.players,
-    selectedCatastrophes: state.selectedCatastrophes,
-    catastropheMetadata: state.catastropheMetadata,
-    selectedReleases: state.selectedReleases,
-    selectedCollections: state.selectedCollections
-  };
-}
+import AppFooter from './components/AppFooter';
+import BetaBanner from './components/BetaBanner';
+import EmailContactModal from './components/EmailContactModal';
+import LicenseModal from './components/LicenseModal';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false);
+  const [mobilePreviewCard, setMobilePreviewCard] = useState<string | null>(
+    null
+  );
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
 
   useEffect(() => {
@@ -46,7 +43,7 @@ export default function App() {
 
   // Persist game state so refresh restores it; only reset when user clicks "New Game"
   useEffect(() => {
-    const payload = stateToExport(state);
+    const payload = gameStateToExport(state);
     localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(payload));
   }, [
     state.players,
@@ -57,25 +54,34 @@ export default function App() {
     state.selectedCollections
   ]);
 
-  // Adjust padding for fixed header
+  // Sticky player strip height → card preview dock offset when scrolling
   useEffect(() => {
-    function adjustPadding() {
-      const header = document.querySelector(
-        '.game-header'
-      ) as HTMLElement | null;
-      const container = document.querySelector(
-        '.game-container'
-      ) as HTMLElement | null;
-      if (header && container) {
-        container.style.paddingTop = `${header.offsetHeight + 20}px`;
-      }
+    const strip = document.querySelector(
+      '.players-strip-sticky'
+    ) as HTMLElement | null;
+
+    function setPreviewStickyTop() {
+      if (!strip) return;
+      document.documentElement.style.setProperty(
+        '--desk-sticky-top',
+        `${strip.offsetHeight + 12}px`
+      );
     }
-    adjustPadding();
-    window.addEventListener('resize', adjustPadding);
-    const timer = setTimeout(adjustPadding, 100);
+
+    setPreviewStickyTop();
+    window.addEventListener('resize', setPreviewStickyTop);
+    const timer = setTimeout(setPreviewStickyTop, 100);
+
+    let observer: ResizeObserver | undefined;
+    if (strip && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(setPreviewStickyTop);
+      observer.observe(strip);
+    }
+
     return () => {
-      window.removeEventListener('resize', adjustPadding);
+      window.removeEventListener('resize', setPreviewStickyTop);
       clearTimeout(timer);
+      observer?.disconnect();
     };
   }, [state.players, state.selectedPlayerId, state.playerCount]);
 
@@ -157,38 +163,6 @@ export default function App() {
     [state.selectedPlayerId, state.players]
   );
 
-  const handleDropCard = useCallback(
-    (playerId: number, cardName: string) => {
-      const player = state.players.find((p) => p.id === playerId);
-      const newCardIndex = player ? player.cards.length : 0;
-      dispatch({ type: 'ADD_CARD', playerId, cardName });
-      // Auto-open modal only for cards with user-editable metadata
-      const editableFields = getEditableMetadataFields(cardName);
-      if (editableFields.length > 0) {
-        const allNonCard = editableFields.every((f) => f.scope !== 'card');
-        const hasExistingSource =
-          allNonCard &&
-          state.players.some(
-            (p) =>
-              (editableFields.some((f) => f.scope === 'global') ||
-                p.id === playerId) &&
-              editableFields.every((f) =>
-                p.cards.some((c) => c[f.key] !== undefined)
-              )
-          );
-        if (!hasExistingSource) {
-          dispatch({
-            type: 'OPEN_MODAL',
-            playerId,
-            cardIndex: newCardIndex,
-            cardName
-          });
-        }
-      }
-    },
-    [state.players]
-  );
-
   const handleClickCatastrophe = useCallback(
     (cardName: string) => {
       if (!state.selectedCatastrophes.find((c) => c.name === cardName)) {
@@ -209,48 +183,74 @@ export default function App() {
   );
 
   return (
-    <div className="game-container">
-      <CardZoom cardName={state.hoveredCard} />
-
-      <Header state={state} dispatch={dispatch}>
-        <PlayerSection
-          state={state}
-          dispatch={dispatch}
-          onDropCard={handleDropCard}
-          gameScore={gameScore}
-        />
-      </Header>
-
-      <PackDisplay
-        state={state}
-        dispatch={dispatch}
-        cards={cardsMap}
-        onClickCard={handleClickCard}
-        onClickCatastrophe={handleClickCatastrophe}
-        onDeselectCatastrophe={handleDeselectCatastrophe}
-      />
-
-      <footer className="scoring-logs-footer">
-        <button
-          type="button"
-          className="scoring-logs-footer-btn"
-          onClick={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
-          disabled={!gameScore}
-          title={
-            gameScore
-              ? 'View detailed scoring logs'
-              : 'Add cards to see scoring logs'
-          }
+    <div className="app-root">
+      <BetaBanner />
+      <div className="game-main-column">
+        <div className="app-hero">
+          <Header state={state} dispatch={dispatch} />
+        </div>
+        <div
+          className={`players-strip-sticky${state.mobileAddingForPlayer !== null ? ' players-strip-sticky--mobile-adding' : ''}`}
         >
-          View scoring logs
-        </button>
-      </footer>
+          <PlayerSection
+            state={state}
+            dispatch={dispatch}
+            gameScore={gameScore}
+            onOpenCardPreview={(name) => setMobilePreviewCard(name)}
+          />
+        </div>
+        <div
+          className={`game-container${state.selectedPlayerId !== null ? ' game-container--deck-visible' : ''}`}
+        >
+          <div className="desk-row">
+            <PackDisplay
+              state={state}
+              dispatch={dispatch}
+              cards={cardsMap}
+              onClickCard={handleClickCard}
+              onClickCatastrophe={handleClickCatastrophe}
+              onDeselectCatastrophe={handleDeselectCatastrophe}
+              onOpenCardPreview={(name) => setMobilePreviewCard(name)}
+            />
+            <CardZoom cardName={state.hoveredCard} />
+          </div>
 
-      {state.scoringLogsModalOpen && (
-        <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />
-      )}
+          <AppFooter
+            onOpenScoringLogs={() => dispatch({ type: 'OPEN_SCORING_LOGS' })}
+            scoringLogsDisabled={!gameScore}
+            scoringLogsTitle={
+              gameScore
+                ? 'View detailed scoring logs'
+                : 'Add cards to see scoring logs'
+            }
+            onOpenContact={() => setContactModalOpen(true)}
+            onOpenLicense={() => setLicenseModalOpen(true)}
+          />
 
-      <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
+          {contactModalOpen && (
+            <EmailContactModal
+              mode="contact"
+              onClose={() => setContactModalOpen(false)}
+            />
+          )}
+          {licenseModalOpen && (
+            <LicenseModal onClose={() => setLicenseModalOpen(false)} />
+          )}
+
+          {state.scoringLogsModalOpen && (
+            <ScoringLogsModal state={state} dispatch={dispatch} cards={cardsMap} />
+          )}
+
+          <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
+
+          {mobilePreviewCard !== null && (
+            <CardPreviewModal
+              cardName={mobilePreviewCard}
+              onClose={() => setMobilePreviewCard(null)}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

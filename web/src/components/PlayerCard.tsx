@@ -1,6 +1,14 @@
-import type { Dispatch } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  type Dispatch,
+  type Ref
+} from 'react';
 import type { Action } from '../appReducer';
 import type { PlayerState, CardGroup } from '../types';
+import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
+import { useLongPressPreview } from '../hooks/useLongPressPreview';
 
 function selectOrStartAddingPlayer(
   dispatch: Dispatch<Action>,
@@ -45,6 +53,84 @@ function startAddingForPlayer(
   dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId });
 }
 
+export type PlayerCardLayoutVariant = 'default' | 'compact' | 'featured';
+
+/** One grouped card in a player’s hand (desktop hover + optional mobile long-press preview). */
+export function PlayerHandGroupCell({
+  dispatch,
+  playerId,
+  group,
+  onHover,
+  onLongPressPreview,
+  scrollTargetRef
+}: {
+  dispatch: Dispatch<Action>;
+  playerId: number;
+  group: CardGroup;
+  onHover?: (name: string | null) => void;
+  onLongPressPreview?: (cardName: string) => void;
+  scrollTargetRef?: Ref<HTMLDivElement | null>;
+}) {
+  const { touchProps, wrapClick } = useLongPressPreview(
+    onLongPressPreview ? () => onLongPressPreview(group.name) : undefined
+  );
+
+  const handleActivate = useCallback(() => {
+    if (group.hasMetadata) {
+      openCardMetadataModal(
+        dispatch,
+        playerId,
+        group.cardIndices[0],
+        group.name
+      );
+    }
+  }, [dispatch, playerId, group]);
+
+  const allDiscarded = group.discardedIndices.length === group.count;
+
+  return (
+    <div
+      ref={scrollTargetRef}
+      className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+      {...touchProps}
+      onMouseEnter={onHover ? () => onHover(group.name) : undefined}
+      onMouseLeave={onHover ? () => onHover(null) : undefined}
+      onClick={(e) => {
+        e.stopPropagation();
+        wrapClick(handleActivate)();
+      }}
+      onContextMenu={(e) => {
+        if (onLongPressPreview) e.preventDefault();
+      }}
+    >
+      <img
+        src={`/cards/${encodeURIComponent(group.name)}.png`}
+        alt={group.name}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      {group.count > 1 && <div className="card-count">{group.count}</div>}
+      {allDiscarded ? (
+        <div className="card-score card-score--discarded">0 pts</div>
+      ) : group.totalScore !== null ? (
+        <div className="card-score">{group.totalScore} pts</div>
+      ) : group.metadataMissing ? (
+        <div className="card-score card-score--missing">-</div>
+      ) : null}
+      <button
+        className="remove-card remove-card--visible"
+        onClick={(e) => {
+          e.stopPropagation();
+          removePlayerCard(dispatch, playerId, group.cardIndices[0]);
+        }}
+      >
+        &times;
+      </button>
+    </div>
+  );
+}
+
 interface PlayerCardProps {
   dispatch: Dispatch<Action>;
   player: PlayerState;
@@ -52,8 +138,11 @@ interface PlayerCardProps {
   isMobile: boolean;
   cardGroups: CardGroup[];
   totalScore: number;
-  onDrop: (playerId: number, cardName: string) => void;
   showAddButton?: boolean;
+  /** Desktop: narrow name+score when another player is selected */
+  layoutVariant?: PlayerCardLayoutVariant;
+  /** Mobile: long-press hand card to open full-screen image preview */
+  onOpenCardPreview?: (cardName: string) => void;
 }
 
 export default function PlayerCard({
@@ -63,109 +152,114 @@ export default function PlayerCard({
   isMobile,
   cardGroups,
   totalScore,
-  onDrop,
-  showAddButton
+  showAddButton,
+  layoutVariant = 'default',
+  onOpenCardPreview
 }: PlayerCardProps) {
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  }
+  const prevCardCountRef = useRef(player.cards.length);
+  const scrollTargetRef = useRef<HTMLDivElement | null>(null);
 
-  function handleDragEnter(e: React.DragEvent) {
-    e.preventDefault();
-    (e.currentTarget as HTMLElement).classList.add('drag-over');
-  }
+  const lastCardIndex = player.cards.length > 0 ? player.cards.length - 1 : -1;
+  const isCompact = layoutVariant === 'compact';
+  const displayCardCount = countPlayerDisplayCards(player.cards);
 
-  function handleDragLeave(e: React.DragEvent) {
-    (e.currentTarget as HTMLElement).classList.remove('drag-over');
-  }
-
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    (e.currentTarget as HTMLElement).classList.remove('drag-over');
-    const cardName = e.dataTransfer.getData('cardName');
-    if (cardName) {
-      onDrop(player.id, cardName);
+  useLayoutEffect(() => {
+    if (isMobile || isCompact) {
+      prevCardCountRef.current = player.cards.length;
+      return;
     }
+    if (
+      player.cards.length > prevCardCountRef.current &&
+      scrollTargetRef.current
+    ) {
+      const reduceMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollTargetRef.current.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+    prevCardCountRef.current = player.cards.length;
+  }, [player.cards.length, isMobile, isCompact]);
+
+  const layoutClass =
+    layoutVariant === 'featured'
+      ? ' player--featured'
+      : isCompact
+        ? ' player--compact'
+        : '';
+
+  if (isCompact) {
+    return (
+      <div
+        className={`player player--compact${isSelected ? ' selected' : ''}`}
+        data-player-id={player.id}
+        onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
+      >
+        <div className="player-header">
+          <h3>{player.name}</h3>
+          <div
+            className="player-score-row-compact"
+            aria-label={`${totalScore} points, ${displayCardCount} cards`}
+          >
+            <span className="player-score-pts">
+              <span className="total-score">{totalScore}</span> pts
+            </span>
+            <span className="player-score-sep" aria-hidden="true">
+              |
+            </span>
+            <span className="player-score-cards">
+              {displayCardCount} cards
+            </span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div
-      className={`player${isSelected ? ' selected' : ''}`}
+      className={`player${isSelected ? ' selected' : ''}${layoutClass}`}
       data-player-id={player.id}
       onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
     >
       <div className="player-header">
         <h3>{player.name}</h3>
-        <div className="player-score">
-          <span className="total-score">{totalScore}</span> points
+        <div className="player-score-stack">
+          <div className="player-score">
+            <span className="total-score">{totalScore}</span> points
+          </div>
+          <div className="player-hand-count">{displayCardCount} cards</div>
         </div>
       </div>
-      <div
-        className="player-hand"
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
+      <div className="player-hand">
         {cardGroups.length === 0 ? (
           <div className="drop-zone">
-            Drop cards here or click to select player
+            Select this player, then click cards in the pack to add them
           </div>
         ) : (
           cardGroups.map((group) => {
-            const allDiscarded = group.discardedIndices.length === group.count;
+            const refLastAdded =
+              lastCardIndex >= 0 &&
+              group.cardIndices.includes(lastCardIndex)
+                ? scrollTargetRef
+                : undefined;
             return (
-              <div
+              <PlayerHandGroupCell
                 key={`${group.name}-${group.cardIndices[0]}`}
-                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() =>
-                  setHoveredCard(dispatch, group.name)
+                dispatch={dispatch}
+                playerId={player.id}
+                group={group}
+                scrollTargetRef={refLastAdded}
+                onHover={
+                  isMobile
+                    ? undefined
+                    : (name) => setHoveredCard(dispatch, name)
                 }
-                onMouseLeave={() => setHoveredCard(dispatch, null)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (group.hasMetadata) {
-                    openCardMetadataModal(
-                      dispatch,
-                      player.id,
-                      group.cardIndices[0],
-                      group.name
-                    );
-                  }
-                }}
-              >
-                <img
-                  src={`/cards/${encodeURIComponent(group.name)}.png`}
-                  alt={group.name}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                {group.count > 1 && (
-                  <div className="card-count">{group.count}</div>
-                )}
-                {allDiscarded ? (
-                  <div className="card-score card-score--discarded">0 pts</div>
-                ) : group.totalScore !== null ? (
-                  <div className="card-score">{group.totalScore} pts</div>
-                ) : group.metadataMissing ? (
-                  <div className="card-score card-score--missing">-</div>
-                ) : null}
-                <button
-                  className="remove-card remove-card--visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removePlayerCard(
-                      dispatch,
-                      player.id,
-                      group.cardIndices[0]
-                    );
-                  }}
-                >
-                  &times;
-                </button>
-              </div>
+                onLongPressPreview={onOpenCardPreview}
+              />
             );
           })
         )}

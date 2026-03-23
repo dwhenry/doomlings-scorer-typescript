@@ -3,19 +3,23 @@ import type { PlayerState, CardGroup, Card } from '../types';
 import type { Action, AppState } from '../appReducer';
 import type { GameScore } from '@scorer/scorer';
 import { PLAYER_CARD_NAME } from '@scorer/types';
+import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
 import {
   getCardMetadataFields,
   isMetadataComplete,
   hasCardScopedMetadata
 } from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import PlayerCard from './PlayerCard';
+import PlayerCard, {
+  PlayerHandGroupCell,
+  type PlayerCardLayoutVariant
+} from './PlayerCard';
 
 interface PlayerSectionProps {
   state: AppState;
   dispatch: Dispatch<Action>;
-  onDropCard: (playerId: number, cardName: string) => void;
   gameScore: GameScore | null;
+  onOpenCardPreview?: (cardName: string) => void;
 }
 
 function buildCardGroups(
@@ -106,14 +110,17 @@ function buildCardGroups(
 export default function PlayerSection({
   state,
   dispatch,
-  onDropCard,
   gameScore,
+  onOpenCardPreview
 }: PlayerSectionProps) {
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
+  const mobileLongPressPreview = isMobile ? onOpenCardPreview : undefined;
+  const mobileAddingActive =
+    isMobile && mobileAddingForPlayer !== null;
 
   // Mobile focused view: only show the player we're adding cards for
-  if (isMobile && mobileAddingForPlayer !== null) {
+  if (mobileAddingActive) {
     const playerIndex = players.findIndex(
       (p) => p.id === mobileAddingForPlayer
     );
@@ -123,9 +130,20 @@ export default function PlayerSection({
     const totalScore = gameScore
       ? gameScore.getPlayerScore(playerIndex).total
       : 0;
+    const displayCardCount = countPlayerDisplayCards(player.cards);
+
+    const handCards = cardGroups.map((group) => (
+      <PlayerHandGroupCell
+        key={`${group.name}-${group.cardIndices[0]}`}
+        dispatch={dispatch}
+        playerId={player.id}
+        group={group}
+        onLongPressPreview={mobileLongPressPreview}
+      />
+    ));
 
     return (
-      <section className="players-section players-section--focused">
+      <section className="players-section players-section--focused players-section--focused-mobile-card">
         <div className="focused-player-header">
           <button
             className="focused-player-done"
@@ -134,93 +152,98 @@ export default function PlayerSection({
             Done
           </button>
           <span className="focused-player-name">{player.name}</span>
-          <span className="focused-player-score">{totalScore} pts</span>
+          <div
+            className="focused-player-stats"
+            aria-label={`${totalScore} points, ${displayCardCount} cards`}
+          >
+            <span className="focused-player-score">{totalScore} pts</span>
+            <span className="focused-player-sep" aria-hidden="true">
+              |
+            </span>
+            <span className="focused-player-cards">
+              {displayCardCount} cards
+            </span>
+          </div>
         </div>
-        <div className="focused-player-hand">
-          {cardGroups.map((group) => {
-            const allDiscarded = group.discardedIndices.length === group.count;
-            return (
-              <div
-                key={`${group.name}-${group.cardIndices[0]}`}
-                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() =>
-                  dispatch({ type: 'SET_HOVERED', cardName: group.name })
-                }
-                onMouseLeave={() =>
-                  dispatch({ type: 'SET_HOVERED', cardName: null })
-                }
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (group.hasMetadata) {
-                    dispatch({
-                      type: 'OPEN_MODAL',
-                      playerId: player.id,
-                      cardIndex: group.cardIndices[0],
-                      cardName: group.name
-                    });
-                  }
-                }}
-              >
-                <img
-                  src={`/cards/${encodeURIComponent(group.name)}.png`}
-                  alt={group.name}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                {group.count > 1 && (
-                  <div className="card-count">{group.count}</div>
-                )}
-                {allDiscarded ? (
-                  <div className="card-score card-score--discarded">0 pts</div>
-                ) : group.totalScore !== null ? (
-                  <div className="card-score">{group.totalScore} pts</div>
-                ) : group.metadataMissing ? (
-                  <div className="card-score card-score--missing">-</div>
-                ) : null}
-                <button
-                  className="remove-card remove-card--visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    dispatch({
-                      type: 'REMOVE_CARD',
-                      playerId: player.id,
-                      cardIndex: group.cardIndices[0]
-                    });
-                  }}
-                >
-                  &times;
-                </button>
-              </div>
-            );
-          })}
+        <div
+          className="focused-player-hand-wrap"
+          aria-label={`${player.name}'s hand`}
+        >
+          <div className="focused-player-hand focused-player-hand--two-rows">
+            {handCards}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const desktopHasSelection = !isMobile && selectedPlayerId !== null;
+
+  const sectionClass = `players-section${
+    isMobile
+      ? ''
+      : desktopHasSelection
+        ? ' players-section--has-selection'
+        : ' players-section--grid-desktop-2'
+  }`;
+
+  function playerCardFor(
+    player: PlayerState,
+    playerIndex: number,
+    layoutVariant: PlayerCardLayoutVariant
+  ) {
+    const cardGroups = buildCardGroups(player, gameScore, playerIndex);
+    const totalScore = gameScore
+      ? gameScore.getPlayerScore(playerIndex).total
+      : 0;
+
+    return (
+      <PlayerCard
+        key={player.id}
+        dispatch={dispatch}
+        player={player}
+        isSelected={selectedPlayerId === player.id}
+        isMobile={isMobile}
+        cardGroups={cardGroups}
+        totalScore={totalScore}
+        showAddButton={isMobile}
+        layoutVariant={layoutVariant}
+        onOpenCardPreview={mobileLongPressPreview}
+      />
+    );
+  }
+
+  if (desktopHasSelection) {
+    const selected = players.find((p) => p.id === selectedPlayerId);
+    if (!selected) {
+      return (
+        <section className={sectionClass}>
+          {players.map((player, index) =>
+            playerCardFor(player, index, 'default')
+          )}
+        </section>
+      );
+    }
+    const selectedIndex = players.findIndex((p) => p.id === selected.id);
+    const others = players.filter((p) => p.id !== selectedPlayerId);
+
+    return (
+      <section className={sectionClass}>
+        {playerCardFor(selected, selectedIndex, 'featured')}
+        <div className="players-section__others" aria-label="Other players">
+          {others.map((p) =>
+            playerCardFor(p, players.findIndex((x) => x.id === p.id), 'compact')
+          )}
         </div>
       </section>
     );
   }
 
   return (
-    <section className="players-section">
-      {players.map((player, index) => {
-        const cardGroups = buildCardGroups(player, gameScore, index);
-        const totalScore = gameScore
-          ? gameScore.getPlayerScore(index).total
-          : 0;
-
-        return (
-          <PlayerCard
-            key={player.id}
-            dispatch={dispatch}
-            player={player}
-            isSelected={selectedPlayerId === player.id}
-            isMobile={isMobile}
-            cardGroups={cardGroups}
-            totalScore={totalScore}
-            onDrop={onDropCard}
-            showAddButton={isMobile}
-          />
-        );
-      })}
+    <section className={sectionClass}>
+      {players.map((player, index) =>
+        playerCardFor(player, index, 'default')
+      )}
     </section>
   );
 }

@@ -3,11 +3,10 @@ import type { Card, CardEntry, CardType } from '../types';
 import { TRAIT_CARD_TYPES } from '@scorer/types';
 import type { Action, AppState } from '../appReducer';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { useHeaderBottom } from '../hooks/useHeaderBottom';
+import { useLongPressPreview } from '../hooks/useLongPressPreview';
 import ColorTabs, { type TabId } from './ColorTabs';
 import SearchBar from './SearchBar';
 import CardGrid from './CardGrid';
-import BottomDrawer from './BottomDrawer';
 import {
   cardMatchesReleases,
   cardMatchesCollections
@@ -20,6 +19,8 @@ interface PackDisplayProps {
   onClickCard: (cardName: string) => void;
   onClickCatastrophe: (cardName: string) => void;
   onDeselectCatastrophe: (cardName: string) => void;
+  /** Mobile / touch: long-press pack cards to open full-screen preview */
+  onOpenCardPreview?: (cardName: string) => void;
 }
 
 export default function PackDisplay({
@@ -28,19 +29,26 @@ export default function PackDisplay({
   cards,
   onClickCard,
   onClickCatastrophe,
-  onDeselectCatastrophe
+  onDeselectCatastrophe,
+  onOpenCardPreview
 }: PackDisplayProps) {
-  const { selectedReleases, selectedCollections, playerCount, selectedPlayerId, mobileAddingForPlayer, selectedCatastrophes } =
-    state;
+  const {
+    players,
+    selectedReleases,
+    selectedCollections,
+    playerCount,
+    selectedPlayerId,
+    mobileAddingForPlayer,
+    selectedCatastrophes
+  } = state;
 
   const setHovered = useCallback(
     (cardName: string | null) => {
       dispatch({ type: 'SET_HOVERED', cardName });
     },
-    []
+    [dispatch]
   );
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const headerBottom = useHeaderBottom();
   const [activeTab, setActiveTab] = useState<TabId>('purple');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -121,14 +129,6 @@ export default function PackDisplay({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, catastropheCards, selectedReleases, selectedCollections, searchQuery, isSearching]);
 
-  const handleDragStart = useCallback(
-    (e: React.DragEvent, cardName: string) => {
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('cardName', cardName);
-    },
-    []
-  );
-
   const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
     setSearchQuery('');
@@ -145,10 +145,9 @@ export default function PackDisplay({
         <>
           <CardGrid
             cards={filteredCards}
-            selectedPlayerId={selectedPlayerId}
             onClickCard={onClickCard}
-            onHover={setHovered}
-            onDragStart={handleDragStart}
+            onHover={isDesktop ? setHovered : undefined}
+            onLongPressPreview={!isDesktop ? onOpenCardPreview : undefined}
           />
           {filteredCatastrophes.length > 0 && (
             <CatastropheInline
@@ -157,7 +156,8 @@ export default function PackDisplay({
               selectedCatastrophes={selectedCatastrophes}
               clickCard={onClickCatastrophe}
               onDeselect={onDeselectCatastrophe}
-              onHover={setHovered}
+              onHover={isDesktop ? setHovered : undefined}
+              onLongPressPreview={!isDesktop ? onOpenCardPreview : undefined}
             />
           )}
         </>
@@ -168,40 +168,58 @@ export default function PackDisplay({
           selectedCatastrophes={selectedCatastrophes}
           clickCard={onClickCatastrophe}
           onDeselect={onDeselectCatastrophe}
-          onHover={setHovered}
+          onHover={isDesktop ? setHovered : undefined}
+          onLongPressPreview={!isDesktop ? onOpenCardPreview : undefined}
         />
       ) : (
         <CardGrid
           cards={filteredCards}
-          selectedPlayerId={selectedPlayerId}
           onClickCard={onClickCard}
-          onHover={setHovered}
-          onDragStart={handleDragStart}
+          onHover={isDesktop ? setHovered : undefined}
+          onLongPressPreview={!isDesktop ? onOpenCardPreview : undefined}
         />
       )}
     </>
   );
 
   if (!isDesktop) {
-    // Only render drawer on mobile when actively adding cards for a player
     if (mobileAddingForPlayer === null) return null;
 
+    const addingPlayer = players.find((p) => p.id === mobileAddingForPlayer);
+
     return (
-      <BottomDrawer topOffset={headerBottom}>{tabbedContent}</BottomDrawer>
+      <section className="pack-display pack-display--mobile player-selected">
+        <h2>Card Pack</h2>
+        <div className="player-selection-hint">
+          Tap cards below to add them to{' '}
+          {addingPlayer?.name ?? `Player ${mobileAddingForPlayer + 1}`}
+        </div>
+        {tabbedContent}
+      </section>
+    );
+  }
+
+  if (selectedPlayerId === null) {
+    return (
+      <section
+        className="pack-display pack-display--awaiting-player"
+        aria-live="polite"
+      >
+        <h2>Card Pack</h2>
+        <p className="pack-display-awaiting-text">
+          Select a player above to browse and add cards.
+        </p>
+      </section>
     );
   }
 
   return (
-    <section
-      className={`pack-display${selectedPlayerId !== null ? ' player-selected' : ''}`}
-    >
+    <section className="pack-display player-selected">
       <h2>Card Pack</h2>
 
-      {selectedPlayerId !== null && (
-        <div className="player-selection-hint">
-          Click on cards below to add them to Player {selectedPlayerId + 1}
-        </div>
-      )}
+      <div className="player-selection-hint">
+        Click on cards below to add them to Player {selectedPlayerId + 1}
+      </div>
 
       {tabbedContent}
     </section>
@@ -215,14 +233,16 @@ function CatastropheInline({
   playerCount,
   clickCard,
   onDeselect,
-  onHover
+  onHover,
+  onLongPressPreview
 }: {
   catastropheCards: Card[];
   selectedCatastrophes: CardEntry[];
   playerCount: number;
   clickCard: (name: string) => void;
   onDeselect: (name: string) => void;
-  onHover: (name: string | null) => void;
+  onHover?: (name: string | null) => void;
+  onLongPressPreview?: (name: string) => void;
 }) {
   return (
     <div className="catastrophe-tab-content">
@@ -259,44 +279,87 @@ function CatastropheInline({
               return value === '';
             });
 
+          const sel = selectedCatastrophes.find((c) => c.name === card.name);
+          const idx =
+            sel !== undefined
+              ? selectedCatastrophes.indexOf(sel) + 1
+              : undefined;
+
           return (
-            <div
+            <CatastrophePackCell
               key={card.name}
-              className={`card catastrophe-card${isSelected ? ' selected' : ''}${missingMetadata ? ' metadata-missing' : ''}`}
-              onClick={() => clickCard(card.name)}
-              onMouseEnter={() => onHover(card.name)}
-              onMouseLeave={() => onHover(null)}
-            >
-              <img
-                src={`/cards/${encodeURIComponent(card.name)}.png`}
-                alt={card.name}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-              {selectedCatastrophes.find((c) => c.name === card.name) && (
-                <div className="card-count">
-                  {selectedCatastrophes.indexOf(
-                    selectedCatastrophes.find((c) => c.name === card.name)!
-                  ) + 1}
-                </div>
-              )}
-              <span className="pack-card-name">{card.name}</span>
-              {isSelected && (
-                <button
-                  className="remove-card remove-card--visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeselect(card.name);
-                  }}
-                >
-                  &times;
-                </button>
-              )}
-            </div>
+              card={card}
+              isSelected={!!isSelected}
+              missingMetadata={!!missingMetadata}
+              selectedIndex={idx}
+              clickCard={clickCard}
+              onDeselect={onDeselect}
+              onHover={onHover}
+              onLongPressPreview={onLongPressPreview}
+            />
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function CatastrophePackCell({
+  card,
+  isSelected,
+  missingMetadata,
+  selectedIndex,
+  clickCard,
+  onDeselect,
+  onHover,
+  onLongPressPreview
+}: {
+  card: Card;
+  isSelected: boolean;
+  missingMetadata: boolean;
+  selectedIndex?: number;
+  clickCard: (name: string) => void;
+  onDeselect: (name: string) => void;
+  onHover?: (name: string | null) => void;
+  onLongPressPreview?: (name: string) => void;
+}) {
+  const { touchProps, wrapClick } = useLongPressPreview(
+    onLongPressPreview ? () => onLongPressPreview(card.name) : undefined
+  );
+
+  return (
+    <div
+      className={`card catastrophe-card${isSelected ? ' selected' : ''}${missingMetadata ? ' metadata-missing' : ''}`}
+      {...touchProps}
+      onClick={wrapClick(() => clickCard(card.name))}
+      onMouseEnter={onHover ? () => onHover(card.name) : undefined}
+      onMouseLeave={onHover ? () => onHover(null) : undefined}
+      onContextMenu={(e) => {
+        if (onLongPressPreview) e.preventDefault();
+      }}
+    >
+      <img
+        src={`/cards/${encodeURIComponent(card.name)}.png`}
+        alt={card.name}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      {selectedIndex !== undefined && (
+        <div className="card-count">{selectedIndex}</div>
+      )}
+      <span className="pack-card-name">{card.name}</span>
+      {isSelected && (
+        <button
+          className="remove-card remove-card--visible"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeselect(card.name);
+          }}
+        >
+          &times;
+        </button>
+      )}
     </div>
   );
 }
