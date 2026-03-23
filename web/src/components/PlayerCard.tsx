@@ -54,7 +54,6 @@ interface PlayerCardProps {
   isMobile: boolean;
   cardGroups: CardGroup[];
   totalScore: number;
-  onDrop: (playerId: number, cardName: string) => void;
   showAddButton?: boolean;
   /** Desktop: narrow name+score when another player is selected */
   layoutVariant?: PlayerCardLayoutVariant;
@@ -67,7 +66,6 @@ export default function PlayerCard({
   isMobile,
   cardGroups,
   totalScore,
-  onDrop,
   showAddButton,
   layoutVariant = 'default'
 }: PlayerCardProps) {
@@ -98,29 +96,6 @@ export default function PlayerCard({
     prevCardCountRef.current = player.cards.length;
   }, [player.cards.length, isMobile, isCompact]);
 
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  }
-
-  function handleDragEnter(e: React.DragEvent) {
-    e.preventDefault();
-    (e.currentTarget as HTMLElement).classList.add('drag-over');
-  }
-
-  function handleDragLeave(e: React.DragEvent) {
-    (e.currentTarget as HTMLElement).classList.remove('drag-over');
-  }
-
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    (e.currentTarget as HTMLElement).classList.remove('drag-over');
-    const cardName = e.dataTransfer.getData('cardName');
-    if (cardName) {
-      onDrop(player.id, cardName);
-    }
-  }
-
   const layoutClass =
     layoutVariant === 'featured'
       ? ' player--featured'
@@ -134,13 +109,12 @@ export default function PlayerCard({
         className={`player player--compact${isSelected ? ' selected' : ''}`}
         data-player-id={player.id}
         onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
       >
         <div className="player-header">
-          <h3>{player.name}</h3>
+          <h3>
+            {player.name}
+            <span className="player-card-count"> · {player.cards.length}</span>
+          </h3>
           <div className="player-score">
             <span className="total-score">{totalScore}</span> pts
           </div>
@@ -156,21 +130,18 @@ export default function PlayerCard({
       onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
     >
       <div className="player-header">
-        <h3>{player.name}</h3>
+        <h3>
+          {player.name}
+          <span className="player-card-count"> · {player.cards.length}</span>
+        </h3>
         <div className="player-score">
           <span className="total-score">{totalScore}</span> points
         </div>
       </div>
-      <div
-        className="player-hand"
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
+      <div className="player-hand">
         {cardGroups.length === 0 ? (
           <div className="drop-zone">
-            Drop cards here or click to select player
+            Select this player, then click cards in the pack to add them
           </div>
         ) : (
           cardGroups.map((group) => {

@@ -121,14 +121,6 @@ export default function PackDisplay({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeTab, catastropheCards, selectedReleases, selectedCollections, searchQuery, isSearching]);
 
-  const handleDragStart = useCallback(
-    (e: React.DragEvent, cardName: string) => {
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('cardName', cardName);
-    },
-    []
-  );
-
   const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
     setSearchQuery('');
@@ -145,10 +137,8 @@ export default function PackDisplay({
         <>
           <CardGrid
             cards={filteredCards}
-            selectedPlayerId={selectedPlayerId}
             onClickCard={onClickCard}
             onHover={setHovered}
-            onDragStart={handleDragStart}
           />
           {filteredCatastrophes.length > 0 && (
             <CatastropheInline
@@ -173,10 +163,8 @@ export default function PackDisplay({
       ) : (
         <CardGrid
           cards={filteredCards}
-          selectedPlayerId={selectedPlayerId}
           onClickCard={onClickCard}
           onHover={setHovered}
-          onDragStart={handleDragStart}
         />
       )}
     </>
@@ -191,17 +179,17 @@ export default function PackDisplay({
     );
   }
 
+  if (selectedPlayerId === null) {
+    return null;
+  }
+
   return (
-    <section
-      className={`pack-display${selectedPlayerId !== null ? ' player-selected' : ''}`}
-    >
+    <section className="pack-display player-selected">
       <h2>Card Pack</h2>
 
-      {selectedPlayerId !== null && (
-        <div className="player-selection-hint">
-          Click on cards below to add them to Player {selectedPlayerId + 1}
-        </div>
-      )}
+      <div className="player-selection-hint">
+        Click on cards below to add them to Player {selectedPlayerId + 1}
+      </div>
 
       {tabbedContent}
     </section>

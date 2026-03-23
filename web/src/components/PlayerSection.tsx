@@ -14,7 +14,6 @@ import PlayerCard, { type PlayerCardLayoutVariant } from './PlayerCard';
 interface PlayerSectionProps {
   state: AppState;
   dispatch: Dispatch<Action>;
-  onDropCard: (playerId: number, cardName: string) => void;
   gameScore: GameScore | null;
 }
 
@@ -106,7 +105,6 @@ function buildCardGroups(
 export default function PlayerSection({
   state,
   dispatch,
-  onDropCard,
   gameScore,
 }: PlayerSectionProps) {
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
@@ -133,7 +131,10 @@ export default function PlayerSection({
           >
             Done
           </button>
-          <span className="focused-player-name">{player.name}</span>
+          <span className="focused-player-name">
+            {player.name}
+            <span className="player-card-count"> · {player.cards.length}</span>
+          </span>
           <span className="focused-player-score">{totalScore} pts</span>
         </div>
         <div className="focused-player-hand">
@@ -228,7 +229,6 @@ export default function PlayerSection({
         isMobile={isMobile}
         cardGroups={cardGroups}
         totalScore={totalScore}
-        onDrop={onDropCard}
         showAddButton={isMobile}
         layoutVariant={layoutVariant}
       />

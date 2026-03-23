@@ -73,6 +73,12 @@ body {
   box-sizing: border-box;
 }
 
+@media (min-width: 768px) {
+  .game-main-column .game-container--deck-visible {
+    padding-top: 32px;
+  }
+}
+
 .beta-banner {
   padding: 10px 16px;
   text-align: center;
@@ -311,7 +317,7 @@ body {
     flex-wrap: wrap;
     gap: 12px;
     align-items: stretch;
-    padding: 6px 4px 2px;
+    padding: 4px 4px 0;
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
@@ -330,8 +336,8 @@ body {
   .player--compact {
     flex: 1 1 148px;
     max-width: 240px;
-    min-height: 52px;
-    padding: 16px 20px;
+    min-height: 48px;
+    padding: 10px 14px 6px;
     flex-direction: column;
     align-items: stretch;
     animation: none;
@@ -396,19 +402,6 @@ body {
   .players-section {
     grid-template-columns: 1fr;
   }
-}
-
-.player--compact.drag-over {
-  background: linear-gradient(135deg, #e3f2fd 0%, #dbeafe 100%);
-  border-color: #2196f3;
-  border-style: solid;
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
-  transform: translateY(-1px);
-  transition:
-    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .player {
@@ -482,6 +475,12 @@ body {
   font-size: 1.1em;
 }
 
+.player-card-count {
+  font-weight: 600;
+  color: #868e96;
+  font-size: 0.9em;
+}
+
 .player-score {
   font-size: 22px;
   font-weight: 800;
@@ -534,12 +533,6 @@ body {
   }
 }
 
-.player-hand.drag-over {
-  background: linear-gradient(135deg, #e3f2fd 0%, #dbeafe 100%);
-  border-color: #2196f3;
-  border-style: solid;
-}
-
 .drop-zone {
   width: 100%;
   text-align: center;
@@ -577,7 +570,7 @@ body {
 
 .pack-card {
   width: 40px;
-  cursor: grab;
+  cursor: pointer;
   position: relative;
   flex-shrink: 0;
 }
@@ -591,14 +584,6 @@ body {
 }
 
 .pack-card:active {
-  cursor: grabbing;
-}
-
-.pack-display:not(.player-selected) .pack-card {
-  cursor: grab;
-}
-
-.pack-display.player-selected .pack-card {
   cursor: pointer;
 }
 

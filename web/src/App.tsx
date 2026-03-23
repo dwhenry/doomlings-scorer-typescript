@@ -159,38 +159,6 @@ export default function App() {
     [state.selectedPlayerId, state.players]
   );
 
-  const handleDropCard = useCallback(
-    (playerId: number, cardName: string) => {
-      const player = state.players.find((p) => p.id === playerId);
-      const newCardIndex = player ? player.cards.length : 0;
-      dispatch({ type: 'ADD_CARD', playerId, cardName });
-      // Auto-open modal only for cards with user-editable metadata
-      const editableFields = getEditableMetadataFields(cardName);
-      if (editableFields.length > 0) {
-        const allNonCard = editableFields.every((f) => f.scope !== 'card');
-        const hasExistingSource =
-          allNonCard &&
-          state.players.some(
-            (p) =>
-              (editableFields.some((f) => f.scope === 'global') ||
-                p.id === playerId) &&
-              editableFields.every((f) =>
-                p.cards.some((c) => c[f.key] !== undefined)
-              )
-          );
-        if (!hasExistingSource) {
-          dispatch({
-            type: 'OPEN_MODAL',
-            playerId,
-            cardIndex: newCardIndex,
-            cardName
-          });
-        }
-      }
-    },
-    [state.players]
-  );
-
   const handleClickCatastrophe = useCallback(
     (cardName: string) => {
       if (!state.selectedCatastrophes.find((c) => c.name === cardName)) {
@@ -218,14 +186,11 @@ export default function App() {
           <Header state={state} dispatch={dispatch} />
         </div>
         <div className="players-strip-sticky">
-          <PlayerSection
-            state={state}
-            dispatch={dispatch}
-            onDropCard={handleDropCard}
-            gameScore={gameScore}
-          />
+          <PlayerSection state={state} dispatch={dispatch} gameScore={gameScore} />
         </div>
-        <div className="game-container">
+        <div
+          className={`game-container${state.selectedPlayerId !== null ? ' game-container--deck-visible' : ''}`}
+        >
           <div className="desk-row">
             <PackDisplay
               state={state}
