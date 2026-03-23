@@ -6,6 +6,7 @@ interface AppFooterProps {
   scoringLogsTitle: string;
   onOpenContact: () => void;
   onOpenLicense: () => void;
+  onOpenHowToUse: () => void;
 }
 
 export default function AppFooter({
@@ -13,10 +14,11 @@ export default function AppFooter({
   scoringLogsDisabled,
   scoringLogsTitle,
   onOpenContact,
-  onOpenLicense
+  onOpenLicense,
+  onOpenHowToUse
 }: AppFooterProps) {
   return (
-    <footer className="app-footer">
+    <footer className="app-footer" data-tour="footer">
       <nav className="app-footer-links" aria-label="Site links">
         <a
           href={DOOMLINGS_WEBSITE_URL}
@@ -40,6 +42,13 @@ export default function AppFooter({
           onClick={onOpenLicense}
         >
           License
+        </button>
+        <button
+          type="button"
+          className="app-footer-action app-footer-action-btn"
+          onClick={onOpenHowToUse}
+        >
+          How to use
         </button>
         <button
           type="button"

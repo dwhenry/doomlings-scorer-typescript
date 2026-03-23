@@ -40,7 +40,7 @@ export default function Header({ state, dispatch }: HeaderProps) {
   }, [state]);
 
   return (
-    <header className="game-header">
+    <header className="game-header" data-tour="header">
       <div className="header-top">
         <h1>Doomlings Scorer</h1>
 

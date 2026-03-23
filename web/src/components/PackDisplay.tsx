@@ -188,7 +188,10 @@ export default function PackDisplay({
     const addingPlayer = players.find((p) => p.id === mobileAddingForPlayer);
 
     return (
-      <section className="pack-display pack-display--mobile player-selected">
+      <section
+        className="pack-display pack-display--mobile player-selected"
+        data-tour="pack"
+      >
         <h2>Card Pack</h2>
         <div className="player-selection-hint">
           Tap cards below to add them to{' '}
@@ -204,6 +207,7 @@ export default function PackDisplay({
       <section
         className="pack-display pack-display--awaiting-player"
         aria-live="polite"
+        data-tour="pack"
       >
         <h2>Card Pack</h2>
         <p className="pack-display-awaiting-text">
@@ -214,7 +218,7 @@ export default function PackDisplay({
   }
 
   return (
-    <section className="pack-display player-selected">
+    <section className="pack-display player-selected" data-tour="pack">
       <h2>Card Pack</h2>
 
       <div className="player-selection-hint">
