@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 interface CardPreviewModalProps {
   cardName: string;
   onClose: () => void;
+  /** When false, Escape is left to other UI (e.g. onboarding tour). */
+  closeOnEscape?: boolean;
 }
 
 /**
@@ -11,15 +13,17 @@ interface CardPreviewModalProps {
  */
 export default function CardPreviewModal({
   cardName,
-  onClose
+  onClose,
+  closeOnEscape = true
 }: CardPreviewModalProps) {
   useEffect(() => {
+    if (!closeOnEscape) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [closeOnEscape, onClose]);
 
   return (
     <div

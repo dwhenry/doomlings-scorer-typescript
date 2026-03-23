@@ -186,7 +186,7 @@ export default function ScoringLogsModal({
   return (
     <>
     <div
-      className="modal-overlay"
+      className="modal-overlay scoring-logs-modal-overlay"
       onClick={close}
       role="dialog"
       aria-modal="true"
@@ -194,6 +194,7 @@ export default function ScoringLogsModal({
     >
       <div
         className="modal-content scoring-logs-modal"
+        data-tour="scoring-logs-modal"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header scoring-logs-header">
@@ -357,6 +358,7 @@ export default function ScoringLogsModal({
           <button
             type="button"
             className="scoring-logs-report-bug-btn"
+            data-tour="scoring-report-bug"
             onClick={() => setBugReportOpen(true)}
           >
             Report scoring bug

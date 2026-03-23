@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
   useCallback,
-  useRef
+  useRef,
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import '@scorer/cards';
@@ -27,6 +27,9 @@ import AppFooter from './components/AppFooter';
 import BetaBanner from './components/BetaBanner';
 import EmailContactModal from './components/EmailContactModal';
 import LicenseModal from './components/LicenseModal';
+import OnboardingTour from './components/OnboardingTour';
+import { isOnboardingCompleteForCurrentVersion } from './onboarding/onboardingSteps';
+import { useOnboardingApplyDemo } from './hooks/useOnboardingDemo';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
@@ -36,6 +39,25 @@ export default function App() {
     null
   );
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
+  const [onboardingOpen, setOnboardingOpen] = useState(
+    () => !isOnboardingCompleteForCurrentVersion()
+  );
+  const [tourDrivenPreview, setTourDrivenPreview] = useState(false);
+  const appRootRef = useRef<HTMLDivElement>(null);
+
+  const closeMobilePreview = useCallback(() => {
+    setTourDrivenPreview(false);
+    setMobilePreviewCard(null);
+  }, []);
+
+  const applyOnboardingDemo = useOnboardingApplyDemo(
+    dispatch,
+    state.selectedPlayerId,
+    cardsMap,
+    setMobilePreviewCard,
+    setTourDrivenPreview,
+    appRootRef
+  );
 
   useEffect(() => {
     setCardsMap(allCards());
@@ -183,7 +205,7 @@ export default function App() {
   );
 
   return (
-    <div className="app-root">
+    <div className="app-root" ref={appRootRef}>
       <BetaBanner />
       <div className="game-main-column">
         <div className="app-hero">
@@ -191,6 +213,7 @@ export default function App() {
         </div>
         <div
           className={`players-strip-sticky${state.mobileAddingForPlayer !== null ? ' players-strip-sticky--mobile-adding' : ''}`}
+          data-tour="players"
         >
           <PlayerSection
             state={state}
@@ -202,7 +225,7 @@ export default function App() {
         <div
           className={`game-container${state.selectedPlayerId !== null ? ' game-container--deck-visible' : ''}`}
         >
-          <div className="desk-row">
+          <div className="desk-row" data-tour="card-preview">
             <PackDisplay
               state={state}
               dispatch={dispatch}
@@ -225,6 +248,7 @@ export default function App() {
             }
             onOpenContact={() => setContactModalOpen(true)}
             onOpenLicense={() => setLicenseModalOpen(true)}
+            onOpenHowToUse={() => setOnboardingOpen(true)}
           />
 
           {contactModalOpen && (
@@ -246,9 +270,19 @@ export default function App() {
           {mobilePreviewCard !== null && (
             <CardPreviewModal
               cardName={mobilePreviewCard}
-              onClose={() => setMobilePreviewCard(null)}
+              onClose={closeMobilePreview}
+              closeOnEscape={!tourDrivenPreview}
             />
           )}
+
+          <OnboardingTour
+            open={onboardingOpen}
+            onClose={() => setOnboardingOpen(false)}
+            applyDemo={applyOnboardingDemo}
+            demoRefreshKey={
+              cardsMap.size + (state.scoringLogsModalOpen ? 1_000_000 : 0)
+            }
+          />
         </div>
       </div>
     </div>

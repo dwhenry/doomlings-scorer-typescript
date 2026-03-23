@@ -2533,6 +2533,150 @@ button:active {
 }
 
 /* ======================== */
+/* Onboarding tour           */
+/* ======================== */
+.onboarding-tour-root {
+  position: fixed;
+  inset: 0;
+  z-index: 3600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .onboarding-tour-root {
+    align-items: center;
+  }
+}
+
+.onboarding-tour-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.onboarding-tour-spotlight {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.onboarding-tour-dialog {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 28rem;
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+  background: #fff;
+  color: #1a1a2e;
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem 1rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+
+.onboarding-tour-progress {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #667eea;
+  letter-spacing: 0.02em;
+}
+
+.onboarding-tour-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.onboarding-tour-body {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.onboarding-tour-body p {
+  margin: 0 0 0.65rem;
+}
+
+.onboarding-tour-body p:last-child {
+  margin-bottom: 0;
+}
+
+.onboarding-tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e8e8ef;
+}
+
+.onboarding-tour-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.onboarding-tour-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.onboarding-tour-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.onboarding-tour-btn--ghost {
+  background: transparent;
+  color: #555;
+  border-color: #d0d0d8;
+}
+
+.onboarding-tour-btn--ghost:hover:not(:disabled) {
+  background: #f4f4f8;
+}
+
+.onboarding-tour-btn--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.onboarding-tour-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.app-root[data-onboarding-demo='hover'] .desk-row .card-zoom-dock {
+  z-index: 3700;
+}
+
+.app-root[data-onboarding-demo='long-press'] .card-preview-modal-overlay {
+  z-index: 3800;
+}
+
+.app-root[data-onboarding-demo='scoring-modal'] .scoring-logs-modal-overlay {
+  z-index: 3700;
+}
+
+/* ======================== */
 /* Reduced Motion            */
 /* ======================== */
 @media (prefers-reduced-motion: reduce) {
