@@ -131,11 +131,19 @@ export default function PlayerSection({
           >
             Done
           </button>
-          <span className="focused-player-name">
-            {player.name}
-            <span className="player-card-count"> · {player.cards.length}</span>
-          </span>
-          <span className="focused-player-score">{totalScore} pts</span>
+          <span className="focused-player-name">{player.name}</span>
+          <div
+            className="focused-player-stats"
+            aria-label={`${totalScore} points, ${player.cards.length} cards`}
+          >
+            <span className="focused-player-score">{totalScore} pts</span>
+            <span className="focused-player-sep" aria-hidden="true">
+              |
+            </span>
+            <span className="focused-player-cards">
+              {player.cards.length} cards
+            </span>
+          </div>
         </div>
         <div className="focused-player-hand">
           {cardGroups.map((group) => {

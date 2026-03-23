@@ -111,12 +111,20 @@ export default function PlayerCard({
         onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
       >
         <div className="player-header">
-          <h3>
-            {player.name}
-            <span className="player-card-count"> · {player.cards.length}</span>
-          </h3>
-          <div className="player-score">
-            <span className="total-score">{totalScore}</span> pts
+          <h3>{player.name}</h3>
+          <div
+            className="player-score-row-compact"
+            aria-label={`${totalScore} points, ${player.cards.length} cards`}
+          >
+            <span className="player-score-pts">
+              <span className="total-score">{totalScore}</span> pts
+            </span>
+            <span className="player-score-sep" aria-hidden="true">
+              |
+            </span>
+            <span className="player-score-cards">
+              {player.cards.length} cards
+            </span>
           </div>
         </div>
       </div>
@@ -130,12 +138,14 @@ export default function PlayerCard({
       onClick={() => selectOrStartAddingPlayer(dispatch, isMobile, player.id)}
     >
       <div className="player-header">
-        <h3>
-          {player.name}
-          <span className="player-card-count"> · {player.cards.length}</span>
-        </h3>
-        <div className="player-score">
-          <span className="total-score">{totalScore}</span> points
+        <h3>{player.name}</h3>
+        <div className="player-score-stack">
+          <div className="player-score">
+            <span className="total-score">{totalScore}</span> points
+          </div>
+          <div className="player-hand-count">
+            {player.cards.length} cards
+          </div>
         </div>
       </div>
       <div className="player-hand">

@@ -391,8 +391,8 @@ body {
     transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .player--compact .player-score {
-    font-size: 18px;
+  .player--compact .player-score-row-compact {
+    font-size: 15px;
     flex-shrink: 0;
     transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -475,18 +475,61 @@ body {
   font-size: 1.1em;
 }
 
-.player-card-count {
+.player-score-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.player-hand-count {
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: #868e96;
-  font-size: 0.9em;
+  color: #5c6370;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.player.selected .player-hand-count {
+  color: #4a5d7a;
 }
 
 .player-score {
   font-size: 22px;
   font-weight: 800;
-  color: #16a34a;
-  text-shadow: 0 1px 2px rgba(22, 163, 74, 0.15);
+  color: #15803d;
+  text-shadow: 0 1px 2px rgba(22, 163, 74, 0.12);
   font-variant-numeric: tabular-nums;
+}
+
+.player-score-row-compact {
+  display: flex;
+  align-items: baseline;
+  flex-shrink: 0;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.player-score-pts {
+  color: #15803d;
+}
+
+.player-score-pts .total-score {
+  font-weight: 800;
+}
+
+.player-score-sep {
+  color: #adb5bd;
+  font-weight: 500;
+  user-select: none;
+}
+
+.player-score-cards {
+  color: #495057;
+  font-weight: 600;
 }
 
 .player-hand {
@@ -2257,6 +2300,12 @@ a.app-footer-action:visited {
   .player-header h3 {
     margin: 0;
   }
+
+  .player-header .player-score-stack {
+    margin-left: auto;
+    align-items: flex-end;
+    text-align: right;
+  }
 }
 
 /* ======================== */
@@ -2301,12 +2350,30 @@ a.app-footer-action:visited {
   color: #495057;
 }
 
+.focused-player-stats {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 1em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .focused-player-score {
   font-weight: 800;
-  font-size: 1.1em;
-  color: #16a34a;
-  margin-left: auto;
-  font-variant-numeric: tabular-nums;
+  color: #15803d;
+}
+
+.focused-player-sep {
+  color: #adb5bd;
+  font-weight: 500;
+  user-select: none;
+}
+
+.focused-player-cards {
+  font-weight: 600;
+  color: #495057;
 }
 
 .focused-player-hand {
