@@ -10,7 +10,6 @@ import {
   hasCardScopedMetadata
 } from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { useMobileHandPin } from '../hooks/useMobileHandPin';
 import PlayerCard, { type PlayerCardLayoutVariant } from './PlayerCard';
 
 interface PlayerSectionProps {
@@ -113,8 +112,6 @@ export default function PlayerSection({
   const isMobile = !useMediaQuery('(min-width: 768px)');
   const mobileAddingActive =
     isMobile && mobileAddingForPlayer !== null;
-  const { flowSlotRef, handRef, pinned, spacerHeight, handPinStyle } =
-    useMobileHandPin(mobileAddingActive);
 
   // Mobile focused view: only show the player we're adding cards for
   if (mobileAddingActive) {
@@ -205,25 +202,11 @@ export default function PlayerSection({
           </div>
         </div>
         <div
-          ref={flowSlotRef}
-          className="focused-player-hand-flow-slot"
+          className="focused-player-hand-wrap"
+          aria-label={`${player.name}'s hand`}
         >
-          {pinned ? (
-            <div
-              className="focused-player-hand-spacer"
-              style={{ height: spacerHeight }}
-              aria-hidden
-            />
-          ) : null}
-          <div
-            ref={handRef}
-            className={`focused-player-hand-sticky${pinned ? ' focused-player-hand-sticky--pinned' : ''}`}
-            style={handPinStyle}
-            aria-label={`${player.name}'s hand`}
-          >
-            <div className="focused-player-hand focused-player-hand--two-rows">
-              {handCards}
-            </div>
+          <div className="focused-player-hand focused-player-hand--two-rows">
+            {handCards}
           </div>
         </div>
       </section>

@@ -258,16 +258,16 @@ body {
   z-index: 1000;
 }
 
-/* Mobile “add cards”: strip scrolls away; only the hand bar below sticks */
+/* Mobile: whole strip stays sticky (hero scrolls away). Pause strip animation for WebKit sticky. */
 @media (max-width: 767px) {
+  .players-strip-sticky {
+    top: env(safe-area-inset-top, 0px);
+  }
+
   .players-strip-sticky--mobile-adding {
-    position: static;
-    z-index: auto;
-    /* Animated backgrounds on an ancestor can break position:sticky in WebKit */
     animation: none;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
     background-size: 100% 100%;
-    /* Vertical rhythm: avoid margin on inner .players-section (shows purple “line”) */
     padding-top: 8px;
     padding-bottom: 12px;
   }
@@ -2499,39 +2499,17 @@ a.app-footer-action:visited {
     padding: 10px 12px 6px;
   }
 
-  .focused-player-hand-flow-slot {
-    display: block;
-    margin: 0;
-    padding: 0;
-  }
-
-  .focused-player-hand-spacer {
-    flex-shrink: 0;
-  }
-
-  /* In flow until JS pins (position:fixed + spacer); sticky was unreliable here */
-  .focused-player-hand-sticky {
-    display: block;
-    flex-shrink: 0;
-    align-self: stretch;
-    position: relative;
-    margin: 0;
+  .players-strip-sticky--mobile-adding
+    .players-section--focused-mobile-card
+    .focused-player-hand-wrap {
     padding: 2px 12px 18px;
-    background: white;
-    border: none;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  }
-
-  .focused-player-hand-sticky--pinned {
-    padding-top: max(2px, env(safe-area-inset-top, 0px));
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   /* Two rows of tiles, then scroll vertically */
   .focused-player-hand--two-rows {
     flex-wrap: wrap;
     align-content: flex-start;
-    max-height: calc(2 * 92px + 6px);
+    max-height: calc(2 * 78px + 8px);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
