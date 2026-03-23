@@ -166,10 +166,14 @@ export default function PlayerCard({
                 key={`${group.name}-${group.cardIndices[0]}`}
                 ref={refLastAdded}
                 className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() =>
-                  setHoveredCard(dispatch, group.name)
+                onMouseEnter={
+                  isMobile
+                    ? undefined
+                    : () => setHoveredCard(dispatch, group.name)
                 }
-                onMouseLeave={() => setHoveredCard(dispatch, null)}
+                onMouseLeave={
+                  isMobile ? undefined : () => setHoveredCard(dispatch, null)
+                }
                 onClick={(e) => {
                   e.stopPropagation();
                   if (group.hasMetadata) {

@@ -19,6 +19,7 @@ import { getEditableMetadataFields } from './utils/cardMetadata';
 import Header from './components/Header';
 import PlayerSection from './components/PlayerSection';
 import PackDisplay from './components/PackDisplay';
+import CardPreviewModal from './components/CardPreviewModal';
 import CardZoom from './components/CardZoom';
 import MetadataModal from './components/MetadataModal';
 import ScoringLogsModal from './components/ScoringLogsModal';
@@ -31,6 +32,9 @@ export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [licenseModalOpen, setLicenseModalOpen] = useState(false);
+  const [mobilePreviewCard, setMobilePreviewCard] = useState<string | null>(
+    null
+  );
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
 
   useEffect(() => {
@@ -185,7 +189,9 @@ export default function App() {
         <div className="app-hero">
           <Header state={state} dispatch={dispatch} />
         </div>
-        <div className="players-strip-sticky">
+        <div
+          className={`players-strip-sticky${state.mobileAddingForPlayer !== null ? ' players-strip-sticky--mobile-adding' : ''}`}
+        >
           <PlayerSection state={state} dispatch={dispatch} gameScore={gameScore} />
         </div>
         <div
@@ -199,6 +205,7 @@ export default function App() {
               onClickCard={handleClickCard}
               onClickCatastrophe={handleClickCatastrophe}
               onDeselectCatastrophe={handleDeselectCatastrophe}
+              onOpenCardPreview={(name) => setMobilePreviewCard(name)}
             />
             <CardZoom cardName={state.hoveredCard} />
           </div>
@@ -230,6 +237,13 @@ export default function App() {
           )}
 
           <MetadataModal state={state} gameScore={gameScore} dispatch={dispatch} cards={cardsMap}/>
+
+          {mobilePreviewCard !== null && (
+            <CardPreviewModal
+              cardName={mobilePreviewCard}
+              onClose={() => setMobilePreviewCard(null)}
+            />
+          )}
         </div>
       </div>
     </div>

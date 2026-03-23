@@ -234,9 +234,11 @@ body {
   width: 40px;
 }
 
-.catastrophe-card:hover {
-  opacity: 0.8;
-  z-index: 1001;
+@media (hover: hover) and (pointer: fine) {
+  .catastrophe-card:hover {
+    opacity: 0.8;
+    z-index: 1001;
+  }
 }
 
 .catastrophe-card.selected {
@@ -250,9 +252,25 @@ body {
 
 /* Sticky strip: player hands (banner + game header scroll away above) */
 .players-strip-sticky {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1000;
+}
+
+/* Mobile “add cards”: strip scrolls away; only the hand bar below sticks */
+@media (max-width: 767px) {
+  .players-strip-sticky--mobile-adding {
+    position: static;
+    z-index: auto;
+    /* Animated backgrounds on an ancestor can break position:sticky in WebKit */
+    animation: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 100% 100%;
+    /* Vertical rhythm: avoid margin on inner .players-section (shows purple “line”) */
+    padding-top: 8px;
+    padding-bottom: 12px;
+  }
 }
 
 .players-strip-sticky .players-section:not(.players-section--focused) {
@@ -620,12 +638,14 @@ body {
   flex-shrink: 0;
 }
 
-.pack-card:hover {
-  z-index: 100;
-  transform: translateY(-4px) rotateX(4deg);
-  box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.08);
+@media (hover: hover) and (pointer: fine) {
+  .pack-card:hover {
+    z-index: 100;
+    transform: translateY(-4px) rotateX(4deg);
+    box-shadow:
+      0 8px 16px rgba(0, 0, 0, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .pack-card:active {
@@ -647,11 +667,13 @@ body {
     box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.player-card:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.08);
+@media (hover: hover) and (pointer: fine) {
+  .player-card:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .card-count {
@@ -765,6 +787,80 @@ body {
   to {
     opacity: 1;
   }
+}
+
+/* Full-screen card preview (mobile / touch) */
+.card-preview-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3400;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  animation: fadeIn 0.2s ease;
+}
+
+.card-preview-modal-close {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.card-preview-modal-close:active {
+  opacity: 0.75;
+}
+
+.card-preview-modal-body {
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.card-preview-modal-img {
+  max-width: min(100%, 420px);
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.card-preview-modal-caption {
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+  text-align: center;
+}
+
+.card-preview-modal-hint {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  margin: 0;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.45;
 }
 
 .modal-content {
@@ -1603,9 +1699,11 @@ a.app-footer-action:visited {
   transition: transform 0.2s;
 }
 
-.pack-display.player-selected .pack-card:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .pack-display.player-selected .pack-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+  }
 }
 
 .pack-display h2 {
@@ -2038,11 +2136,6 @@ a.app-footer-action:visited {
     max-height: 200px;
   }
 
-  /* Hide pack-display on mobile — drawer replaces it */
-  .pack-display {
-    display: none;
-  }
-
   .card-zoom-dock {
     display: none !important;
   }
@@ -2219,61 +2312,30 @@ a.app-footer-action:visited {
   gap: 4px;
 }
 
-/* ======================== */
-/* Bottom Drawer (mobile)   */
-/* ======================== */
-.bottom-drawer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 1500;
-  display: flex;
-  flex-direction: column;
-  transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overscroll-behavior: contain;
-}
+/* Mobile pack in page flow (was fixed drawer) */
+@media (max-width: 768px) {
+  .pack-display--mobile .cards-grid--tabbed {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
 
-.drawer-content {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0 16px 16px;
-}
+  .pack-display--mobile .catastrophe-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
 
-/* Drawer-specific overrides */
-.bottom-drawer .player-selection-hint {
-  font-size: 13px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-}
+  .pack-display--mobile .pack-card--labeled {
+    width: auto;
+  }
 
-.bottom-drawer .cards-grid--tabbed {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
+  .pack-display--mobile .pack-card-name {
+    max-width: none;
+    white-space: normal;
+  }
 
-.bottom-drawer .catastrophe-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.bottom-drawer .pack-card--labeled {
-  width: auto;
-}
-
-.bottom-drawer .pack-card-name {
-  max-width: none;
-  white-space: normal;
-}
-
-.bottom-drawer .catastrophe-tab-content .catastrophe-card {
-  width: auto;
+  .pack-display--mobile .catastrophe-tab-content .catastrophe-card {
+    width: auto;
+  }
 }
 
 /* ======================== */
@@ -2412,6 +2474,71 @@ a.app-footer-action:visited {
   gap: 6px;
   padding: 8px 0;
   min-height: 50px;
+}
+
+@media (max-width: 767px) {
+  /* One white card: spacing from strip padding, not section margin (margin shows grey gap) */
+  .players-strip-sticky--mobile-adding .players-section--focused-mobile-card {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    border-radius: 10px;
+    border-bottom: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+  }
+
+  .players-strip-sticky--mobile-adding
+    .players-section--focused.players-section--focused-mobile-card {
+    margin-top: 0;
+  }
+
+  .players-strip-sticky--mobile-adding
+    .players-section--focused-mobile-card
+    .focused-player-header {
+    padding: 10px 12px 6px;
+  }
+
+  .focused-player-hand-flow-slot {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  .focused-player-hand-spacer {
+    flex-shrink: 0;
+  }
+
+  /* In flow until JS pins (position:fixed + spacer); sticky was unreliable here */
+  .focused-player-hand-sticky {
+    display: block;
+    flex-shrink: 0;
+    align-self: stretch;
+    position: relative;
+    margin: 0;
+    padding: 2px 12px 18px;
+    background: white;
+    border: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  .focused-player-hand-sticky--pinned {
+    padding-top: max(2px, env(safe-area-inset-top, 0px));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Two rows of tiles, then scroll vertically */
+  .focused-player-hand--two-rows {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    max-height: calc(2 * 92px + 6px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    min-height: 0;
+    padding: 4px 0 2px;
+  }
 }
 
 /* ======================== */

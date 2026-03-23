@@ -10,6 +10,7 @@ import {
   hasCardScopedMetadata
 } from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useMobileHandPin } from '../hooks/useMobileHandPin';
 import PlayerCard, { type PlayerCardLayoutVariant } from './PlayerCard';
 
 interface PlayerSectionProps {
@@ -110,9 +111,13 @@ export default function PlayerSection({
 }: PlayerSectionProps) {
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
+  const mobileAddingActive =
+    isMobile && mobileAddingForPlayer !== null;
+  const { flowSlotRef, handRef, pinned, spacerHeight, handPinStyle } =
+    useMobileHandPin(mobileAddingActive);
 
   // Mobile focused view: only show the player we're adding cards for
-  if (isMobile && mobileAddingForPlayer !== null) {
+  if (mobileAddingActive) {
     const playerIndex = players.findIndex(
       (p) => p.id === mobileAddingForPlayer
     );
@@ -124,8 +129,60 @@ export default function PlayerSection({
       : 0;
     const displayCardCount = countPlayerDisplayCards(player.cards);
 
+    const handCards = cardGroups.map((group) => {
+      const allDiscarded = group.discardedIndices.length === group.count;
+      return (
+        <div
+          key={`${group.name}-${group.cardIndices[0]}`}
+          className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (group.hasMetadata) {
+              dispatch({
+                type: 'OPEN_MODAL',
+                playerId: player.id,
+                cardIndex: group.cardIndices[0],
+                cardName: group.name
+              });
+            }
+          }}
+        >
+          <img
+            src={`/cards/${encodeURIComponent(group.name)}.png`}
+            alt={group.name}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+          {group.count > 1 && (
+            <div className="card-count">{group.count}</div>
+          )}
+          {allDiscarded ? (
+            <div className="card-score card-score--discarded">0 pts</div>
+          ) : group.totalScore !== null ? (
+            <div className="card-score">{group.totalScore} pts</div>
+          ) : group.metadataMissing ? (
+            <div className="card-score card-score--missing">-</div>
+          ) : null}
+          <button
+            className="remove-card remove-card--visible"
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: 'REMOVE_CARD',
+                playerId: player.id,
+                cardIndex: group.cardIndices[0]
+              });
+            }}
+          >
+            &times;
+          </button>
+        </div>
+      );
+    });
+
     return (
-      <section className="players-section players-section--focused">
+      <section className="players-section players-section--focused players-section--focused-mobile-card">
         <div className="focused-player-header">
           <button
             className="focused-player-done"
@@ -147,64 +204,27 @@ export default function PlayerSection({
             </span>
           </div>
         </div>
-        <div className="focused-player-hand">
-          {cardGroups.map((group) => {
-            const allDiscarded = group.discardedIndices.length === group.count;
-            return (
-              <div
-                key={`${group.name}-${group.cardIndices[0]}`}
-                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={() =>
-                  dispatch({ type: 'SET_HOVERED', cardName: group.name })
-                }
-                onMouseLeave={() =>
-                  dispatch({ type: 'SET_HOVERED', cardName: null })
-                }
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (group.hasMetadata) {
-                    dispatch({
-                      type: 'OPEN_MODAL',
-                      playerId: player.id,
-                      cardIndex: group.cardIndices[0],
-                      cardName: group.name
-                    });
-                  }
-                }}
-              >
-                <img
-                  src={`/cards/${encodeURIComponent(group.name)}.png`}
-                  alt={group.name}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                {group.count > 1 && (
-                  <div className="card-count">{group.count}</div>
-                )}
-                {allDiscarded ? (
-                  <div className="card-score card-score--discarded">0 pts</div>
-                ) : group.totalScore !== null ? (
-                  <div className="card-score">{group.totalScore} pts</div>
-                ) : group.metadataMissing ? (
-                  <div className="card-score card-score--missing">-</div>
-                ) : null}
-                <button
-                  className="remove-card remove-card--visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    dispatch({
-                      type: 'REMOVE_CARD',
-                      playerId: player.id,
-                      cardIndex: group.cardIndices[0]
-                    });
-                  }}
-                >
-                  &times;
-                </button>
-              </div>
-            );
-          })}
+        <div
+          ref={flowSlotRef}
+          className="focused-player-hand-flow-slot"
+        >
+          {pinned ? (
+            <div
+              className="focused-player-hand-spacer"
+              style={{ height: spacerHeight }}
+              aria-hidden
+            />
+          ) : null}
+          <div
+            ref={handRef}
+            className={`focused-player-hand-sticky${pinned ? ' focused-player-hand-sticky--pinned' : ''}`}
+            style={handPinStyle}
+            aria-label={`${player.name}'s hand`}
+          >
+            <div className="focused-player-hand focused-player-hand--two-rows">
+              {handCards}
+            </div>
+          </div>
         </div>
       </section>
     );
