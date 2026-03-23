@@ -1,5 +1,6 @@
 /* Body Background */
 body {
+  margin: 0;
   background: #f5f3f0;
   background-image:
     radial-gradient(
@@ -15,7 +16,7 @@ body {
   min-height: 100vh;
 }
 
-/* Root layout: top bar is full viewport width; main content stays in .game-container */
+/* Root layout */
 .app-root {
   font-family:
     'Inter',
@@ -26,17 +27,50 @@ body {
     sans-serif;
 }
 
-.app-top-full-width {
+/*
+ * Main column wraps header band, sticky player strip, and deck so sticky has a tall scroll parent.
+ * Purple bands break out to full viewport width; inner padding matches the 1400px content column.
+ */
+.game-main-column {
+  box-sizing: border-box;
   width: 100%;
-}
-
-/* Game Container */
-.game-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  padding-bottom: 72px;
-  padding-top: 20px;
+  padding: 0;
+  min-width: 0;
+}
+
+.app-hero,
+.game-main-column > .players-strip-sticky {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  box-sizing: border-box;
+  padding-left: max(20px, calc((100vw - 1400px) / 2 + 20px));
+  padding-right: max(20px, calc((100vw - 1400px) / 2 + 20px));
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background-size: 200% 100%;
+  animation: headerGradient 8s ease infinite;
+}
+
+.app-hero {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+.game-main-column > .players-strip-sticky {
+  box-shadow: none;
+}
+
+/* Deck + footer (inside the 1400px column — match 20px gutter used in full-bleed bands) */
+.game-main-column .game-container {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 20px 20px 72px;
+  box-sizing: border-box;
 }
 
 .beta-banner {
@@ -55,21 +89,15 @@ body {
   max-width: 56rem;
 }
 
-/* Header (title + game options — scrolls with page) */
+/* Header (title + game options — scrolls with page; gradient comes from .app-hero) */
 .game-header {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-  background-size: 200% 100%;
-  animation: headerGradient 8s ease infinite;
+  background: transparent;
   color: white;
-  padding: 20px;
+  padding: 20px 0;
   border-radius: 0;
   margin-bottom: 0;
-  backdrop-filter: blur(12px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    0 4px 16px rgba(102, 126, 234, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
 }
 
 @keyframes headerGradient {
@@ -228,13 +256,35 @@ body {
 /* Players Section */
 .players-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
   gap: 15px;
   padding: 15px 20px;
   background: white;
   border-bottom: 3px solid #dee2e6;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-top: 15px;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Player hands on purple band (below header) */
+.players-strip-sticky .players-section {
+  margin-top: 0;
+  padding: 12px 0 16px;
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+/* Mobile “adding cards” view stays a solid card on top of the hero */
+.players-strip-sticky .players-section--focused {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: white;
+  border-bottom: 2px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -246,11 +296,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    min-width: 0;
   }
 
   .players-section--has-selection > .player--featured {
     width: 100%;
-    max-width: none;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .players-section__others {
@@ -260,10 +312,14 @@ body {
     gap: 12px;
     align-items: stretch;
     padding: 6px 4px 2px;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .player--featured {
-    max-width: none;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .player--featured .player-hand {
@@ -366,6 +422,7 @@ body {
     box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   max-width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -435,6 +492,7 @@ body {
 
 .player-hand {
   flex: 1;
+  min-width: 0;
   min-height: 60px;
   background: white;
   border: 2px dashed #dee2e6;
