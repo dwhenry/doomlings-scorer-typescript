@@ -9,19 +9,28 @@ import {
   markOnboardingComplete,
   onboardingStepsDesktop,
   onboardingStepsMobile,
-  type OnboardingStep
+  type OnboardingStep,
+  type OnboardingStepId
 } from '../onboarding/onboardingSteps';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import type { OnboardingDemoContext } from '../hooks/useOnboardingDemo';
 
-const MOBILE_QUERY = '(max-width: 767px)';
 const SPOTLIGHT_PAD = 6;
 
 interface OnboardingTourProps {
   open: boolean;
   onClose: () => void;
+  applyDemo: (ctx: OnboardingDemoContext) => void;
+  /** When this changes (e.g. cards load), demo effects for the current step re-run. */
+  demoRefreshKey: number;
 }
 
-export default function OnboardingTour({ open, onClose }: OnboardingTourProps) {
+export default function OnboardingTour({
+  open,
+  onClose,
+  applyDemo,
+  demoRefreshKey
+}: OnboardingTourProps) {
   const isMobile = !useMediaQuery('(min-width: 768px)');
   const steps: OnboardingStep[] = isMobile
     ? onboardingStepsMobile
@@ -30,6 +39,7 @@ export default function OnboardingTour({ open, onClose }: OnboardingTourProps) {
   const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const prevOpenRef = useRef(open);
+  const prevStepIdRef = useRef<OnboardingStepId | null>(null);
 
   useEffect(() => {
     if (open && !prevOpenRef.current) {
@@ -37,6 +47,25 @@ export default function OnboardingTour({ open, onClose }: OnboardingTourProps) {
     }
     prevOpenRef.current = open;
   }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      applyDemo({
+        stepId: null,
+        previousStepId: prevStepIdRef.current,
+        isMobile
+      });
+      prevStepIdRef.current = null;
+      return;
+    }
+    const stepId = steps[index]?.id ?? null;
+    applyDemo({
+      stepId,
+      previousStepId: prevStepIdRef.current,
+      isMobile
+    });
+    prevStepIdRef.current = stepId;
+  }, [applyDemo, demoRefreshKey, open, index, isMobile, steps]);
 
   useEffect(() => {
     setIndex((i) => Math.min(i, Math.max(0, steps.length - 1)));

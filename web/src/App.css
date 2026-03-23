@@ -2664,6 +2664,18 @@ button:active {
   filter: brightness(1.05);
 }
 
+.app-root[data-onboarding-demo='hover'] .desk-row .card-zoom-dock {
+  z-index: 3700;
+}
+
+.app-root[data-onboarding-demo='long-press'] .card-preview-modal-overlay {
+  z-index: 3800;
+}
+
+.app-root[data-onboarding-demo='scoring-modal'] .scoring-logs-modal-overlay {
+  z-index: 3700;
+}
+
 /* ======================== */
 /* Reduced Motion            */
 /* ======================== */

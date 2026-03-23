@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
   useCallback,
-  useRef
+  useRef,
 } from 'react';
 import { allCards } from '@scorer/cardContainer';
 import '@scorer/cards';
@@ -29,6 +29,7 @@ import EmailContactModal from './components/EmailContactModal';
 import LicenseModal from './components/LicenseModal';
 import OnboardingTour from './components/OnboardingTour';
 import { isOnboardingCompleteForCurrentVersion } from './onboarding/onboardingSteps';
+import { useOnboardingApplyDemo } from './hooks/useOnboardingDemo';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
@@ -40,6 +41,22 @@ export default function App() {
   const [cardsMap, setCardsMap] = useState<Map<string, Card>>(new Map());
   const [onboardingOpen, setOnboardingOpen] = useState(
     () => !isOnboardingCompleteForCurrentVersion()
+  );
+  const [tourDrivenPreview, setTourDrivenPreview] = useState(false);
+  const appRootRef = useRef<HTMLDivElement>(null);
+
+  const closeMobilePreview = useCallback(() => {
+    setTourDrivenPreview(false);
+    setMobilePreviewCard(null);
+  }, []);
+
+  const applyOnboardingDemo = useOnboardingApplyDemo(
+    dispatch,
+    state.selectedPlayerId,
+    cardsMap,
+    setMobilePreviewCard,
+    setTourDrivenPreview,
+    appRootRef
   );
 
   useEffect(() => {
@@ -188,7 +205,7 @@ export default function App() {
   );
 
   return (
-    <div className="app-root">
+    <div className="app-root" ref={appRootRef}>
       <BetaBanner />
       <div className="game-main-column">
         <div className="app-hero">
@@ -253,16 +270,19 @@ export default function App() {
           {mobilePreviewCard !== null && (
             <CardPreviewModal
               cardName={mobilePreviewCard}
-              onClose={() => setMobilePreviewCard(null)}
+              onClose={closeMobilePreview}
+              closeOnEscape={!tourDrivenPreview}
             />
           )}
 
-          {onboardingOpen && (
-            <OnboardingTour
-              open={onboardingOpen}
-              onClose={() => setOnboardingOpen(false)}
-            />
-          )}
+          <OnboardingTour
+            open={onboardingOpen}
+            onClose={() => setOnboardingOpen(false)}
+            applyDemo={applyOnboardingDemo}
+            demoRefreshKey={
+              cardsMap.size + (state.scoringLogsModalOpen ? 1_000_000 : 0)
+            }
+          />
         </div>
       </div>
     </div>

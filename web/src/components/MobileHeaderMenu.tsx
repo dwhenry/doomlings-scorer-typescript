@@ -108,6 +108,7 @@ export default function MobileHeaderMenu({
             <button
               type="button"
               className="mobile-header-menu-item"
+              data-tour="mobile-report-bug"
               onClick={() => {
                 onClose();
                 onReportBug();
