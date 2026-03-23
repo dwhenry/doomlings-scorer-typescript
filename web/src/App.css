@@ -306,7 +306,8 @@ body {
   }
 
   .players-section--has-selection > .player--featured {
-    width: 100%;
+    /* Stretch via column flex parent; avoid width:100% + border-box overflow */
+    align-self: stretch;
     max-width: 100%;
     min-width: 0;
   }
@@ -405,6 +406,7 @@ body {
 }
 
 .player {
+  box-sizing: border-box;
   background: #f8f9fa;
   border: 2px solid #dee2e6;
   border-radius: 8px;
