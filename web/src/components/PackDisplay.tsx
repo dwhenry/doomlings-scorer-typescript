@@ -180,7 +180,17 @@ export default function PackDisplay({
   }
 
   if (selectedPlayerId === null) {
-    return null;
+    return (
+      <section
+        className="pack-display pack-display--awaiting-player"
+        aria-live="polite"
+      >
+        <h2>Card Pack</h2>
+        <p className="pack-display-awaiting-text">
+          Select a player above to browse and add cards.
+        </p>
+      </section>
+    );
   }
 
   return (
