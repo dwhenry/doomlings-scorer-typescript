@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, type Dispatch } from 'react';
 import type { Action } from '../appReducer';
 import type { PlayerState, CardGroup } from '../types';
+import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
 
 function selectOrStartAddingPlayer(
   dispatch: Dispatch<Action>,
@@ -74,6 +75,7 @@ export default function PlayerCard({
 
   const lastCardIndex = player.cards.length > 0 ? player.cards.length - 1 : -1;
   const isCompact = layoutVariant === 'compact';
+  const displayCardCount = countPlayerDisplayCards(player.cards);
 
   useLayoutEffect(() => {
     if (isMobile || isCompact) {
@@ -114,7 +116,7 @@ export default function PlayerCard({
           <h3>{player.name}</h3>
           <div
             className="player-score-row-compact"
-            aria-label={`${totalScore} points, ${player.cards.length} cards`}
+            aria-label={`${totalScore} points, ${displayCardCount} cards`}
           >
             <span className="player-score-pts">
               <span className="total-score">{totalScore}</span> pts
@@ -123,7 +125,7 @@ export default function PlayerCard({
               |
             </span>
             <span className="player-score-cards">
-              {player.cards.length} cards
+              {displayCardCount} cards
             </span>
           </div>
         </div>
@@ -143,9 +145,7 @@ export default function PlayerCard({
           <div className="player-score">
             <span className="total-score">{totalScore}</span> points
           </div>
-          <div className="player-hand-count">
-            {player.cards.length} cards
-          </div>
+          <div className="player-hand-count">{displayCardCount} cards</div>
         </div>
       </div>
       <div className="player-hand">

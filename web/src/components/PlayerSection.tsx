@@ -3,6 +3,7 @@ import type { PlayerState, CardGroup, Card } from '../types';
 import type { Action, AppState } from '../appReducer';
 import type { GameScore } from '@scorer/scorer';
 import { PLAYER_CARD_NAME } from '@scorer/types';
+import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
 import {
   getCardMetadataFields,
   isMetadataComplete,
@@ -121,6 +122,7 @@ export default function PlayerSection({
     const totalScore = gameScore
       ? gameScore.getPlayerScore(playerIndex).total
       : 0;
+    const displayCardCount = countPlayerDisplayCards(player.cards);
 
     return (
       <section className="players-section players-section--focused">
@@ -134,14 +136,14 @@ export default function PlayerSection({
           <span className="focused-player-name">{player.name}</span>
           <div
             className="focused-player-stats"
-            aria-label={`${totalScore} points, ${player.cards.length} cards`}
+            aria-label={`${totalScore} points, ${displayCardCount} cards`}
           >
             <span className="focused-player-score">{totalScore} pts</span>
             <span className="focused-player-sep" aria-hidden="true">
               |
             </span>
             <span className="focused-player-cards">
-              {player.cards.length} cards
+              {displayCardCount} cards
             </span>
           </div>
         </div>

@@ -12,6 +12,7 @@ import type { Action, AppState } from '../appReducer';
 import EmailContactModal from './EmailContactModal';
 import type { CardEntry, GameStateExport, PlayerState } from '../types';
 import { gameStateToExport } from '../utils/gameStateExport';
+import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
 
 type LogView = 'byPlayer' | 'bySource';
 
@@ -241,7 +242,7 @@ export default function ScoringLogsModal({
                 >
                   <h4 className="scoring-logs-player-name scoring-logs-score-row">
                     <span className="scoring-logs-score-name">
-                      {player.name} ({player.cards.length} cards)
+                      {player.name} ({countPlayerDisplayCards(player.cards)} cards)
                     </span>
                     {player.phaseA !== undefined ? (
                       <>
