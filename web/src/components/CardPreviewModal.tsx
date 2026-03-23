@@ -53,10 +53,6 @@ export default function CardPreviewModal({
           }}
         />
         <p className="card-preview-modal-caption">{cardName}</p>
-        <p className="card-preview-modal-hint">
-          Long-press a card in the pack to preview. Tap outside or use the
-          close button to dismiss.
-        </p>
       </div>
     </div>
   );

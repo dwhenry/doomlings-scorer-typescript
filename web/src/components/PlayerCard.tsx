@@ -1,7 +1,14 @@
-import { useLayoutEffect, useRef, type Dispatch } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  type Dispatch,
+  type Ref
+} from 'react';
 import type { Action } from '../appReducer';
 import type { PlayerState, CardGroup } from '../types';
 import { countPlayerDisplayCards } from '../utils/countPlayerDisplayCards';
+import { useLongPressPreview } from '../hooks/useLongPressPreview';
 
 function selectOrStartAddingPlayer(
   dispatch: Dispatch<Action>,
@@ -48,6 +55,82 @@ function startAddingForPlayer(
 
 export type PlayerCardLayoutVariant = 'default' | 'compact' | 'featured';
 
+/** One grouped card in a player’s hand (desktop hover + optional mobile long-press preview). */
+export function PlayerHandGroupCell({
+  dispatch,
+  playerId,
+  group,
+  onHover,
+  onLongPressPreview,
+  scrollTargetRef
+}: {
+  dispatch: Dispatch<Action>;
+  playerId: number;
+  group: CardGroup;
+  onHover?: (name: string | null) => void;
+  onLongPressPreview?: (cardName: string) => void;
+  scrollTargetRef?: Ref<HTMLDivElement | null>;
+}) {
+  const { touchProps, wrapClick } = useLongPressPreview(
+    onLongPressPreview ? () => onLongPressPreview(group.name) : undefined
+  );
+
+  const handleActivate = useCallback(() => {
+    if (group.hasMetadata) {
+      openCardMetadataModal(
+        dispatch,
+        playerId,
+        group.cardIndices[0],
+        group.name
+      );
+    }
+  }, [dispatch, playerId, group]);
+
+  const allDiscarded = group.discardedIndices.length === group.count;
+
+  return (
+    <div
+      ref={scrollTargetRef}
+      className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
+      {...touchProps}
+      onMouseEnter={onHover ? () => onHover(group.name) : undefined}
+      onMouseLeave={onHover ? () => onHover(null) : undefined}
+      onClick={(e) => {
+        e.stopPropagation();
+        wrapClick(handleActivate)();
+      }}
+      onContextMenu={(e) => {
+        if (onLongPressPreview) e.preventDefault();
+      }}
+    >
+      <img
+        src={`/cards/${encodeURIComponent(group.name)}.png`}
+        alt={group.name}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      {group.count > 1 && <div className="card-count">{group.count}</div>}
+      {allDiscarded ? (
+        <div className="card-score card-score--discarded">0 pts</div>
+      ) : group.totalScore !== null ? (
+        <div className="card-score">{group.totalScore} pts</div>
+      ) : group.metadataMissing ? (
+        <div className="card-score card-score--missing">-</div>
+      ) : null}
+      <button
+        className="remove-card remove-card--visible"
+        onClick={(e) => {
+          e.stopPropagation();
+          removePlayerCard(dispatch, playerId, group.cardIndices[0]);
+        }}
+      >
+        &times;
+      </button>
+    </div>
+  );
+}
+
 interface PlayerCardProps {
   dispatch: Dispatch<Action>;
   player: PlayerState;
@@ -58,6 +141,8 @@ interface PlayerCardProps {
   showAddButton?: boolean;
   /** Desktop: narrow name+score when another player is selected */
   layoutVariant?: PlayerCardLayoutVariant;
+  /** Mobile: long-press hand card to open full-screen image preview */
+  onOpenCardPreview?: (cardName: string) => void;
 }
 
 export default function PlayerCard({
@@ -68,7 +153,8 @@ export default function PlayerCard({
   cardGroups,
   totalScore,
   showAddButton,
-  layoutVariant = 'default'
+  layoutVariant = 'default',
+  onOpenCardPreview
 }: PlayerCardProps) {
   const prevCardCountRef = useRef(player.cards.length);
   const scrollTargetRef = useRef<HTMLDivElement | null>(null);
@@ -155,68 +241,25 @@ export default function PlayerCard({
           </div>
         ) : (
           cardGroups.map((group) => {
-            const allDiscarded = group.discardedIndices.length === group.count;
             const refLastAdded =
               lastCardIndex >= 0 &&
               group.cardIndices.includes(lastCardIndex)
                 ? scrollTargetRef
                 : undefined;
             return (
-              <div
+              <PlayerHandGroupCell
                 key={`${group.name}-${group.cardIndices[0]}`}
-                ref={refLastAdded}
-                className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-                onMouseEnter={
+                dispatch={dispatch}
+                playerId={player.id}
+                group={group}
+                scrollTargetRef={refLastAdded}
+                onHover={
                   isMobile
                     ? undefined
-                    : () => setHoveredCard(dispatch, group.name)
+                    : (name) => setHoveredCard(dispatch, name)
                 }
-                onMouseLeave={
-                  isMobile ? undefined : () => setHoveredCard(dispatch, null)
-                }
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (group.hasMetadata) {
-                    openCardMetadataModal(
-                      dispatch,
-                      player.id,
-                      group.cardIndices[0],
-                      group.name
-                    );
-                  }
-                }}
-              >
-                <img
-                  src={`/cards/${encodeURIComponent(group.name)}.png`}
-                  alt={group.name}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                {group.count > 1 && (
-                  <div className="card-count">{group.count}</div>
-                )}
-                {allDiscarded ? (
-                  <div className="card-score card-score--discarded">0 pts</div>
-                ) : group.totalScore !== null ? (
-                  <div className="card-score">{group.totalScore} pts</div>
-                ) : group.metadataMissing ? (
-                  <div className="card-score card-score--missing">-</div>
-                ) : null}
-                <button
-                  className="remove-card remove-card--visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removePlayerCard(
-                      dispatch,
-                      player.id,
-                      group.cardIndices[0]
-                    );
-                  }}
-                >
-                  &times;
-                </button>
-              </div>
+                onLongPressPreview={onOpenCardPreview}
+              />
             );
           })
         )}

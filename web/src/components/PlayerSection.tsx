@@ -10,12 +10,16 @@ import {
   hasCardScopedMetadata
 } from '../utils/cardMetadata';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import PlayerCard, { type PlayerCardLayoutVariant } from './PlayerCard';
+import PlayerCard, {
+  PlayerHandGroupCell,
+  type PlayerCardLayoutVariant
+} from './PlayerCard';
 
 interface PlayerSectionProps {
   state: AppState;
   dispatch: Dispatch<Action>;
   gameScore: GameScore | null;
+  onOpenCardPreview?: (cardName: string) => void;
 }
 
 function buildCardGroups(
@@ -107,9 +111,11 @@ export default function PlayerSection({
   state,
   dispatch,
   gameScore,
+  onOpenCardPreview
 }: PlayerSectionProps) {
   const { players, selectedPlayerId, mobileAddingForPlayer } = state;
   const isMobile = !useMediaQuery('(min-width: 768px)');
+  const mobileLongPressPreview = isMobile ? onOpenCardPreview : undefined;
   const mobileAddingActive =
     isMobile && mobileAddingForPlayer !== null;
 
@@ -126,57 +132,15 @@ export default function PlayerSection({
       : 0;
     const displayCardCount = countPlayerDisplayCards(player.cards);
 
-    const handCards = cardGroups.map((group) => {
-      const allDiscarded = group.discardedIndices.length === group.count;
-      return (
-        <div
-          key={`${group.name}-${group.cardIndices[0]}`}
-          className={`card player-card${group.metadataMissing ? ' metadata-missing' : ''}${allDiscarded ? ' card--discarded' : ''}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (group.hasMetadata) {
-              dispatch({
-                type: 'OPEN_MODAL',
-                playerId: player.id,
-                cardIndex: group.cardIndices[0],
-                cardName: group.name
-              });
-            }
-          }}
-        >
-          <img
-            src={`/cards/${encodeURIComponent(group.name)}.png`}
-            alt={group.name}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          {group.count > 1 && (
-            <div className="card-count">{group.count}</div>
-          )}
-          {allDiscarded ? (
-            <div className="card-score card-score--discarded">0 pts</div>
-          ) : group.totalScore !== null ? (
-            <div className="card-score">{group.totalScore} pts</div>
-          ) : group.metadataMissing ? (
-            <div className="card-score card-score--missing">-</div>
-          ) : null}
-          <button
-            className="remove-card remove-card--visible"
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: 'REMOVE_CARD',
-                playerId: player.id,
-                cardIndex: group.cardIndices[0]
-              });
-            }}
-          >
-            &times;
-          </button>
-        </div>
-      );
-    });
+    const handCards = cardGroups.map((group) => (
+      <PlayerHandGroupCell
+        key={`${group.name}-${group.cardIndices[0]}`}
+        dispatch={dispatch}
+        playerId={player.id}
+        group={group}
+        onLongPressPreview={mobileLongPressPreview}
+      />
+    ));
 
     return (
       <section className="players-section players-section--focused players-section--focused-mobile-card">
@@ -244,6 +208,7 @@ export default function PlayerSection({
         totalScore={totalScore}
         showAddButton={isMobile}
         layoutVariant={layoutVariant}
+        onOpenCardPreview={mobileLongPressPreview}
       />
     );
   }

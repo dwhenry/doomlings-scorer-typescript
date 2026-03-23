@@ -192,7 +192,12 @@ export default function App() {
         <div
           className={`players-strip-sticky${state.mobileAddingForPlayer !== null ? ' players-strip-sticky--mobile-adding' : ''}`}
         >
-          <PlayerSection state={state} dispatch={dispatch} gameScore={gameScore} />
+          <PlayerSection
+            state={state}
+            dispatch={dispatch}
+            gameScore={gameScore}
+            onOpenCardPreview={(name) => setMobilePreviewCard(name)}
+          />
         </div>
         <div
           className={`game-container${state.selectedPlayerId !== null ? ' game-container--deck-visible' : ''}`}
