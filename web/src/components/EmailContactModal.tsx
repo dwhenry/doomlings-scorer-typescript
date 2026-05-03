@@ -128,7 +128,7 @@ export default function EmailContactModal(props: EmailContactModalProps) {
 
         {mode === 'contact' && (
           <p className="email-contact-helper">
-            Your message will be sent to {CONTACT_RECIPIENT_EMAIL}. We may reply
+            Your message will be sent to the developer. We may reply
             at the address you provide.
           </p>
         )}

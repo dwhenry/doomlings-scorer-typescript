@@ -2538,7 +2538,7 @@ button:active {
 .onboarding-tour-root {
   position: fixed;
   inset: 0;
-  z-index: 3600;
+  z-index: 2147483647;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -2556,10 +2556,63 @@ button:active {
   }
 }
 
+.onboarding-tour-root--top-left {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.onboarding-tour-root--top {
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.onboarding-tour-root--top-right {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.onboarding-tour-root--left {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.onboarding-tour-root--center {
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding-tour-root--right {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.onboarding-tour-root--bottom-left {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.onboarding-tour-root--bottom {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.onboarding-tour-root--bottom-right {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
 .onboarding-tour-scrim {
   position: absolute;
   inset: 0;
   pointer-events: auto;
+}
+
+.onboarding-tour-scrim--plain {
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.onboarding-tour-scrim--anchored {
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .onboarding-tour-spotlight {

@@ -16,6 +16,7 @@ export type OnboardingStepId =
   | 'welcome'
   | 'menu'
   | 'header'
+  | 'cards'
   | 'players'
   | 'pack'
   | 'hover-preview'
@@ -25,6 +26,17 @@ export type OnboardingStepId =
   | 'beta-report-desktop'
   | 'footer';
 
+export type TourDialogPosition =
+  | 'top-left'
+  | 'top'
+  | 'top-right'
+  | 'left'
+  | 'center'
+  | 'right'
+  | 'bottom-left'
+  | 'bottom'
+  | 'bottom-right';
+
 export interface OnboardingStep {
   id: OnboardingStepId;
   title: string;
@@ -32,6 +44,10 @@ export interface OnboardingStep {
   body: string[];
   /** If set, soft-highlight `[data-tour="…"]` when present; otherwise text-only. */
   tourAnchor?: TourAnchorId;
+  /** Optional viewport position for the tour dialog. */
+  dialogPosition?: TourDialogPosition;
+
+  action?: 'clickCard';
 }
 
 export const onboardingStepsMobile: OnboardingStep[] = [
@@ -104,7 +120,9 @@ export const onboardingStepsDesktop: OnboardingStep[] = [
     id: 'header',
     title: 'Header controls',
     body: [
-      'Use New Game to reset. Filter by release or collection to limit which cards appear in the pack, and set the number of players here.'
+      'Use New Game to reset.',
+      'You can filter the cards to display by release or collection.',
+      'You can set the number - this will affect the current game.'
     ],
     tourAnchor: 'header'
   },
@@ -112,7 +130,9 @@ export const onboardingStepsDesktop: OnboardingStep[] = [
     id: 'players',
     title: 'Players',
     body: [
-      'We’ve selected Player 1. Click a player to focus them; their hand and score stay visible while others shrink.'
+      'You can select a player by clicking on them.',
+      'We’ve selected Player 1.',
+      'You can only add and remove cards from a selected player.'
     ],
     tourAnchor: 'players'
   },
@@ -120,9 +140,23 @@ export const onboardingStepsDesktop: OnboardingStep[] = [
     id: 'pack',
     title: 'Card pack',
     body: [
-      'With a player selected, click cards in the pack to add them to that player’s hand. Use color tabs and search to find cards quickly.'
+      'With a player selected, click cards in the pack to add them to that player’s hand.',
+      'Use color tabs and search to find cards quickly (as well as filters in the menu).',
+      'You can add the same card multiple times to a player’s hand.',
+      'To remove a card from a player’s hand, click the \'x\' when hovering the card in the players hand.'
     ],
-    tourAnchor: 'pack'
+    tourAnchor: 'pack',
+    action: 'clickCard'
+  },
+  {
+    id: 'cards',
+    title: 'Cards',
+    body: [
+      'Cards can be removed from a player’s hand by clicking the \'x\' when hovering the card in the players hand.',
+      'A green bar at the bottom will show the current (points) value of the card.',
+      'A yellow bar indicated teh card is missing custom values (modal when card was added to player). Click the card to reopen the modal.'
+    ],
+    tourAnchor: 'players'
   },
   {
     id: 'hover-preview',
@@ -136,16 +170,23 @@ export const onboardingStepsDesktop: OnboardingStep[] = [
     id: 'catastrophe',
     title: 'Catastrophes',
     body: [
-      'Use the Catastrophe tab in the pack to enable catastrophes for this game. Some require metadata—complete any prompts that appear.'
-    ]
+      'Use the Catastrophe tab in the pack to select the catastrophes for this game.',
+      'Select them in the order tehy occurred.',
+      'Some require additional details, a modal will open to allow you to fill in the details.',
+      'It is recommended you add all the player cards before adding the catastrophes.'
+    ],
+    tourAnchor: 'pack',
   },
   {
     id: 'scoring-breakdown',
     title: 'Score breakdown (beta)',
     body: [
-      'We’ve opened Scoring logs for you. Switch between By player and By source to see how totals are built. Expand a card row for phase-by-phase detail (A, B, C). During beta, this view helps you double-check that scoring matches how you played.'
+      'We’ve opened Scoring logs for you (see the footer).',
+      'Expand a card row for phase-by-phase detail (A, B, C).',
+      'During beta, this view helps you double-check that scoring matches what you expected.',
     ],
-    tourAnchor: 'scoring-logs-modal'
+    tourAnchor: 'scoring-logs-modal',
+    dialogPosition: 'top-left'
   },
   {
     id: 'beta-report-desktop',
@@ -154,7 +195,8 @@ export const onboardingStepsDesktop: OnboardingStep[] = [
       'If a total or log line looks wrong, use Report scoring bug to send your current game state and a short note. That feedback is a big part of the beta test.',
       'When you’re done exploring, close the logs window or continue—either way you can reopen it from View scoring logs in the footer. Replay this tour anytime via How to use there too.'
     ],
-    tourAnchor: 'scoring-report-bug'
+    tourAnchor: 'scoring-report-bug',
+    dialogPosition: 'top-left'
   },
   {
     id: 'footer',
