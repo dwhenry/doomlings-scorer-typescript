@@ -26,6 +26,7 @@ function GridCard({
   return (
     <div
       className="card pack-card pack-card--labeled"
+      data-pack-card-name={card.name}
       {...touchProps}
       onClick={wrapClick(() => onClickCard(card.name))}
       onMouseEnter={onHover ? () => onHover(card.name) : undefined}

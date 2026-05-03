@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, type Dispatch, type RefObject } from 'r
 import type { Action } from '../appReducer';
 import type { Card } from '../types';
 import type { OnboardingStepId } from '../onboarding/onboardingSteps';
-import { pickDemoPackCardName } from '../onboarding/pickDemoPackCard';
+import {
+  pickDemoPackCardName,
+  pickVisibleDemoPackCardName
+} from '../onboarding/pickDemoPackCard';
 
 export interface OnboardingDemoContext {
   stepId: OnboardingStepId | null;
@@ -19,6 +22,8 @@ export function useOnboardingApplyDemo(
   appRootRef: RefObject<HTMLDivElement | null>
 ) {
   const longPressTimerRef = useRef<number | null>(null);
+  const packDemoCardAddedRef = useRef(false);
+  const packDemoCardMetadataRef = useRef(false);
   const selectedPlayerIdRef = useRef(selectedPlayerId);
   const cardsMapRef = useRef(cardsMap);
 
@@ -40,6 +45,9 @@ export function useOnboardingApplyDemo(
   const cleanupStep = useCallback(
     (id: OnboardingStepId | null) => {
       if (!id) return;
+      if (id === 'pack') {
+        dispatch({ type: 'STOP_ADDING' });
+      }
       if (id === 'hover-preview') {
         dispatch({ type: 'SET_HOVERED', cardName: null });
       }
@@ -86,6 +94,8 @@ export function useOnboardingApplyDemo(
         clearLongPressTimer();
         setTourDrivenPreview(false);
         setMobilePreviewCard(null);
+        packDemoCardAddedRef.current = false;
+        packDemoCardMetadataRef.current = false;
         if (isMobile) dispatch({ type: 'STOP_ADDING' });
         return;
       }
@@ -103,8 +113,31 @@ export function useOnboardingApplyDemo(
         case 'welcome':
         case 'menu':
         case 'header':
-        case 'catastrophe':
         case 'footer':
+          break;
+        case 'catastrophe':
+          if (isMobile) {
+            dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId: 0 });
+          } else if (sp !== 0) {
+            dispatch({ type: 'SELECT_PLAYER', id: 0 });
+          }
+          document.querySelector('[aria-selected="catastrophe"]')?.click();
+
+          break;
+        case 'cards':
+          if (isMobile) {
+            dispatch({ type: 'START_ADDING_FOR_PLAYER', playerId: 0 });
+          } else if (sp !== 0) {
+            dispatch({ type: 'SELECT_PLAYER', id: 0 });
+          }
+          requestAnimationFrame(() => {
+            if (packDemoCardMetadataRef.current) return;
+            const cardName = pickVisibleDemoPackCardName(cardsMapRef.current, true);
+            if (!cardName) return;
+            dispatch({ type: 'ADD_CARD', playerId: 0, cardName });
+            packDemoCardMetadataRef.current = true;
+          })
+
           break;
         case 'players':
           if (isMobile) {
@@ -119,6 +152,13 @@ export function useOnboardingApplyDemo(
           } else if (sp !== 0) {
             dispatch({ type: 'SELECT_PLAYER', id: 0 });
           }
+          requestAnimationFrame(() => {
+            if (packDemoCardAddedRef.current) return;
+            const cardName = pickVisibleDemoPackCardName(cardsMapRef.current);
+            if (!cardName) return;
+            dispatch({ type: 'ADD_CARD', playerId: 0, cardName });
+            packDemoCardAddedRef.current = true;
+          })
           break;
         case 'hover-preview':
           if (!isMobile && demoCard) {

@@ -10,12 +10,26 @@ import {
   onboardingStepsDesktop,
   onboardingStepsMobile,
   type OnboardingStep,
-  type OnboardingStepId
+  type OnboardingStepId,
+  type TourDialogPosition
 } from '../onboarding/onboardingSteps';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { OnboardingDemoContext } from '../hooks/useOnboardingDemo';
 
 const SPOTLIGHT_PAD = 6;
+const ANCHORED_OUTER_SCRIM_RGBA = 'rgba(0, 0, 0, 0.54)';
+
+const dialogPositionClass: Record<TourDialogPosition, string> = {
+  'top-left': 'onboarding-tour-root--top-left',
+  top: 'onboarding-tour-root--top',
+  'top-right': 'onboarding-tour-root--top-right',
+  left: 'onboarding-tour-root--left',
+  center: 'onboarding-tour-root--center',
+  right: 'onboarding-tour-root--right',
+  'bottom-left': 'onboarding-tour-root--bottom-left',
+  bottom: 'onboarding-tour-root--bottom',
+  'bottom-right': 'onboarding-tour-root--bottom-right'
+};
 
 interface OnboardingTourProps {
   open: boolean;
@@ -153,22 +167,31 @@ export default function OnboardingTour({
 
   if (!open || !step) return null;
 
-  const scrimRgba = 'rgba(0, 0, 0, 0.62)';
+  const hasAnchor = Boolean(step.tourAnchor);
+  const scrimClassName = hasAnchor
+    ? 'onboarding-tour-scrim onboarding-tour-scrim--anchored'
+    : 'onboarding-tour-scrim onboarding-tour-scrim--plain';
+  const positionClass = step.dialogPosition
+    ? ` ${dialogPositionClass[step.dialogPosition]}`
+    : '';
 
   return (
     <div
-      className="onboarding-tour-root"
+      className={`onboarding-tour-root${
+        hasAnchor ? ' onboarding-tour-root--anchored' : ''
+      }${positionClass}`}
+      data-tour-step={step.id}
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-tour-title"
       aria-describedby="onboarding-tour-body"
     >
       <div
-        className="onboarding-tour-scrim"
-        style={{ background: scrimRgba }}
+        key={`${step.id}-${hasAnchor ? 'anchored' : 'plain'}`}
+        className={scrimClassName}
         aria-hidden="true"
       />
-      {spotlightRect && (
+      {hasAnchor && spotlightRect && (
         <div
           className="onboarding-tour-spotlight"
           style={{
@@ -176,7 +199,7 @@ export default function OnboardingTour({
             top: spotlightRect.top - SPOTLIGHT_PAD,
             width: spotlightRect.width + SPOTLIGHT_PAD * 2,
             height: spotlightRect.height + SPOTLIGHT_PAD * 2,
-            boxShadow: `0 0 0 9999px ${scrimRgba}`
+            boxShadow: `0 0 0 9999px ${ANCHORED_OUTER_SCRIM_RGBA}`
           }}
           aria-hidden="true"
         />
