@@ -121,7 +121,7 @@ export function useOnboardingApplyDemo(
           } else if (sp !== 0) {
             dispatch({ type: 'SELECT_PLAYER', id: 0 });
           }
-          document.querySelector('[aria-selected="catastrophe"]')?.click();
+          (document.querySelector('[aria-selected="catastrophe"]') as HTMLButtonElement)?.click();
 
           break;
         case 'cards':
