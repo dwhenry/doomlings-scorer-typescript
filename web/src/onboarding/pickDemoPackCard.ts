@@ -15,7 +15,7 @@ function canUseDemoCard(card: Card, hasMetadata: boolean): boolean {
 /** A pack card unlikely to open metadata modals during the tour. */
 export function pickDemoPackCardName(cards: Map<string, Card>): string | null {
   for (const card of cards.values()) {
-    if (canUseDemoCard(card)) return card.name;
+    if (canUseDemoCard(card, false)) return card.name;
   }
   return null;
 }
